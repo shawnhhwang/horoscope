@@ -58,14 +58,21 @@
 
 ### 5. 管理員 CMS 與數據大盤 (Admin Portal · 整合於 Port 9999)
 *   **RBAC 權限控管**：嚴格區分 ADMIN、VIP、MEMBER 角色，杜絕非法提權。
-*   **一鍵免密直通 DEMO 模式**：前台全面支援 DEMO 模式（預設開啟，亦可手動切換開關）。開啟時預設賦予 **ADMIN 系統最大管理權限**，自動簽發真實管理員 JWT 憑證，可一鍵直通管理後台，自由進行 LLM 端點配置、命理辭庫在線編修、會員權限調整與營運數據分析。
-*   **點擊頭像直接進入 ADMIN 編輯**：前台導航列右上角常駐會員/管理員頭像，點擊頭像即可直接進入 `/admin` 進行系統配置、LLM 參數與辭庫編輯，無需記憶額外路徑。
-*   **單一前端純淨架構 (廢除 3001)**：已完全停止並廢除獨立的 3001 Port 服務，所有後台管理頁面（數據大盤、命理辭庫、會員權限、LLM 配置）均無縫整併於主網站 (Port 9999，路徑 `/admin/*`)。
-*   **雙層頂部導覽列高能見度入口**：前台右上角常駐亮金膠囊按鈕 `[⚙️ 後台管理中樞 CMS]`，第二橫列算命快捷選單末端亦設有 `[⚙️ 系統後台配置]` 捷徑，直接內部路由直達。
-*   **命理辭庫即時管理**：支援在線編修星曜入宮斷語、卦辭爻辭、塔羅牌義。
-*   **會員管理與升降級**：後台即時搜尋、檢視與調整會員等級。
+*   **動態 DEMO 模式切換 (.env 動態控制)**：
+    *   在 `.env` / `apps/server/.env` 與 `apps/web/.env` 設定 `DEMO_MODE=true|false` 與 `VITE_DEMO_MODE=true|false`，自由切換展示體驗或真實線上營運。
+    *   當設為 `true` 時，前台全面支援免密碼直通體驗，自動提供管理員預設權限；設為 `false` 時，強制所有訪客進行正式會員註冊與登入。
+*   **資料庫在線檢視與備份還原 (Database Admin & Backups)**：
+    *   **即時快照備份**：後台可一鍵建立時間戳快照備份 (`.db`)，並支援快照檔案下載。
+    *   **安全還原**：支援自歷史備份快照一鍵還原資料庫（執行前自動建立回滾保護快照）。
+    *   **多表可視化編輯器**：支援在線分頁查詢、搜尋與直接修改 `User`、`BirthProfile`、`ReadingRecord`、`SystemInterpretation` 原始資料列。
+*   **會員完整管理與密碼重設 (Member Management)**：
+    *   支援在線新增會員、編輯會員個人資訊、指派角色（`USER`、`VIP`、`ADMIN`）、重設密碼與帳號銷毀。
+*   **RAG 知識庫工程與提示詞調試 (RAG Engineering)**：
+    *   提供各命理系統專屬現代專業顧問角色（去仙人道士口吻，貼近心理學與客觀諮詢）。
+    *   支援 RAG 即時檢索調試視窗、提示詞 Snippet 檢查、全站解讀資料庫 JSON 匯出與批次 Upsert 匯入。
+*   **點擊頭像直接進入 ADMIN 編輯**：前台導航列右上角常駐會員/管理員頭像，點擊頭像即可直接進入 `/admin` 進行系統配置、資料庫管理、LLM 參數與辭庫編輯，無需記憶額外路徑。
+*   **單一前端純淨架構 (廢除 3001)**：已完全停止並廢除獨立的 3001 Port 服務，所有後台管理頁面（數據大盤、資料庫備份、命理辭庫、會員管理、LLM 配置）均無縫整併於主網站 (Port 9999，路徑 `/admin/*`)。
 *   **運營監控大盤**：註冊人數、測算模組調用熱力圖即時數據呈現。
-*   **AI 靈犀配置中樞**：後台在線配置外部 LLM API Endpoint、Key、模型規格與大師 System Prompt，支援連線即時測試。
 
 ### 6. 天機靈犀 LLM 智能星象顧問 (Celestial AI Assistant)
 *   **右上角全局靈犀按鈕**：前台頂部導航常駐「✨ 天機靈犀」，一鍵滑出琉璃光暈抽屜對話介面。
@@ -194,17 +201,15 @@ docker compose ps
 # 運行核心演算庫單元測試 (18 項全部通過)
 pnpm --filter @celestial/astro-core test
 
-# 運行後端 API 服務整合測試 (21 項全部通過)
+# 運行後端 API 與後台功能整合測試 (46 項全部通過)
 pnpm --filter @celestial/server test
 
-# 運行全單元與整合測試 (39 項全部通過)
+# 運行全單元與整合測試 (全專案 64 項全部通過，100% 成功率)
 pnpm test
 
 # 運行全專案構建檢查 (Monorepo 5 個套件全數編譯無誤)
 pnpm build
 ```
-
-詳細測試結果請參閱完整的 [TEST_REPORT.md](file:///home/coder/Codebase/Horoscope/TEST_REPORT.md)。
 
 ---
 
@@ -213,6 +218,7 @@ pnpm build
 | HTTP 方法 | 端點路徑 | 說明 | 鑑權要求 |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/health` | 伺服器健康檢查 | 無 |
+| `GET` | `/api/v1/auth/config` | 取得當前環境 DEMO 模式啟用狀態 | 無 |
 | `POST` | `/api/v1/auth/register` | 會員註冊 (Bcrypt 雜湊) | 無 |
 | `POST` | `/api/v1/auth/login` | 會員登入 (取得 JWT Bearer Token) | 無 |
 | `GET` | `/api/v1/auth/me` | 查詢當前登入者資訊 | Bearer Token |
@@ -228,8 +234,19 @@ pnpm build
 | `GET/POST`| `/api/v1/profiles` | 個人命盤保險庫 CRUD | Bearer Token |
 | `GET/POST`| `/api/v1/readings` | 測算紀錄與個人筆記日記 | Bearer Token |
 | `GET` | `/api/v1/admin/analytics` | 運營統計儀表板數據 | ADMIN Role |
+| `GET` | `/api/v1/admin/database/stats` | 取得 SQLite 資料庫檔案大小、各表筆數與備份數 | ADMIN Role |
+| `POST` | `/api/v1/admin/database/backup` | 建立即時時間戳快照備份 (`.db`) | ADMIN Role |
+| `GET` | `/api/v1/admin/database/backups` | 查詢歷史快照備份清單 | ADMIN Role |
+| `GET` | `/api/v1/admin/database/download-backup/:filename` | 下載備份快照檔案 | ADMIN Role |
+| `POST` | `/api/v1/admin/database/restore` | 執行快照還原（自動建立防護快照） | ADMIN Role |
+| `GET/POST/PUT/DELETE` | `/api/v1/admin/database/tables/:table(/:id)` | 分頁查詢與直接編輯資料表原始資料 | ADMIN Role |
+| `GET/POST` | `/api/v1/admin/users` | 會員清單查詢與管理員手動新增會員 | ADMIN Role |
+| `PUT/DELETE` | `/api/v1/admin/users/:id` | 修改會員資料／等級、刪除會員 | ADMIN Role |
+| `POST` | `/api/v1/admin/users/:id/password` | 管理員重設指定會員密碼 | ADMIN Role |
 | `GET/PUT` | `/api/v1/admin/interpretations` | 命理辭庫管理與即時在線編修 | ADMIN Role |
-| `GET/PUT` | `/api/v1/admin/users` | 會員帳號管理與 VIP 權限切換 | ADMIN Role |
+| `POST` | `/api/v1/admin/rag/test-retrieval` | RAG 專家角色與辭庫檢索即時調試 | ADMIN Role |
+| `GET` | `/api/v1/admin/rag/export` | 匯出全站解讀辭典為 JSON 檔案 | ADMIN Role |
+| `POST` | `/api/v1/admin/rag/import` | 批次匯入並同步更新解讀詞條 (Upsert) | ADMIN Role |
 | `GET` | `/api/v1/llm/status` | 查詢 LLM 靈犀助手公開狀態與當前模型 | 無 |
 | `POST` | `/api/v1/llm/chat` | 靈犀對話並注入具體命盤數據上下文 | 無 / 可選 |
 | `GET/PUT` | `/api/v1/admin/llm-config` | 後台查看與修改 LLM 端點、Key、Prompt | ADMIN Role |
