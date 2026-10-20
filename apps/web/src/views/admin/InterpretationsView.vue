@@ -102,9 +102,9 @@
     <!-- 彈窗：新增/編輯辭條 -->
     <div
       v-if="showModal"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm"
     >
-      <div class="glass-panel border border-admin-gold/40 rounded-2xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
+      <div class="glass-panel border border-admin-gold/40 rounded-2xl p-4 sm:p-6 max-w-lg w-full max-h-[90dvh] overflow-y-auto space-y-4 shadow-2xl">
         <div class="flex justify-between items-center border-b border-admin-gold/20 pb-3">
           <h3 class="font-serif text-lg font-bold text-admin-gold">
             {{ isEditing ? '編輯 RAG 辭庫詞條' : '新增 RAG 命理詞條' }}
@@ -159,9 +159,9 @@
     <!-- 彈窗：🧪 RAG 檢索即時調試器 (Live RAG Tester) -->
     <div
       v-if="showRagTestModal"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm"
     >
-      <div class="glass-panel border border-purple-500/40 rounded-2xl p-6 max-w-3xl w-full max-h-[88vh] overflow-y-auto space-y-4 shadow-2xl">
+      <div class="glass-panel border border-purple-500/40 rounded-2xl p-4 sm:p-6 max-w-3xl w-full max-h-[90dvh] overflow-y-auto space-y-4 shadow-2xl">
         <div class="flex justify-between items-center border-b border-purple-500/20 pb-3">
           <div class="flex items-center space-x-2">
             <span class="text-xl">🧪</span>
@@ -224,9 +224,9 @@
     <!-- 彈窗：批次匯入 RAG JSON -->
     <div
       v-if="showImportModal"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm"
     >
-      <div class="glass-panel border border-admin-gold/40 rounded-2xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
+      <div class="glass-panel border border-admin-gold/40 rounded-2xl p-4 sm:p-6 max-w-lg w-full max-h-[90dvh] overflow-y-auto space-y-4 shadow-2xl">
         <div class="flex justify-between items-center border-b border-admin-gold/20 pb-3">
           <h3 class="font-serif text-lg font-bold text-admin-gold">批次匯入 RAG 辭庫 (JSON)</h3>
           <button @click="showImportModal = false" class="text-admin-muted hover:text-white">✕</button>

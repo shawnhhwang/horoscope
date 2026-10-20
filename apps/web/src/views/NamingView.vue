@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto px-6 pt-28 pb-20">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-28 pb-20">
     <div class="text-center mb-10">
       <div class="text-xs uppercase tracking-[0.25em] font-serif text-dark-gold mb-2">CHINESE ONOMASTICS</div>
       <h1 class="font-serif text-3xl sm:text-4xl font-bold text-gold-gradient mb-3">易經姓名學剖析與起名</h1>

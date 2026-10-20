@@ -210,9 +210,9 @@
     <!-- 彈窗：編輯 / 新增資料列 -->
     <div
       v-if="showEditModal"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm"
     >
-      <div class="glass-panel border border-admin-gold/40 rounded-2xl p-6 max-w-2xl w-full max-h-[85vh] overflow-y-auto space-y-4 shadow-2xl">
+      <div class="glass-panel border border-admin-gold/40 rounded-2xl p-4 sm:p-6 max-w-2xl w-full max-h-[90dvh] overflow-y-auto space-y-4 shadow-2xl">
         <div class="flex justify-between items-center border-b border-admin-gold/20 pb-3">
           <h3 class="font-bold text-admin-gold text-base">
             {{ isEditingRow ? `編輯 ${currentTable} 記錄 (ID: ${editingId})` : `新增 ${currentTable} 記錄` }}

@@ -120,9 +120,9 @@
     <!-- 彈窗：新增會員 -->
     <div
       v-if="showCreateModal"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm"
     >
-      <div class="glass-panel border border-admin-gold/40 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+      <div class="glass-panel border border-admin-gold/40 rounded-2xl p-4 sm:p-6 max-w-md w-full max-h-[90dvh] overflow-y-auto space-y-4 shadow-2xl">
         <div class="flex justify-between items-center border-b border-admin-gold/20 pb-3">
           <h3 class="font-bold text-admin-gold text-base">建立新會員帳號</h3>
           <button @click="showCreateModal = false" class="text-admin-muted hover:text-white">✕</button>
@@ -196,9 +196,9 @@
     <!-- 彈窗：編輯會員 -->
     <div
       v-if="showEditModal"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm"
     >
-      <div class="glass-panel border border-admin-gold/40 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+      <div class="glass-panel border border-admin-gold/40 rounded-2xl p-4 sm:p-6 max-w-md w-full max-h-[90dvh] overflow-y-auto space-y-4 shadow-2xl">
         <div class="flex justify-between items-center border-b border-admin-gold/20 pb-3">
           <h3 class="font-bold text-admin-gold text-base">編輯會員資料</h3>
           <button @click="showEditModal = false" class="text-admin-muted hover:text-white">✕</button>

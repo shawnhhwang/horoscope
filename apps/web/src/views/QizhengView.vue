@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto px-6 pt-28 pb-20 font-serif">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-28 pb-20 font-serif">
     <!-- 標題區 -->
     <div class="text-center mb-10">
       <div class="text-xs uppercase tracking-[0.25em] text-dark-gold mb-2 font-sans">

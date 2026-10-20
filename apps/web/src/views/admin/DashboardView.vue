@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-8">
-    <div class="flex justify-between items-center">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
       <div>
         <h2 class="font-serif text-2xl font-bold text-admin-gold">營運總覽與數據大盤</h2>
         <p class="text-xs text-admin-muted mt-1">即時監控系統會員增長、測算調用與辭庫規模</p>
       </div>
-      <button @click="fetchStats" class="px-3 py-1.5 rounded-lg border border-admin-gold/30 text-xs text-admin-gold hover:bg-admin-gold/10">
-        重新整理數據
+      <button @click="fetchStats" class="px-3.5 py-1.5 rounded-lg border border-admin-gold/30 text-xs text-admin-gold hover:bg-admin-gold/10 transition-colors cursor-pointer self-start sm:self-auto">
+        重新整理數據 🔄
       </button>
     </div>
 

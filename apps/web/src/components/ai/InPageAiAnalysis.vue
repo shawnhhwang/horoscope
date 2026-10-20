@@ -1,7 +1,7 @@
 <template>
   <section class="in-page-ai-section w-full my-8 glass-panel rounded-2xl overflow-hidden border border-dark-gold/30 shadow-cosmic transition-all font-serif">
     <!-- 1. 待命狀態 (Idle: 尚未發起 LLM 解析) -->
-    <div v-if="status === 'idle'" class="p-6 sm:p-8 text-center space-y-4 bg-gradient-to-b from-dark-gold/10 via-transparent to-transparent">
+    <div v-if="status === 'idle'" class="p-4 sm:p-8 text-center space-y-4 bg-gradient-to-b from-dark-gold/10 via-transparent to-transparent">
       <div class="flex items-center justify-center space-x-2 text-dark-gold">
         <span class="text-xl">✨</span>
         <h4 class="font-bold text-base sm:text-lg tracking-wider text-gold-gradient">AI 專業命理與星象全盤深度診斷</h4>
@@ -13,7 +13,7 @@
       <div class="pt-2">
         <button
           @click="startAnalysis"
-          class="px-8 py-3 rounded-xl font-bold text-sm bg-dark-gold text-dark-void hover:bg-yellow-500 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-cosmic inline-flex items-center space-x-2.5 cursor-pointer font-serif"
+          class="px-6 sm:px-8 py-3 rounded-xl font-bold text-sm bg-dark-gold text-dark-void hover:bg-yellow-500 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-cosmic inline-flex items-center space-x-2.5 cursor-pointer font-serif"
         >
           <span>{{ buttonText || '✨ 啟動專業 AI 顧問·全盤深度診斷' }}</span>
           <span class="text-[11px] bg-black/25 dark:bg-black/25 light:bg-black/10 px-2 py-0.5 rounded font-mono font-normal">實時推演</span>
@@ -22,7 +22,7 @@
     </div>
 
     <!-- 2. 思考中狀態 (Loading: 正在呼叫本地/外部 LLM 深度思考，即時動態碼表計時) -->
-    <div v-else-if="status === 'loading'" class="p-8 sm:p-10 space-y-5 bg-dark-nebula/60 dark:bg-dark-nebula/60 light:bg-amber-50/70 border border-dark-gold/30 light:border-amber-300/60 rounded-2xl">
+    <div v-else-if="status === 'loading'" class="p-5 sm:p-10 space-y-5 bg-dark-nebula/60 dark:bg-dark-nebula/60 light:bg-amber-50/70 border border-dark-gold/30 light:border-amber-300/60 rounded-2xl">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-dark-gold/20 light:border-amber-300/40 pb-5">
         <div class="flex items-center space-x-3.5">
           <!-- 宇宙星環旋轉動態 -->
@@ -61,7 +61,7 @@
     </div>
 
     <!-- 3. 解析完成狀態 (Completed: 全幅展開長文，支援標準 Markdown 格式) -->
-    <div v-else-if="status === 'completed'" class="p-6 sm:p-8 space-y-6">
+    <div v-else-if="status === 'completed'" class="p-4 sm:p-8 space-y-6">
       <!-- 頂部資訊列：標題、模型、耗時、折疊按鈕 -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-dark-gold/20 light:border-light-bronze/25 pb-4">
         <div class="flex items-center space-x-3">
@@ -101,7 +101,7 @@
       <!-- MARKDOWN 內容主體：無高度截斷，自然全幅展開，精美古典色調 -->
       <div v-show="isExpanded" class="space-y-4">
         <div
-          class="markdown-content text-sm sm:text-base leading-relaxed p-6 sm:p-8 rounded-xl shadow-sm border border-dark-gold/20 light:border-light-bronze/30"
+          class="markdown-content text-sm sm:text-base leading-relaxed p-4 sm:p-8 rounded-xl shadow-sm border border-dark-gold/20 light:border-light-bronze/30"
           v-html="renderedMarkdown"
         ></div>
       </div>

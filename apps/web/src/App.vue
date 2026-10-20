@@ -18,8 +18,8 @@
     <!-- 天機靈犀 AI 助手抽屜視窗 -->
     <LlmAssistantModal />
 
-    <!-- 頁尾 (Awwwards 奢華幾何裝飾，在後台 CMS 時隱藏) -->
-    <footer v-if="!isAdminRoute" class="glass-panel border-t border-dark-gold/15 py-12 px-6 mt-20 text-center text-xs text-dark-muted">
+    <!-- 頁尾 (Awwwards 奢華幾何裝飾，在後台 CMS 時隱藏，適配 iPhone 底部安全區) -->
+    <footer v-if="!isAdminRoute" class="glass-panel border-t border-dark-gold/15 py-12 px-4 sm:px-6 mt-20 text-center text-xs text-dark-muted pb-[calc(3rem+env(safe-area-inset-bottom,0px))]">
       <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center space-x-2">
           <span class="font-serif text-dark-gold font-bold">萬象天儀</span>

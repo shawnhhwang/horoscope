@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto px-6 pt-28 pb-20">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-28 pb-20">
     <div class="text-center mb-10">
       <div class="text-xs uppercase tracking-[0.25em] font-serif text-dark-gold mb-2">I CHING DIVINATION</div>
       <h1 class="font-serif text-3xl sm:text-4xl font-bold text-gold-gradient mb-3">周易文王六爻卜卦</h1>

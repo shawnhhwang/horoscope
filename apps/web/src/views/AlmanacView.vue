@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto px-6 pt-28 pb-20 font-serif">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-28 pb-20 font-serif">
     <!-- 頂部古風金箔天書特色橫幅 -->
     <div class="relative rounded-2xl overflow-hidden mb-8 border border-dark-gold/30 shadow-cosmic max-w-5xl mx-auto h-44 sm:h-52">
       <img

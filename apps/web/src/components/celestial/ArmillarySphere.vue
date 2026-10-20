@@ -1,5 +1,5 @@
 <template>
-  <div ref="container" class="relative w-full h-[500px] md:h-[650px] overflow-hidden cursor-grab active:cursor-grabbing">
+  <div ref="container" class="relative w-full h-[340px] sm:h-[450px] md:h-[650px] overflow-hidden cursor-grab active:cursor-grabbing touch-none">
     <!-- 3D WebGL Canvas 渲染容器 -->
     <div ref="canvasWrapper" class="w-full h-full"></div>
 

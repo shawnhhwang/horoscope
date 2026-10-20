@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto px-6 pt-28 pb-20">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-28 pb-20">
     <div class="text-center mb-10">
       <div class="text-xs uppercase tracking-[0.25em] font-serif text-dark-gold mb-2">ZI WEI DOU SHU</div>
       <h1 class="font-serif text-3xl sm:text-4xl font-bold text-gold-gradient mb-3">紫微斗數天機排盤</h1>
@@ -53,8 +53,14 @@
     <!-- 紫微十二宮 4x4 琉璃古盤 -->
     <div v-if="chart" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- 4x4 命盤主體 (佔據 2 欄) -->
-      <div class="lg:col-span-2 glass-panel rounded-2xl p-4 border border-dark-gold/30">
-        <div class="grid grid-cols-4 gap-2 aspect-square">
+      <div class="lg:col-span-2 glass-panel rounded-2xl p-3 sm:p-4 border border-dark-gold/30 overflow-hidden">
+        <div class="sm:hidden text-center text-[10px] text-dark-gold mb-2 font-serif flex items-center justify-center space-x-1">
+          <span>👈</span>
+          <span>左右滑動檢視完整 4x4 琉璃古盤，點選任一宮位查看詳解</span>
+          <span>👉</span>
+        </div>
+        <div class="overflow-x-auto -mx-1 px-1 pb-2">
+          <div class="min-w-[520px] sm:min-w-0 grid grid-cols-4 gap-2 aspect-square">
           <!-- 第 1 排 (Top): 巳, 午, 未, 申 -->
           <div
             v-for="branch in ['巳', '午', '未', '申']"
@@ -227,6 +233,7 @@
           </div>
         </div>
       </div>
+    </div>
 
       <!-- 右側宮位詳解面板 (佔據 1 欄) -->
       <div class="glass-panel rounded-2xl p-6 border border-dark-gold/30 flex flex-col justify-between">

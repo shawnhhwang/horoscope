@@ -1,18 +1,18 @@
 <template>
   <div class="space-y-6">
     <!-- 標題列 -->
-    <div class="flex items-center justify-between border-b border-admin-gold/15 pb-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-admin-gold/15 pb-4">
       <div>
         <h2 class="font-serif font-bold text-xl text-admin-gold tracking-wide">AI 靈犀大語言模型配置 (LLM Settings)</h2>
         <p class="text-xs text-admin-muted mt-1 font-serif">
           集中管理萬象天儀全系統之 LLM 諮詢端點、API Key、模型名稱與命理大師人格 Prompt。支援 OpenAI 相容協議。
         </p>
       </div>
-      <div class="flex items-center space-x-3">
+      <div class="flex flex-wrap items-center gap-2">
         <button
           @click="testConnection"
           :disabled="testing"
-          class="px-4 py-2 rounded-lg border border-admin-gold/40 text-admin-gold text-xs font-serif hover:bg-admin-gold/10 transition-colors disabled:opacity-50"
+          class="px-3.5 py-2 rounded-lg border border-admin-gold/40 text-admin-gold text-xs font-serif hover:bg-admin-gold/10 transition-colors disabled:opacity-50"
         >
           <span v-if="testing">連線測試中...</span>
           <span v-else>連線與解盤測試 ⚡</span>
@@ -20,7 +20,7 @@
         <button
           @click="saveConfig"
           :disabled="saving"
-          class="px-5 py-2 rounded-lg bg-admin-gold text-admin-bg font-serif font-bold text-xs hover:bg-yellow-500 transition-colors shadow-lg disabled:opacity-50"
+          class="px-4 sm:px-5 py-2 rounded-lg bg-admin-gold text-admin-bg font-serif font-bold text-xs hover:bg-yellow-500 transition-colors shadow-lg disabled:opacity-50"
         >
           <span v-if="saving">儲存中...</span>
           <span v-else>儲存配置變更 ✓</span>

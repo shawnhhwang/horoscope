@@ -19,6 +19,34 @@
     --color-accent: #E5C378;
   }
 
+  /* iOS Safe Area & Viewport Insets */
+  :root {
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+  }
+
+  /* 消除行動端點擊反白高亮，優化原生手感 */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 啟用 iOS 原生流暢慣性滾動 */
+  .overflow-x-auto,
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* 防止 iPhone Safari 在聚焦輸入框時自動強行放大畫面 (字體需至少 16px) */
+  @media screen and (max-width: 768px) {
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+
   html.lenis, html.lenis body {
     height: auto;
   }

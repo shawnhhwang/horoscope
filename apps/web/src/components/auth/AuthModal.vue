@@ -25,7 +25,7 @@
             type="text"
             required
             placeholder="例如：星穹行者"
-            class="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-dark-gold/30 focus:border-dark-gold outline-none text-sm"
+            class="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-dark-gold/30 focus:border-dark-gold outline-none text-base sm:text-sm"
           />
         </div>
 
@@ -36,7 +36,7 @@
             type="email"
             required
             placeholder="your@email.com"
-            class="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-dark-gold/30 focus:border-dark-gold outline-none text-sm"
+            class="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-dark-gold/30 focus:border-dark-gold outline-none text-base sm:text-sm"
           />
         </div>
 
@@ -47,7 +47,7 @@
             type="password"
             required
             placeholder="請輸入密碼"
-            class="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-dark-gold/30 focus:border-dark-gold outline-none text-sm"
+            class="w-full px-4 py-2.5 rounded-lg bg-black/40 border border-dark-gold/30 focus:border-dark-gold outline-none text-base sm:text-sm"
           />
         </div>
 

@@ -13,10 +13,10 @@
     <Transition name="slide-right">
       <div
         v-if="llmStore.isOpen"
-        class="fixed top-0 right-0 bottom-0 w-full sm:w-[480px] lg:w-[540px] z-50 flex flex-col glass-panel border-l border-dark-gold/30 shadow-2xl transition-colors font-serif"
+        class="fixed top-0 right-0 bottom-0 w-full sm:w-[480px] lg:w-[540px] z-50 flex flex-col glass-panel border-l border-dark-gold/30 shadow-2xl transition-colors font-serif pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]"
       >
         <!-- 頂部標題列 -->
-        <div class="px-6 py-4 border-b border-dark-gold/20 flex items-center justify-between bg-black/10">
+        <div class="px-5 sm:px-6 py-4 border-b border-dark-gold/20 flex items-center justify-between bg-black/10">
           <div class="flex items-center space-x-3">
             <div class="w-9 h-9 rounded-full border border-dark-gold bg-dark-gold/15 flex items-center justify-center shadow-cosmic animate-pulse">
               <span class="text-xs text-dark-gold font-bold">犀</span>
@@ -134,7 +134,7 @@
               v-model="inputQuery"
               :disabled="llmStore.isGenerating"
               placeholder="向 AI 專業命理顧問諮詢格局特質、決策指引或命理解惑..."
-              class="flex-1 bg-black/30 border border-dark-gold/30 rounded-xl px-4 py-2.5 text-xs text-dark-text placeholder-dark-muted/60 focus:outline-none focus:border-dark-gold transition-colors"
+              class="flex-1 bg-black/30 border border-dark-gold/30 rounded-xl px-4 py-2.5 text-base sm:text-xs text-dark-text placeholder-dark-muted/60 focus:outline-none focus:border-dark-gold transition-colors"
             />
             <button
               type="submit"
