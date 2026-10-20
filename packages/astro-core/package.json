@@ -1,0 +1,21 @@
+{
+  "name": "@celestial/astro-core",
+  "version": "1.0.0",
+  "description": "萬象天儀 - 東西方星象與命理純演算法核心庫",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "lunar-typescript": "^1.7.5"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  }
+}

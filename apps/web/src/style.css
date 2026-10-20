@@ -1,0 +1,263 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-bg: #F9F8F5;
+    --color-card: #FFFFFF;
+    --color-text: #1A1C23;
+    --color-muted: #586174;
+    --color-accent: #A47E3B;
+  }
+
+  .dark {
+    --color-bg: #08090C;
+    --color-card: #141724;
+    --color-text: #F0F3F8;
+    --color-muted: #8A92A6;
+    --color-accent: #E5C378;
+  }
+
+  html.lenis, html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+}
+
+/* ==========================================================================
+   高級毛玻璃琉璃質感卡片 (Glass Panels)
+   ========================================================================== */
+.glass-panel {
+  background: rgba(20, 23, 36, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(229, 195, 120, 0.18);
+}
+
+/* ==========================================================================
+   神聖幾何金屬流光字體 (Text Gradient)
+   ========================================================================== */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #FFF1CA 0%, #E5C378 50%, #B88E3E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ==========================================================================
+   金箔光暈邊框 (Glow Border)
+   ========================================================================== */
+.border-gold-glow {
+  box-shadow: 0 0 15px rgba(229, 195, 120, 0.2);
+}
+
+/* ==========================================================================
+   精緻古典自定義滾動條
+   ========================================================================== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #08090C;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E5C378;
+  border-radius: 3px;
+}
+
+/* ==========================================================================
+   淺色模式全面相容性覆寫 (Universal Light Theme Consistency Engine)
+   ========================================================================== */
+html.light body {
+  background-color: #F9F8F5 !important;
+  color: #1A1C23 !important;
+}
+
+html.light .glass-panel {
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(164, 126, 59, 0.28) !important;
+  box-shadow: 0 4px 25px -4px rgba(164, 126, 59, 0.12) !important;
+  color: #1A1C23 !important;
+}
+
+html.light .text-gold-gradient {
+  background: linear-gradient(135deg, #6B4914 0%, #9C722E 50%, #5E4011 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+html.light .text-dark-text {
+  color: #1A1C23 !important;
+}
+
+html.light .text-dark-muted {
+  color: #586174 !important;
+}
+
+html.light .text-dark-gold {
+  color: #8C6424 !important;
+}
+
+html.light .bg-dark-gold {
+  background-color: #A47E3B !important;
+  color: #FFFFFF !important;
+}
+
+html.light .text-dark-void {
+  color: #FFFFFF !important;
+}
+
+html.light .bg-dark-void {
+  background-color: #F9F8F5 !important;
+}
+
+html.light .bg-dark-nebula {
+  background-color: #EFECE6 !important;
+}
+
+html.light .bg-dark-card {
+  background-color: #FFFFFF !important;
+}
+
+/* 覆寫黑色半透明區塊，於淺色模式下呈現典藏米色/純白 */
+html.light .bg-black,
+html.light .bg-black\/85,
+html.light .bg-black\/80,
+html.light .bg-black\/70,
+html.light .bg-black\/60,
+html.light .bg-black\/50,
+html.light .bg-black\/40,
+html.light .bg-black\/30,
+html.light .bg-black\/25,
+html.light .bg-black\/20,
+html.light .bg-black\/15,
+html.light .bg-black\/10 {
+  background-color: rgba(244, 241, 234, 0.88) !important;
+  border-color: rgba(164, 126, 59, 0.22) !important;
+  color: #1A1C23 !important;
+}
+
+/* 輸入框、下拉選單、文本域淺色適配 */
+html.light input,
+html.light select,
+html.light textarea {
+  background-color: #FFFFFF !important;
+  border-color: rgba(164, 126, 59, 0.35) !important;
+  color: #1A1C23 !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #8E96A8 !important;
+}
+
+html.light input:focus,
+html.light select:focus,
+html.light textarea:focus {
+  border-color: #8C6424 !important;
+  outline: none !important;
+}
+
+/* 頂部古風橫幅漸變遮罩適配 */
+html.light .from-dark-void\/90 {
+  --tw-gradient-from: rgba(249, 248, 245, 0.95) var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgba(249, 248, 245, 0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), rgba(249, 248, 245, 0.75) var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+
+html.light .via-dark-void\/60 {
+  --tw-gradient-stops: var(--tw-gradient-from), rgba(249, 248, 245, 0.75) var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+
+/* 邊框色系適配 */
+html.light .border-dark-gold,
+html.light .border-dark-gold\/60,
+html.light .border-dark-gold\/50,
+html.light .border-dark-gold\/40,
+html.light .border-dark-gold\/30,
+html.light .border-dark-gold\/25,
+html.light .border-dark-gold\/20,
+html.light .border-dark-gold\/15,
+html.light .border-dark-gold\/10 {
+  border-color: rgba(164, 126, 59, 0.28) !important;
+}
+
+/* 淺色模式下高對比度文字與標籤 */
+html.light .text-emerald-300,
+html.light .text-emerald-400 {
+  color: #047857 !important;
+}
+
+html.light .text-rose-300,
+html.light .text-rose-400 {
+  color: #BE123C !important;
+}
+
+html.light .text-amber-300,
+html.light .text-amber-400 {
+  color: #B45309 !important;
+}
+
+html.light .text-violet-300,
+html.light .text-violet-400 {
+  color: #6D28D9 !important;
+}
+
+html.light .text-cyan-300,
+html.light .text-cyan-400 {
+  color: #0E7490 !important;
+}
+
+html.light .bg-emerald-950\/20,
+html.light .bg-emerald-950\/30,
+html.light .bg-emerald-950\/60,
+html.light .bg-emerald-950\/80 {
+  background-color: rgba(209, 250, 229, 0.75) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  color: #065F46 !important;
+}
+
+html.light .bg-rose-950\/20,
+html.light .bg-rose-950\/30,
+html.light .bg-rose-950\/60,
+html.light .bg-rose-950\/80 {
+  background-color: rgba(255, 228, 230, 0.75) !important;
+  border-color: rgba(244, 63, 94, 0.35) !important;
+  color: #9F1239 !important;
+}
+
+html.light .shadow-cosmic {
+  box-shadow: 0 4px 20px -2px rgba(164, 126, 59, 0.18) !important;
+}
+
+html.light ::-webkit-scrollbar-track {
+  background: #F9F8F5;
+}
+
+/* 後台管理卡片樣式 */
+.admin-card {
+  background: #161922;
+  border: 1px solid rgba(229, 195, 120, 0.15);
+  border-radius: 0.75rem;
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: #A47E3B;
+  border-radius: 3px;
+}

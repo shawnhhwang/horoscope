@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.output/
+.nuxt/
+*.log
+.DS_Store
+.env
+.env.local
+coverage/
+.turbo/
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+graphify-out/
+
+

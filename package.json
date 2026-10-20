@@ -1,0 +1,17 @@
+{
+  "name": "celestial-horoscope-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "萬象天儀 (Astraea & CelestialDao) - 頂級東西方綜合星象與命理系統",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "dev:server": "pnpm --filter @celestial/server dev",
+    "dev:web": "pnpm --filter @celestial/web dev",
+    "lint": "pnpm -r lint"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15",
+    "typescript": "^5.4.5"
+  }
+}

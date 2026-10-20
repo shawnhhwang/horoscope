@@ -1,0 +1,85 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  passwordHash  String
+  displayName   String
+  avatarUrl     String?
+  role          String         @default("MEMBER") // ADMIN, MEMBER, VIP
+  emailVerified Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  profiles      BirthProfile[]
+  readings      ReadingRecord[]
+}
+
+model BirthProfile {
+  id                String          @id @default(uuid())
+  userId            String
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name              String
+  gender            String          // 男, 女, 其他
+  birthDatetime     DateTime
+  longitude         Float           @default(120.0)
+  latitude          Float           @default(25.0)
+  birthLocationName String?
+  trueSolarTime     DateTime?
+  notes             String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  readings          ReadingRecord[]
+}
+
+model ReadingRecord {
+  id            String        @id @default(uuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profileId     String?
+  profile       BirthProfile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+  moduleType    String        // ZIWEI, BAZI, ICHING, NAME, WESTERN_NATAL, TAROT
+  inputSnapshot String        // JSON stringified input
+  chartOutput   String        // JSON stringified chart results
+  aiSummary     String?
+  userNotes     String?
+  isFavorite    Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model SystemInterpretation {
+  id          String   @id @default(uuid())
+  moduleType  String   // ZIWEI, BAZI, ICHING, NAME, WESTERN_NATAL, TAROT
+  keyCode     String   @unique // 例如 ZIWEI_STAR_ZIWEI_LU
+  category    String   // STAR, PALACE, HEXAGRAM, ASPECT, TAROT_CARD
+  title       String
+  contentRich String
+  tags        String?  // JSON stringified tags
+  updatedAt   DateTime @updatedAt
+}
+
+model KangxiChar {
+  id              String   @id @default(uuid())
+  char            String   @unique
+  strokeCount     Int
+  element         String   // 木, 火, 土, 金, 水
+  pinyin          String?
+  radical         String?
+  auspiciousLevel String?  // 大吉, 吉, 平, 凶
+  meaning         String?
+}
+
+model SystemConfig {
+  key         String   @id
+  value       String   // JSON stringified configuration
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+

@@ -1,0 +1,32 @@
+{
+  "name": "@celestial/web",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "萬象天儀 - 前端展示與 Awwwards 級 3D 視覺交互客戶端",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@celestial/astro-core": "workspace:*",
+    "gsap": "^3.12.5",
+    "lenis": "^1.0.45",
+    "lucide-vue-next": "^0.378.0",
+    "marked": "^18.1.1",
+    "pinia": "^2.1.7",
+    "three": "^0.164.1",
+    "vue": "^3.4.27",
+    "vue-router": "^4.3.2"
+  },
+  "devDependencies": {
+    "@types/three": "^0.164.0",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11",
+    "vue-tsc": "^2.0.19"
+  }
+}
