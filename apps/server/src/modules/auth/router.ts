@@ -1,9 +1,19 @@
-import { Router, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@celestial/database';
-import { authenticate, AuthRequest, signToken } from '../../middleware/auth.js';
+import { authenticate, AuthRequest, signToken, isDemoModeActive } from '../../middleware/auth.js';
 
 export const authRouter = Router();
+
+// 系統認證與環境配置資訊（免登入即可讀取）
+authRouter.get('/config', (_req: Request, res: Response) => {
+  return res.json({
+    success: true,
+    data: {
+      demoMode: isDemoModeActive(),
+    },
+  });
+});
 
 // 會員註冊
 authRouter.post('/register', async (req, res: Response) => {

@@ -46,6 +46,14 @@ export async function getDemoAdminUser(): Promise<AuthenticatedUser> {
   }
 }
 
+export function isDemoModeActive(): boolean {
+  const envVal = process.env.DEMO_MODE;
+  if (envVal === 'false' || envVal === '0') {
+    return false;
+  }
+  return true;
+}
+
 export function signToken(user: { id: string; email: string; role: string }): string {
   return jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, {
     expiresIn: '7d',
@@ -54,18 +62,25 @@ export function signToken(user: { id: string; email: string; role: string }): st
 
 export async function authenticate(req: AuthRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
-  const isDemoHeader = req.headers['x-demo-mode'] === 'true';
+  const demoActive = isDemoModeActive();
+  const isDemoHeader = req.headers['x-demo-mode'] === 'true' && demoActive;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     if (isDemoHeader) {
       req.user = await getDemoAdminUser();
       return next();
     }
+    if (req.headers['x-demo-mode'] === 'true' && !demoActive) {
+      return res.status(401).json({ success: false, message: '系統已於環境變數關閉 DEMO 體驗模式，請登入真實帳號' });
+    }
     return res.status(401).json({ success: false, message: '未提供授權憑證，請先登入' });
   }
 
   const token = authHeader.split(' ')[1];
   if (token === 'demo-admin-token' || (isDemoHeader && (!token || token === 'undefined' || token === 'null'))) {
+    if (!demoActive) {
+      return res.status(401).json({ success: false, message: '系統已於環境變數關閉 DEMO 體驗模式，請登入真實帳號' });
+    }
     req.user = await getDemoAdminUser();
     return next();
   }

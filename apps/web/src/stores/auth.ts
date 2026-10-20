@@ -13,11 +13,14 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem('celestial_token'));
   const realUser = ref<UserProfile | null>(null);
 
-  // DEMO 模式開關：預設開啟，讓訪客隨時免登入暢遊全功能與後台
+  // DEMO 模式開關：優先參照環境變數 VITE_DEMO_MODE 與伺服端配置
+  const envDemo = import.meta.env.VITE_DEMO_MODE !== 'false';
+  const serverDemoEnabled = ref<boolean>(true);
+
   const isDemoMode = ref<boolean>(
     localStorage.getItem('celestial_demo_mode') === null
-      ? true
-      : localStorage.getItem('celestial_demo_mode') === 'true'
+      ? envDemo
+      : localStorage.getItem('celestial_demo_mode') === 'true' && envDemo
   );
 
   // DEMO 尊榮總控帳號（預設賦予系統最大權限 ADMIN）
@@ -85,6 +88,22 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem('celestial_user', JSON.stringify(newUser));
   }
 
+  async function syncServerConfig() {
+    try {
+      const res = await fetch('/api/v1/auth/config');
+      const data = await res.json();
+      if (data.success && typeof data.data?.demoMode === 'boolean') {
+        serverDemoEnabled.value = data.data.demoMode;
+        if (!data.data.demoMode) {
+          isDemoMode.value = false;
+          localStorage.setItem('celestial_demo_mode', 'false');
+        }
+      }
+    } catch {
+      // 離線容錯
+    }
+  }
+
   function loadAuth() {
     const savedToken = localStorage.getItem('celestial_token');
     const savedUser = localStorage.getItem('celestial_user');
@@ -94,8 +113,10 @@ export const useAuthStore = defineStore('auth', () => {
     }
     const savedDemo = localStorage.getItem('celestial_demo_mode');
     if (savedDemo !== null) {
-      isDemoMode.value = savedDemo === 'true';
+      isDemoMode.value = savedDemo === 'true' && envDemo;
     }
+
+    syncServerConfig();
 
     if (isDemoMode.value && !realUser.value) {
       ensureDemoToken();
@@ -131,8 +152,10 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     realUser,
     isDemoMode,
+    serverDemoEnabled,
     isAuthenticated,
     ensureDemoToken,
+    syncServerConfig,
     getAuthHeaders,
     toggleDemoMode,
     setAuth,

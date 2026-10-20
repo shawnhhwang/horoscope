@@ -29,6 +29,7 @@ const routes = [
       { path: 'dashboard', name: 'admin-dashboard', component: () => import('../views/admin/DashboardView.vue') },
       { path: 'interpretations', name: 'admin-interpretations', component: () => import('../views/admin/InterpretationsView.vue') },
       { path: 'users', name: 'admin-users', component: () => import('../views/admin/UsersView.vue') },
+      { path: 'database', name: 'admin-database', component: () => import('../views/admin/DatabaseView.vue') },
       { path: 'llm-settings', name: 'admin-llm-settings', component: () => import('../views/admin/LlmSettingsView.vue') },
     ],
   },

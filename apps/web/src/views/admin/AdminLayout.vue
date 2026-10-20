@@ -15,12 +15,21 @@
         </div>
 
         <!-- 👑 DEMO 模式最高權限提示標籤 -->
-        <div class="mb-6 p-2.5 rounded-lg bg-admin-gold/10 border border-admin-gold/30 text-[11px] text-admin-gold flex items-center justify-between shadow-sm">
-          <span class="font-bold flex items-center space-x-1">
-            <span>👑</span>
-            <span>系統最高管理權限</span>
-          </span>
-          <span class="px-1.5 py-0.5 rounded bg-admin-gold text-black font-bold text-[9px]">ADMIN</span>
+        <div class="mb-6 p-2.5 rounded-lg border text-[11px] flex flex-col gap-1 shadow-sm font-serif"
+          :class="authStore.isDemoMode ? 'bg-admin-gold/10 border-admin-gold/30 text-admin-gold' : 'bg-emerald-950/30 border-emerald-500/30 text-emerald-300'">
+          <div class="flex items-center justify-between">
+            <span class="font-bold flex items-center space-x-1">
+              <span>{{ authStore.isDemoMode ? '👑' : '🛡️' }}</span>
+              <span>{{ authStore.isDemoMode ? 'DEMO 管理模式' : '正式生產模式' }}</span>
+            </span>
+            <span class="px-1.5 py-0.5 rounded text-black font-bold text-[9px]"
+              :class="authStore.isDemoMode ? 'bg-admin-gold' : 'bg-emerald-400'">
+              {{ authStore.user?.role || 'ADMIN' }}
+            </span>
+          </div>
+          <div class="text-[9px] text-admin-muted">
+            .env 配置: DEMO_MODE={{ authStore.serverDemoEnabled ? 'true' : 'false' }}
+          </div>
         </div>
 
         <!-- 導航連結 -->
@@ -38,7 +47,7 @@
             class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-admin-muted hover:text-admin-text hover:bg-black/30 transition-colors"
             active-class="bg-admin-gold/15 text-admin-gold font-bold border border-admin-gold/30"
           >
-            <span>📜 命理詞庫內容 (CMS)</span>
+            <span>📜 RAG 領域知識庫與詞條</span>
           </router-link>
 
           <router-link
@@ -46,7 +55,15 @@
             class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-admin-muted hover:text-admin-text hover:bg-black/30 transition-colors"
             active-class="bg-admin-gold/15 text-admin-gold font-bold border border-admin-gold/30"
           >
-            <span>👥 會員與權限管理</span>
+            <span>👥 會員與帳號管理</span>
+          </router-link>
+
+          <router-link
+            to="/admin/database"
+            class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-admin-muted hover:text-admin-text hover:bg-black/30 transition-colors"
+            active-class="bg-admin-gold/15 text-admin-gold font-bold border border-admin-gold/30"
+          >
+            <span>💾 資料庫管理與備份</span>
           </router-link>
 
           <router-link
