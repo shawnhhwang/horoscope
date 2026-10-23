@@ -3,6 +3,7 @@ export * from './calendar/index.js';
 
 // 紫微斗數
 export * from './ziwei/types.js';
+export * from './ziwei/patterns.js';
 export * from './ziwei/calculator.js';
 
 // 四柱八字

@@ -8,10 +8,39 @@ import {
   TransformationType,
   ZiweiChart,
 } from './types.js';
+import { detectPatterns, getMingGongSummary } from './patterns.js';
 import { Solar, Lunar } from 'lunar-typescript';
 
 const BRANCHES: EarthlyBranch[] = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 const STEMS: HeavenlyStem[] = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+
+// 廟旺平陷標準表（以子起：0=子, 1=丑, 2=寅, 3=卯, 4=辰, 5=巳, 6=午, 7=未, 8=申, 9=酉, 10=戌, 11=亥）
+const STAR_BRIGHTNESS_MAP: Record<string, StarBrightness[]> = {
+  紫微: ['平', '廟', '廟', '旺', '得', '旺', '廟', '廟', '旺', '旺', '得', '旺'],
+  天機: ['廟', '陷', '得', '旺', '廟', '平', '廟', '陷', '得', '旺', '廟', '平'],
+  太陽: ['陷', '不', '旺', '廟', '旺', '旺', '廟', '得', '得', '陷', '不', '陷'],
+  武曲: ['旺', '廟', '得', '利', '廟', '平', '旺', '廟', '得', '利', '廟', '平'],
+  天同: ['旺', '不', '旺', '平', '平', '廟', '不', '不', '旺', '平', '平', '廟'],
+  廉貞: ['平', '利', '廟', '平', '利', '陷', '平', '利', '廟', '平', '利', '陷'],
+  天府: ['廟', '廟', '廟', '得', '旺', '得', '旺', '廟', '得', '旺', '旺', '得'],
+  太陰: ['廟', '廟', '陷', '陷', '陷', '陷', '陷', '不', '利', '旺', '旺', '廟'],
+  貪狼: ['旺', '廟', '不', '平', '得', '平', '平', '廟', '不', '平', '得', '利'],
+  巨門: ['旺', '不', '廟', '廟', '陷', '旺', '旺', '不', '廟', '廟', '陷', '旺'],
+  天相: ['廟', '廟', '廟', '平', '得', '得', '廟', '得', '廟', '平', '得', '得'],
+  天梁: ['廟', '旺', '廟', '得', '廟', '陷', '廟', '旺', '陷', '得', '得', '陷'],
+  七殺: ['旺', '廟', '廟', '旺', '廟', '平', '旺', '廟', '廟', '旺', '廟', '平'],
+  破軍: ['廟', '旺', '得', '陷', '旺', '平', '廟', '旺', '得', '陷', '旺', '平'],
+  文昌: ['廟', '陷', '得', '旺', '利', '廟', '陷', '得', '旺', '利', '廟', '陷'],
+  文曲: ['廟', '廟', '平', '旺', '廟', '廟', '陷', '旺', '得', '廟', '陷', '旺'],
+  祿存: ['旺', '旺', '廟', '廟', '廟', '廟', '旺', '旺', '廟', '廟', '廟', '廟'],
+  天馬: ['旺', '平', '得', '平', '旺', '平', '得', '平', '旺', '平', '得', '平'],
+  擎羊: ['旺', '廟', '平', '陷', '廟', '平', '陷', '廟', '旺', '旺', '廟', '平'],
+  陀羅: ['平', '廟', '平', '陷', '廟', '平', '陷', '廟', '平', '陷', '廟', '平'],
+  火星: ['陷', '陷', '廟', '陷', '得', '利', '廟', '利', '陷', '陷', '廟', '陷'],
+  鈴星: ['陷', '陷', '廟', '利', '得', '得', '廟', '得', '得', '得', '廟', '陷'],
+  地空: ['陷', '平', '平', '平', '平', '廟', '平', '平', '廟', '平', '平', '平'],
+  地劫: ['平', '陷', '平', '平', '平', '平', '廟', '平', '平', '廟', '平', '平'],
+};
 
 const PALACE_NAMES: PalaceName[] = [
   '命宮',
@@ -226,6 +255,52 @@ export function calculateZiweiChart(birthDate: Date, gender: '男' | '女'): Ziw
   const tianKuiIdx = BRANCHES.indexOf(kuiBranch);
   const tianYueIdx = BRANCHES.indexOf(yueBranch);
 
+  // 祿存、擎羊、陀羅 (生年干)
+  const LU_CUN_MAP: Record<HeavenlyStem, EarthlyBranch> = {
+    甲: '寅',
+    乙: '卯',
+    丙: '巳',
+    丁: '午',
+    戊: '巳',
+    己: '午',
+    庚: '申',
+    辛: '酉',
+    壬: '亥',
+    癸: '子',
+  };
+  const luCunIdx = BRANCHES.indexOf(LU_CUN_MAP[yearStem]);
+  const qingYangIdx = (luCunIdx + 1) % 12;
+  const tuoLuoIdx = (luCunIdx - 1 + 12) % 12;
+
+  // 天馬 (生年支三合馬星)
+  const TIAN_MA_MAP: Record<EarthlyBranch, EarthlyBranch> = {
+    申: '寅', 子: '寅', 辰: '寅',
+    寅: '申', 午: '申', 戌: '申',
+    巳: '亥', 酉: '亥', 丑: '亥',
+    亥: '巳', 卯: '巳', 未: '巳',
+  };
+  const tianMaIdx = BRANCHES.indexOf(TIAN_MA_MAP[yearBranch]);
+
+  // 地空、地劫 (生時起，亥起子時順逆)
+  const diJieIdx = (11 + timeBranchIndex) % 12;
+  const diKongIdx = (11 - timeBranchIndex + 12) % 12;
+
+  // 火星、鈴星 (生年支起，生時順數)
+  let huoBase = 1;
+  let lingBase = 3;
+  if (['申', '子', '辰'].includes(yearBranch)) {
+    huoBase = 2;
+    lingBase = 10;
+  } else if (['巳', '酉', '丑'].includes(yearBranch)) {
+    huoBase = 3;
+    lingBase = 10;
+  } else if (['亥', '卯', '未'].includes(yearBranch)) {
+    huoBase = 9;
+    lingBase = 10;
+  }
+  const huoXingIdx = (huoBase + timeBranchIndex) % 12;
+  const lingXingIdx = (lingBase + timeBranchIndex) % 12;
+
   // 四化判定 (生年干)
   const siHuaStars = SI_HUA_MAP[yearStem]; // [祿, 權, 科, 忌]
   const transformationMap: Record<string, TransformationType> = {
@@ -274,25 +349,111 @@ export function calculateZiweiChart(birthDate: Date, gender: '男' | '女'): Ziw
         cell.majorStars.push({
           name: starName,
           type: 'major',
-          brightness: '廟', // 基礎亮度設定
+          brightness: STAR_BRIGHTNESS_MAP[starName]?.[branchIdx] || '廟',
           transformation: transformationMap[starName],
         });
       }
     }
 
-    // 加入吉星
-    if (wenChangIdx === branchIdx) cell.luckyStars.push({ name: '文昌', type: 'lucky', transformation: transformationMap['文昌'] });
-    if (wenQuIdx === branchIdx) cell.luckyStars.push({ name: '文曲', type: 'lucky', transformation: transformationMap['文曲'] });
-    if (zuoFuIdx === branchIdx) cell.luckyStars.push({ name: '左輔', type: 'lucky', transformation: transformationMap['左輔'] });
-    if (youBiIdx === branchIdx) cell.luckyStars.push({ name: '右弼', type: 'lucky', transformation: transformationMap['右弼'] });
-    if (tianKuiIdx === branchIdx) cell.luckyStars.push({ name: '天魁', type: 'lucky' });
-    if (tianYueIdx === branchIdx) cell.luckyStars.push({ name: '天鉞', type: 'lucky' });
+    // 加入吉星 (六吉 + 祿存 + 天馬)
+    if (wenChangIdx === branchIdx) {
+      cell.luckyStars.push({
+        name: '文昌',
+        type: 'lucky',
+        brightness: STAR_BRIGHTNESS_MAP['文昌']?.[branchIdx] || '廟',
+        transformation: transformationMap['文昌'],
+      });
+    }
+    if (wenQuIdx === branchIdx) {
+      cell.luckyStars.push({
+        name: '文曲',
+        type: 'lucky',
+        brightness: STAR_BRIGHTNESS_MAP['文曲']?.[branchIdx] || '廟',
+        transformation: transformationMap['文曲'],
+      });
+    }
+    if (zuoFuIdx === branchIdx) {
+      cell.luckyStars.push({
+        name: '左輔',
+        type: 'lucky',
+        brightness: '廟',
+        transformation: transformationMap['左輔'],
+      });
+    }
+    if (youBiIdx === branchIdx) {
+      cell.luckyStars.push({
+        name: '右弼',
+        type: 'lucky',
+        brightness: '廟',
+        transformation: transformationMap['右弼'],
+      });
+    }
+    if (tianKuiIdx === branchIdx) cell.luckyStars.push({ name: '天魁', type: 'lucky', brightness: '廟' });
+    if (tianYueIdx === branchIdx) cell.luckyStars.push({ name: '天鉞', type: 'lucky', brightness: '廟' });
+    if (luCunIdx === branchIdx) {
+      cell.luckyStars.push({
+        name: '祿存',
+        type: 'lucky',
+        brightness: STAR_BRIGHTNESS_MAP['祿存']?.[branchIdx] || '廟',
+      });
+    }
+    if (tianMaIdx === branchIdx) {
+      cell.luckyStars.push({
+        name: '天馬',
+        type: 'lucky',
+        brightness: STAR_BRIGHTNESS_MAP['天馬']?.[branchIdx] || '旺',
+      });
+    }
+
+    // 加入煞星 (四煞 + 空劫)
+    if (qingYangIdx === branchIdx) {
+      cell.unluckyStars.push({
+        name: '擎羊',
+        type: 'unlucky',
+        brightness: STAR_BRIGHTNESS_MAP['擎羊']?.[branchIdx] || '廟',
+      });
+    }
+    if (tuoLuoIdx === branchIdx) {
+      cell.unluckyStars.push({
+        name: '陀羅',
+        type: 'unlucky',
+        brightness: STAR_BRIGHTNESS_MAP['陀羅']?.[branchIdx] || '廟',
+      });
+    }
+    if (huoXingIdx === branchIdx) {
+      cell.unluckyStars.push({
+        name: '火星',
+        type: 'unlucky',
+        brightness: STAR_BRIGHTNESS_MAP['火星']?.[branchIdx] || '廟',
+      });
+    }
+    if (lingXingIdx === branchIdx) {
+      cell.unluckyStars.push({
+        name: '鈴星',
+        type: 'unlucky',
+        brightness: STAR_BRIGHTNESS_MAP['鈴星']?.[branchIdx] || '廟',
+      });
+    }
+    if (diKongIdx === branchIdx) {
+      cell.unluckyStars.push({
+        name: '地空',
+        type: 'unlucky',
+        brightness: STAR_BRIGHTNESS_MAP['地空']?.[branchIdx] || '平',
+      });
+    }
+    if (diJieIdx === branchIdx) {
+      cell.unluckyStars.push({
+        name: '地劫',
+        type: 'unlucky',
+        brightness: STAR_BRIGHTNESS_MAP['地劫']?.[branchIdx] || '平',
+      });
+    }
 
     palaces[branch] = cell;
     palacesList.push(cell);
   }
 
-  return {
+  const chart: ZiweiChart = {
     birthInfo: {
       solarDate: birthDate.toISOString(),
       lunarDate: `${lunar.getYear()}年農曆${lunarMonth}月${lunarDay}日`,
@@ -309,5 +470,11 @@ export function calculateZiweiChart(birthDate: Date, gender: '男' | '女'): Ziw
     lifePalaceBranch: lifeBranch,
     palaces,
     palacesList,
+    patterns: [],
   };
+
+  chart.patterns = detectPatterns(chart);
+  chart.mingGongSummary = getMingGongSummary(chart);
+
+  return chart;
 }

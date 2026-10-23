@@ -101,17 +101,17 @@ const MODULE_ROLES: Record<string, ModuleRoleProfile> = {
   ZIWEI: {
     title: '資深紫微斗數命理諮詢師 (Senior Zi Wei Dou Shu Consultant)',
     rolePersona:
-      '你是一位具備數十年實務命理經驗的現代資深紫微斗數諮詢師。你深研中州派與三合派論命架構，以客觀、理性、具邏輯架構且富有人文關懷的專業顧問口吻溝通。嚴禁使用神仙、仙官、道士或玄幻口吻（不可使用「老夫」、「貧道」、「天機星君」、「道友」等虛構稱謂）。一律以「您」稱呼求測者。',
+      '你是一位具備數十年實務命理經驗的現代資深紫微斗數諮詢師。你深研中州派、三合派與倪海廈天紀論命體系，以客觀、理性、具邏輯架構且富有人文關懷的專業顧問口吻溝通。嚴禁使用神仙、仙官、道士或玄幻口吻（不可使用「老夫」、「貧道」、「天機星君」、「道友」等虛構稱謂）。一律以「您」稱呼求測者。',
     toneGuidelines:
-      '注重星曜組合在現代生活中的心理投射、職場與人際動態；不把命運說死，強調「知命而後造命，善用四化與星系優勢規避煞星衝擊」。語言典雅洗鍊、條理清晰。',
+      '遵循倪海廈天紀核心心法：「大道至簡，命宮為本，三方為用」；算命是討論果的哲學，知果是為了在事前修因轉化；始終堅持「人事努力加上地理調整大於先天命運（2/3 > 1/3）」，絕不把命運說死，而是給出務實可行的決策路徑。語言典雅洗鍊、條理清晰。',
     consultationStructure: [
       '1. 【命身格局與核心特質】：主星廟旺平陷、身宮寄託、先天稟賦優勢與潛在盲點。',
-      '2. 【三方四正星系連動】：命宮、財帛宮、官祿宮、遷移宮星曜互拱與煞星（羊陀火鈴空劫）之磨練轉化。',
-      '3. 【四化飛星與人生時機】：生年與大限四化（化祿機遇、化權決斷、化科名譽、化忌功課）之動力與時機剖析。',
-      '4. 【現代生活與生涯策略指引】：針對事業職場、資產配置、情感關係給出落地、務實的策略建議。',
+      '2. 【命盤正統格局與倪師心法評斷】：分析盤中成立之經典格局（如君臣慶會、殺破狼、府相朝垣、陽梁昌祿等）及其成立條件、破格警示與倪師心法點評。',
+      '3. 【三方四正與生年四化動能】：命宮、財帛宮、官祿宮、遷移宮星曜互拱與生年四化（祿主財守、權主官印、科主名譽、忌主修為功課）之時機剖析。',
+      '4. 【現代生活與生涯策略指引】：依據倪師「2/3大於1/3」法則，針對事業開拓、資產配置、陽宅居住環境與身心調養給出落地、務實的策略建議。',
     ],
     coreKnowledge:
-      '紫微斗數以命宮身宮為太極點，十四主星各具心理原型：紫微（領導統御/帝王心態）、天府（財庫基石/穩健保守）、天機（戰略智囊/思維敏捷）、太陽（無私開拓/公眾影響）、武曲（務實執行/財經決斷）、天同（福氣調和/情緒敏感）、廉貞（政治敏銳/次桃花公關）、太陰（細膩理財/內在情感）、貪狼（多才多藝/慾望開創）、巨門（洞察言辭/暗曜是非）、天相（專業輔佐/公正原則）、天梁（長者風範/逢凶化吉）、七殺（孤膽將軍/開疆拓土）、破軍（先破後立/顛覆改革）。六吉星（昌曲輔弼魁鉞）主貴人助力；六煞星（羊陀火鈴空劫）主挫折考驗。生年四化：化祿（收穫與機遇）、化權（掌握與魄力）、化科（名望與聲譽）、化忌（執念與考驗點）。',
+      '紫微斗數以命宮身宮為太極點，遵循倪海廈天紀三合正統：大道至簡，命宮為本，三方（財帛、官祿、遷移）為用。十四主星各具心理原型：紫微（帝座統御/最喜左右）、天府（財庫基石/穩健守成）、天機（戰略智囊/思維敏捷）、太陽（光明博愛/官祿主星）、武曲（務實將星/正財開源）、天同（福氣調和/逢凶化吉）、廉貞（次桃花公關/嚴明原則）、太陰（細膩理財/田宅主曜）、貪狼（慾望動能/火鈴橫發）、巨門（洞察言辭/石中隱玉）、天相（印綬輔佐/公正秉公）、天梁（長者蔭庇/化解災厄）、七殺（孤膽將星/最忌七殺臨身）、破軍（先破後立/先鋒變革）。生年四化：化祿（收穫與機遇）、化權（掌握與魄力）、化科（名望與貴人）、化忌（執念與事後功課）。輔曜吉星（昌曲輔弼魁鉞祿馬）主貴人助力；煞曜（羊陀火鈴空劫）主考驗磨礪。人生決策關鍵在於：人事努力(1/3) + 地理調整(1/3) > 先天命運(1/3)。算命是討論果的哲學，知果是為了在事前修因轉化。',
   },
 
   BAZI: {
@@ -297,29 +297,52 @@ export async function retrieveModuleKnowledge(
       where: {
         OR: searchModules.map((m) => ({ moduleType: { contains: m } })),
       },
-      take: 8,
+      take: 60,
     });
 
     if (interpretations.length > 0) {
-      // 依關鍵詞相關性過濾
-      const matched = interpretations.filter((item) => {
+      // 提取命盤已辨識之格局名稱
+      const patternNames: string[] = Array.isArray(chartContext?.rawData?.patterns)
+        ? chartContext!.rawData!.patterns.map((p: any) => p?.name).filter(Boolean)
+        : [];
+
+      // 依關鍵詞與格局相關性評分排序 (優先匹配命中格局與倪海廈天紀辭條)
+      const scored = interpretations.map((item) => {
+        let score = 0;
         const key = item.keyCode.toLowerCase();
         const title = item.title.toLowerCase();
         const content = item.contentRich.toLowerCase();
-        return (
-          queryStr.toLowerCase().includes(key) ||
-          queryStr.toLowerCase().includes(title) ||
-          queryStr.toLowerCase().includes(item.category.toLowerCase()) ||
-          (rawDataStr.toLowerCase().includes(key) && key.length > 3)
-        );
+        const tags = (item.tags || '').toLowerCase();
+
+        // 匹配命盤辨識出的格局
+        for (const pName of patternNames) {
+          if (title.includes(pName.toLowerCase()) || content.includes(pName.toLowerCase()) || tags.includes(pName.toLowerCase())) {
+            score += 15;
+          }
+        }
+
+        // 匹配倪海廈天紀核心辭條
+        if (key.includes('nihai')) {
+          score += 6;
+        }
+
+        // 匹配用戶查詢與命盤數據
+        if (queryStr.toLowerCase().includes(title)) score += 6;
+        if (queryStr.toLowerCase().includes(key)) score += 4;
+        if (queryStr.toLowerCase().includes(item.category.toLowerCase())) score += 3;
+
+        return { item, score };
       });
 
-      const selected = matched.length > 0 ? matched : interpretations.slice(0, 3);
+      scored.sort((a, b) => b.score - a.score);
+      const topItems = scored.filter((s) => s.score > 0).slice(0, 6).map((s) => s.item);
+      const selected = topItems.length > 0 ? topItems : interpretations.slice(0, 3);
+
       if (selected.length > 0) {
         const dbKnowledge = selected
-          .map((i) => `• [${i.category}] ${i.title}：${i.contentRich.slice(0, 300)}`)
+          .map((i) => `• [${i.category}] ${i.title}：${i.contentRich.slice(0, 320)}`)
           .join('\n');
-        ragSnippets.push(`【權威命理辭典與解讀文獻 (Database RAG Interpretations)】\n${dbKnowledge}`);
+        ragSnippets.push(`【權威命理辭典與倪海廈天紀 RAG 文獻 (Database Grounding)】\n${dbKnowledge}`);
       }
     }
   } catch (err) {
@@ -468,16 +491,60 @@ export function generateProfessionalSynthesizerReply(messages: ChatMessage[], ch
           ? Object.values(raw.palaces)
           : [];
         const mingPalace =
-          palacesList.find((p: any) => p?.isMingPalace) ||
+          palacesList.find((p: any) => p?.name === '命宮' || p?.isMingPalace) ||
           palacesList[0] ||
           (raw.palaces && raw.lifePalaceBranch ? raw.palaces[raw.lifePalaceBranch] : null);
         const stars = Array.isArray(mingPalace?.majorStars)
           ? mingPalace.majorStars.map((s: any) => (typeof s === 'string' ? s : s?.name)).filter(Boolean).join('、')
           : '主星';
-        const bureau = raw.elementBureau || '本命局';
-        const lifeBranch = raw.lifePalaceBranch || mingPalace?.name || '命宮';
+        const bureau = raw.fiveElementBureau || raw.elementBureau || '本命局';
+        const lifeBranch = raw.lifePalaceBranch || mingPalace?.branch || mingPalace?.name || '命宮';
 
-        return `## 現代紫微斗數專業命理諮詢診斷報告\n\n依據您當前排盤：命宮安於「**${lifeBranch}**」，五行局為「**${bureau}**」，命宮內見主星「**${stars || '無主星'}**」坐守。\n\n針對您的諮詢重點：「**${lastUserMsg}**」，為您進行結構化專業解析：\n\n### 1. 命身格局與核心特質\n* **星系原型**：命宮主星「${stars}」體現出您在思維上具備高度前瞻性與自我期許，處事重視原則與自主性。\n* **心理優勢與盲點**：您的格局具備獨立開拓之才能，然而有時容易因完美主義或對全局的高標準掌控欲，在團隊溝通中產生隱性壓力，需注意適度授權與情緒鬆綁。\n\n### 2. 三方四正星系連動\n* **事業與財帛互動**：三方四正若逢輔弼、昌曲會照，代表您在中年後容易累積專業人脈與貴人聲望；若遇陀羅或擎羊同度，則暗示在關鍵決策時易陷入反覆考量或雷厲風行的極端，宜透過建立SOP降低決策衝動。\n\n### 3. 四化時機與人生動能\n* 當前運勢焦點落於「化祿開拓機遇」與「化權承擔責任」的交互作用期。凡事宜借勢謀定而後動，在專業技術或核心業務上建立不可替代的護城河。\n\n### 4. 具體可落地的實踐方針\n1. **職場生涯**：適合擔任統籌規劃或專業顧問角色，善用您洞察全局的天賦。\n2. **資產配置**：以穩健資產為主軸，避免高槓桿或短線投機。\n3. **心態修養**：在快節奏中留出反思沉澱時間，運勢自然漸入佳境。`;
+        // 提取命盤辨識出的正統三合格局 (Ziwei Patterns)
+        const patterns: any[] = Array.isArray(raw.patterns) ? raw.patterns : [];
+        let patternContent = '';
+        if (patterns.length > 0) {
+          const topPatterns = patterns.slice(0, 3);
+          patternContent = topPatterns
+            .map((pt) => {
+              const condStr = pt.conditions?.required?.length
+                ? `（成立條件：${pt.conditions.required.join('；')}）`
+                : '';
+              const breakStr = pt.conditions?.breaking?.length
+                ? `\n  - ⚠️ **破格警示**：${pt.conditions.breaking.join('；')}`
+                : '';
+              return `* **【${pt.name}】**（${pt.source || '正統三合古籍'}）${condStr}\n  - ${pt.description}${breakStr}`;
+            })
+            .join('\n');
+        } else {
+          patternContent = '* **【三合中正格】**：命盤星曜配置端正，以本命三方四正星曜廟旺為依歸，宜行穩致遠。';
+        }
+
+        const mingSummary = raw.mingGongSummary;
+        const natureDesc = mingSummary?.nature ? `，命格星性為「**${mingSummary.nature}**」` : '';
+        const keywordsDesc = mingSummary?.keywords?.length ? `，核心稟賦特質含：${mingSummary.keywords.join('、')}` : '';
+
+        return `## 現代紫微斗數專業命理諮詢診斷報告（融匯倪師天紀正宗三合心法）
+
+依據您當前排盤：命宮安於「**${lifeBranch}**」宮，五行局為「**${bureau}**」，命宮內見主星「**${stars || '無主星（借對宮觀之）'}**」坐守${natureDesc}${keywordsDesc}。
+
+針對您的諮詢重點：「**${lastUserMsg}**」，為您進行結構化專業解析：
+
+### 1. 命身格局與核心特質（命宮為本）
+* **星系原型與稟賦**：命宮主星「${stars}」體現出您在思維上具備高度前瞻性與自我期許，處事重視原則與自主性。倪師天紀指出：「命宮決定先天性格基石，三方為後天用武之地。」
+* **心理優勢與盲點**：您的格局具備獨立開拓之才能，然而有時容易因完美主義或對全局的高標準掌控欲產生隱性壓力，需注意適度授權與情緒鬆綁。
+
+### 2. 命盤經典格局辨識與倪師心法評斷
+${patternContent}
+
+### 3. 三方四正星系連動與四化動能
+* **三方為用**：財帛、官祿、遷移三方互拱。若逢輔弼、昌曲會照，代表您在中年後容易累積專業人脈與貴人聲望；若遇陀羅或擎羊同度，則暗示在關鍵決策時易陷入反覆考量或雷厲風行的極端，宜透過建立SOP降低決策衝動。
+* **四化時機**：當前運勢焦點落於「化祿開拓機遇」與「化權承擔責任」的交互作用期。倪師云：「知果是為了修因，在未發之前預先調整。」凡事宜借勢謀定而後動，在專業技術或核心業務上建立不可替代的護城河。
+
+### 4. 具體可落地的實踐方針（倪師 2/3 大於 1/3 法則）
+1. **事業職場**：掌握「命宮為本，三方為用」，優先在符合主星特質的專業領域深耕核心競爭力，擔任統籌規劃或專業顧問角色。
+2. **陽宅環境**：遵循「名位相等原則」，居住環境應採光通風充足，避開八煞黃泉之向，以優良地氣補強先天命運之不足。
+3. **人生決策**：人事努力加上地理調整（2/3）必定大於天命（1/3），算命是討論果的哲學，知果後主動修因，運勢自然漸入佳境。`;
       }
 
       case 'BAZI': {

@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { NIHAI_INTERPRETATIONS } from './seed-nihai.js';
 
 const prisma = new PrismaClient();
 
@@ -126,7 +127,9 @@ async function main() {
     },
   ];
 
-  for (const item of interpretations) {
+  const allInterpretations = [...interpretations, ...NIHAI_INTERPRETATIONS];
+
+  for (const item of allInterpretations) {
     await prisma.systemInterpretation.upsert({
       where: { keyCode: item.keyCode },
       update: item,
@@ -134,7 +137,7 @@ async function main() {
     });
   }
 
-  console.log(`📖 Seeded ${interpretations.length} Interpretation Entries.`);
+  console.log(`📖 Seeded ${allInterpretations.length} Interpretation Entries (including Ni Haixia Tianji RAG knowledge).`);
 
   // 4. 初始化 LLM 助手系統配置
   const defaultLlmConfig = {

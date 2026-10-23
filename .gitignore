@@ -13,5 +13,7 @@ coverage/
 *.sqlite
 *.sqlite3
 graphify-out/
+ziwei-doushu-main/
+*.zip
 
 

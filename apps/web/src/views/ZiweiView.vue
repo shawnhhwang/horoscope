@@ -50,6 +50,92 @@
       </div>
     </div>
 
+    <!-- 命盤格局與倪師心法徽章專區 -->
+    <div v-if="chart" class="glass-panel rounded-2xl p-4 sm:p-6 mb-8 border border-dark-gold/30">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-dark-gold/20 pb-3 mb-4">
+        <div class="flex items-center space-x-2">
+          <span class="text-xl">✨</span>
+          <h3 class="font-serif text-lg font-bold text-gold-gradient">命盤正統三合格局與倪師命相心法</h3>
+        </div>
+        <span class="text-xs text-dark-muted font-serif">
+          共識別出 {{ chart.patterns?.length || 0 }} 組格局 · 點擊標籤檢視古籍出處與成立條件
+        </span>
+      </div>
+
+      <!-- 格局徽章清單 (iPhone 觸控友善 min-h-[44px]) -->
+      <div v-if="chart.patterns?.length" class="flex flex-wrap gap-2.5 mb-4">
+        <button
+          v-for="pattern in chart.patterns"
+          :key="pattern.name"
+          @click="selectedPattern = selectedPattern?.name === pattern.name ? null : pattern"
+          :class="[
+            'px-3.5 py-2 min-h-[44px] rounded-xl text-xs font-serif font-semibold border transition-all flex items-center space-x-2 cursor-pointer',
+            selectedPattern?.name === pattern.name
+              ? 'ring-2 ring-dark-gold shadow-cosmic'
+              : 'hover:opacity-90',
+            pattern.level === 'excellent'
+              ? 'bg-amber-500/15 border-amber-500/50 text-amber-200'
+              : pattern.level === 'good'
+              ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-200'
+              : pattern.level === 'caution'
+              ? 'bg-rose-500/15 border-rose-500/50 text-rose-200'
+              : 'bg-cyan-500/15 border-cyan-500/50 text-cyan-200',
+          ]"
+        >
+          <span>{{ pattern.level === 'excellent' ? '👑' : pattern.level === 'good' ? '🌟' : pattern.level === 'caution' ? '⚠️' : '🔹' }}</span>
+          <span>{{ pattern.name }}</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-black/40 font-normal">
+            {{ pattern.level === 'excellent' ? '大吉' : pattern.level === 'good' ? '成格' : pattern.level === 'caution' ? '警示' : '正格' }}
+          </span>
+        </button>
+      </div>
+      <div v-else class="text-xs text-dark-muted py-2 font-serif">
+        本盤星曜中正平和，未形成極端格局，以三方四正主星廟旺各司其職論斷。
+      </div>
+
+      <!-- 選中格局詳情展開卡片 -->
+      <div
+        v-if="selectedPattern"
+        class="p-4 rounded-xl bg-black/40 border border-dark-gold/30 text-xs text-dark-muted space-y-2.5 animate-fadeIn"
+      >
+        <div class="flex items-center justify-between border-b border-dark-gold/15 pb-2">
+          <div class="flex items-center space-x-2">
+            <span class="font-serif font-bold text-sm text-gold-gradient">{{ selectedPattern.name }}</span>
+            <span class="text-[11px] text-dark-gold font-serif">【{{ selectedPattern.source || '紫微三合正宗' }}】</span>
+          </div>
+          <button @click="selectedPattern = null" class="text-dark-muted hover:text-dark-gold text-xs px-2 py-1 cursor-pointer">關閉 ✕</button>
+        </div>
+        <p class="leading-relaxed text-dark-void dark:text-dark-gold/90 light:text-amber-950 font-serif">
+          {{ selectedPattern.description }}
+        </p>
+        <div v-if="selectedPattern.conditions?.required?.length" class="text-[11px] text-emerald-300">
+          <strong>成立條件：</strong> {{ selectedPattern.conditions.required.join('；') }}
+        </div>
+        <div v-if="selectedPattern.conditions?.bonus?.length" class="text-[11px] text-amber-300">
+          <strong>加分項目：</strong> {{ selectedPattern.conditions.bonus.join('；') }}
+        </div>
+        <div v-if="selectedPattern.conditions?.breaking?.length" class="text-[11px] text-rose-300">
+          <strong>破格警示：</strong> {{ selectedPattern.conditions.breaking.join('；') }}
+        </div>
+      </div>
+
+      <!-- 倪師天紀大師心法核心摘要 -->
+      <div class="mt-4 pt-3 border-t border-dark-gold/15 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] text-dark-muted font-serif">
+        <div class="p-2.5 rounded-lg bg-dark-gold/5 border border-dark-gold/10">
+          <span class="text-dark-gold font-bold block mb-0.5">📌 大道至簡</span>
+          三合派為正宗，命宮為先天本質，三方四正為後天用武之地。
+        </div>
+        <div class="p-2.5 rounded-lg bg-dark-gold/5 border border-dark-gold/10">
+          <span class="text-dark-gold font-bold block mb-0.5">📌 2/3 大於 1/3</span>
+          人事努力加上地理環境調整（2/3），必定能大於先天命運（1/3）。
+        </div>
+        <div class="p-2.5 rounded-lg bg-dark-gold/5 border border-dark-gold/10">
+          <span class="text-dark-gold font-bold block mb-0.5">📌 知果為了修因</span>
+          算命是討論果的哲學，知果是為了在事前三年主動調和人事與陽宅。
+        </div>
+      </div>
+    </div>
+
     <!-- 紫微十二宮 4x4 琉璃古盤 -->
     <div v-if="chart" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- 4x4 命盤主體 (佔據 2 欄) -->
@@ -96,6 +182,13 @@
               >
                 {{ star.name }}
               </div>
+              <div
+                v-for="star in getPalace(branch)?.unluckyStars"
+                :key="star.name"
+                class="text-[10px] text-amber-300/90"
+              >
+                {{ star.name }}
+              </div>
             </div>
             <!-- 大限歲數 -->
             <div class="flex justify-between text-[10px] text-dark-muted border-t border-dark-gold/10 pt-1">
@@ -122,6 +215,7 @@
                 <span v-if="star.transformation" class="text-[9px] px-1 rounded bg-red-600/60 text-white font-bold">{{ star.transformation }}</span>
               </div>
               <div v-for="star in getPalace('辰')?.luckyStars" :key="star.name" class="text-[10px] text-emerald-300">{{ star.name }}</div>
+              <div v-for="star in getPalace('辰')?.unluckyStars" :key="star.name" class="text-[10px] text-amber-300/90">{{ star.name }}</div>
             </div>
             <div class="text-[10px] text-dark-muted border-t border-dark-gold/10 pt-1">{{ getPalace('辰')?.decadeStartAge }}-{{ getPalace('辰')?.decadeEndAge }}歲</div>
           </div>
@@ -157,6 +251,7 @@
                 <span v-if="star.transformation" class="text-[9px] px-1 rounded bg-red-600/60 text-white font-bold">{{ star.transformation }}</span>
               </div>
               <div v-for="star in getPalace('酉')?.luckyStars" :key="star.name" class="text-[10px] text-emerald-300">{{ star.name }}</div>
+              <div v-for="star in getPalace('酉')?.unluckyStars" :key="star.name" class="text-[10px] text-amber-300/90">{{ star.name }}</div>
             </div>
             <div class="text-[10px] text-dark-muted border-t border-dark-gold/10 pt-1">{{ getPalace('酉')?.decadeStartAge }}-{{ getPalace('酉')?.decadeEndAge }}歲</div>
           </div>
@@ -179,6 +274,7 @@
                 <span v-if="star.transformation" class="text-[9px] px-1 rounded bg-red-600/60 text-white font-bold">{{ star.transformation }}</span>
               </div>
               <div v-for="star in getPalace('卯')?.luckyStars" :key="star.name" class="text-[10px] text-emerald-300">{{ star.name }}</div>
+              <div v-for="star in getPalace('卯')?.unluckyStars" :key="star.name" class="text-[10px] text-amber-300/90">{{ star.name }}</div>
             </div>
             <div class="text-[10px] text-dark-muted border-t border-dark-gold/10 pt-1">{{ getPalace('卯')?.decadeStartAge }}-{{ getPalace('卯')?.decadeEndAge }}歲</div>
           </div>
@@ -201,6 +297,7 @@
                 <span v-if="star.transformation" class="text-[9px] px-1 rounded bg-red-600/60 text-white font-bold">{{ star.transformation }}</span>
               </div>
               <div v-for="star in getPalace('戌')?.luckyStars" :key="star.name" class="text-[10px] text-emerald-300">{{ star.name }}</div>
+              <div v-for="star in getPalace('戌')?.unluckyStars" :key="star.name" class="text-[10px] text-amber-300/90">{{ star.name }}</div>
             </div>
             <div class="text-[10px] text-dark-muted border-t border-dark-gold/10 pt-1">{{ getPalace('戌')?.decadeStartAge }}-{{ getPalace('戌')?.decadeEndAge }}歲</div>
           </div>
@@ -225,6 +322,7 @@
                 <span v-if="star.transformation" class="text-[9px] px-1 rounded bg-red-600/60 text-white font-bold">{{ star.transformation }}</span>
               </div>
               <div v-for="star in getPalace(branch)?.luckyStars" :key="star.name" class="text-[10px] text-emerald-300">{{ star.name }}</div>
+              <div v-for="star in getPalace(branch)?.unluckyStars" :key="star.name" class="text-[10px] text-amber-300/90">{{ star.name }}</div>
             </div>
             <div class="flex justify-between text-[10px] text-dark-muted border-t border-dark-gold/10 pt-1">
               <span>{{ getPalace(branch)?.decadeStartAge }}-{{ getPalace(branch)?.decadeEndAge }}歲</span>
@@ -271,24 +369,39 @@
             <p v-else class="text-xs text-dark-muted">本宮無正主星，需借對宮星曜論斷。</p>
           </div>
 
-          <!-- 輔星與吉凶星曜 -->
+          <!-- 輔星與吉曜 -->
           <div class="mb-6">
             <h4 class="text-xs uppercase tracking-wider font-serif text-dark-gold mb-2">吉星吉曜</h4>
-            <div class="flex flex-wrap gap-1.5">
+            <div v-if="selectedPalace?.luckyStars?.length" class="flex flex-wrap gap-1.5">
               <span
-                v-for="s in selectedPalace?.luckyStars"
+                v-for="s in selectedPalace.luckyStars"
                 :key="s.name"
                 class="px-2.5 py-1 rounded-md text-xs bg-emerald-950/60 text-emerald-300 border border-emerald-500/20"
               >
-                {{ s.name }}
+                {{ s.name }} ({{ s.brightness || '廟' }})
+              </span>
+            </div>
+            <p v-else class="text-xs text-dark-muted">本宮無特殊輔曜吉星。</p>
+          </div>
+
+          <!-- 煞星與考驗星曜 -->
+          <div v-if="selectedPalace?.unluckyStars?.length" class="mb-6">
+            <h4 class="text-xs uppercase tracking-wider font-serif text-dark-gold mb-2">煞曜與考驗星</h4>
+            <div class="flex flex-wrap gap-1.5">
+              <span
+                v-for="s in selectedPalace.unluckyStars"
+                :key="s.name"
+                class="px-2.5 py-1 rounded-md text-xs bg-rose-950/60 text-rose-300 border border-rose-500/20"
+              >
+                {{ s.name }} ({{ s.brightness || '平' }})
               </span>
             </div>
           </div>
 
           <!-- 三方四正說明 -->
           <div class="p-3 rounded-lg bg-dark-gold/5 border border-dark-gold/20 text-xs text-dark-muted leading-relaxed">
-            <strong class="text-dark-gold block mb-1">三方四正會照解析：</strong>
-            與對宮（遷移/命宮關係）及三合宮形成穩固金三角，吉星互拱則格高，煞星會聚則需修心自制。
+            <strong class="text-dark-gold block mb-1">倪師三方四正會照法門：</strong>
+            命宮為本，三方（財帛、官祿、遷移）為用。與對宮及三合宮形成穩固金三角，吉星互拱則格局清貴，煞星交聚則需心性修持、謀定而後動。
           </div>
         </div>
 
@@ -307,7 +420,7 @@
     <InPageAiAnalysis
       v-if="chart"
       module-type="ZIWEI"
-      :title="`紫微命盤 (${gender}命·${chart.elementBureau})`"
+      :title="`紫微命盤 (${gender}命·${chart.fiveElementBureau || chart.elementBureau})`"
       :summary="`命宮坐${chart.lifePalaceBranch} (${mingStars})`"
       :raw-data="chart"
       :prompt="aiPrompt"
@@ -329,6 +442,7 @@ const loading = ref(false);
 
 const chart = ref<any>(null);
 const selectedBranch = ref<string>('寅');
+const selectedPattern = ref<any>(null);
 
 const mingStars = computed(() => {
   if (!chart.value) return '主星';
@@ -336,9 +450,16 @@ const mingStars = computed(() => {
   return ming?.majorStars?.map((s: any) => s.name).join('、') || '無主星';
 });
 
+const patternNames = computed(() => {
+  if (!chart.value?.patterns?.length) return '';
+  return chart.value.patterns.map((p: any) => `【${p.name}】`).join('、');
+});
+
 const aiPrompt = computed(() => {
   if (!chart.value) return '';
-  return `請以資深紫微斗數命理諮詢師身份，為我深度解析此紫微命盤：命宮在「${chart.value.lifePalaceBranch}」宮，主星為「${mingStars.value}」，身宮在「${chart.value.bodyPalaceBranch}」，五行局為「${chart.value.elementBureau}」。請以客觀嚴謹、結合現代生涯與心理實踐的視角，詳析命身格局、三方四正星系連動、四化引動與大限時機，給予具建設性的策略規劃。`;
+  const patternsStr = patternNames.value ? `，命盤已識別正統格局為：${patternNames.value}` : '';
+  const summaryStr = chart.value.mingGongSummary?.nature ? `，命宮星性為「${chart.value.mingGongSummary.nature}」` : '';
+  return `請以資深紫微斗數命理諮詢師身份，融匯倪海廈天紀三合心法（大道至簡、命宮為本三方為用、人事努力與地理調整大於先天命運 2/3 > 1/3），為我深度解析此紫微命盤：命宮在「${chart.value.lifePalaceBranch}」宮，主星為「${mingStars.value}」${summaryStr}${patternsStr}，身宮在「${chart.value.bodyPalaceBranch}」，五行局為「${chart.value.fiveElementBureau || chart.value.elementBureau}」。請以客觀嚴謹、條理分明且富有人文關懷的專業視角，詳析命身特質、命中格局成破與吉凶指引、三方四正星系連動、生年四化時機，並給出具體可落地的陽宅空間與生涯決策指引。`;
 });
 
 function handleCalculate() {

@@ -42,6 +42,27 @@ export interface PalaceCell {
   smallLimitAge?: number;
 }
 
+export interface PatternCondition {
+  required: string[];   // 必須滿足條件
+  bonus?: string[];     // 加分項
+  breaking?: string[];  // 破格警示
+}
+
+export interface ZiweiPattern {
+  name: string;
+  level: 'excellent' | 'good' | 'neutral' | 'caution';
+  description: string;
+  palaces: string[];
+  conditions?: PatternCondition;
+  source?: string;
+}
+
+export interface ZiweiMingGongSummary {
+  stars: string[];
+  keywords: string[];
+  nature: string;
+}
+
 export interface ZiweiChart {
   birthInfo: {
     solarDate: string;
@@ -59,4 +80,7 @@ export interface ZiweiChart {
   lifePalaceBranch: EarthlyBranch; // 命宮落支
   palaces: Record<EarthlyBranch, PalaceCell>;
   palacesList: PalaceCell[];
+  patterns: ZiweiPattern[];
+  mingGongSummary?: ZiweiMingGongSummary;
 }
+

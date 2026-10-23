@@ -85,6 +85,51 @@ describe('🌟 萬象天儀 核心演算法庫 Intent-Based Tests', () => {
       expect(ke?.name).toBe('武曲');
       expect(ji?.name).toBe('太陽');
     });
+
+    it('應完整排布六吉星、祿馬與六煞星，且亮度適度對應', () => {
+      const testDate = new Date('1990-05-15T08:30:00Z');
+      const chart = calculateZiweiChart(testDate, '男');
+
+      const allLucky = chart.palacesList.flatMap((p) => p.luckyStars.map((s) => s.name));
+      const allUnlucky = chart.palacesList.flatMap((p) => p.unluckyStars.map((s) => s.name));
+
+      expect(allLucky).toContain('文昌');
+      expect(allLucky).toContain('文曲');
+      expect(allLucky).toContain('左輔');
+      expect(allLucky).toContain('右弼');
+      expect(allLucky).toContain('天魁');
+      expect(allLucky).toContain('天鉞');
+      expect(allLucky).toContain('祿存');
+      expect(allLucky).toContain('天馬');
+
+      expect(allUnlucky).toContain('擎羊');
+      expect(allUnlucky).toContain('陀羅');
+      expect(allUnlucky).toContain('火星');
+      expect(allUnlucky).toContain('鈴星');
+      expect(allUnlucky).toContain('地空');
+      expect(allUnlucky).toContain('地劫');
+    });
+
+    it('應精準識別紫微斗數三合派正統格局與倪海廈命相心法', () => {
+      const testDate = new Date('1990-05-15T08:30:00Z');
+      const chart = calculateZiweiChart(testDate, '男');
+
+      expect(chart.patterns).toBeDefined();
+      expect(chart.patterns.length).toBeGreaterThan(0);
+      expect(chart.mingGongSummary).toBeDefined();
+      expect(chart.mingGongSummary?.nature).toBeTruthy();
+
+      // 驗證格局資料結構規範（正體中文、出處、條件分層）
+      for (const pattern of chart.patterns) {
+        expect(pattern.name).toBeTruthy();
+        expect(['excellent', 'good', 'neutral', 'caution']).toContain(pattern.level);
+        expect(pattern.description).toBeTruthy();
+        expect(pattern.palaces.length).toBeGreaterThan(0);
+        if (pattern.conditions) {
+          expect(Array.isArray(pattern.conditions.required)).toBe(true);
+        }
+      }
+    });
   });
 
   describe('3. 四柱八字與十神旺衰 (BaZi Four Pillars)', () => {

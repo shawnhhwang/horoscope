@@ -170,6 +170,53 @@ describe('🌟 Role-RAG 角色化專屬顧問與去仙人化語氣意圖測試 (
       });
       expect(almanacKnowledge).toContain('建除十二神');
     });
+
+    it('ZIWEI 能檢索出倪海廈天紀 RAG 知識庫與經典格局心法', async () => {
+      const ziweiKnowledge = await retrieveModuleKnowledge('ZIWEI', {
+        title: '紫微斗數排盤',
+        summary: '命宮紫微天府',
+        rawData: {
+          patterns: [{ name: '君臣慶會' }, { name: '紫府同宮' }],
+        },
+      });
+      expect(ziweiKnowledge).toContain('倪海廈');
+      expect(ziweiKnowledge).toMatch(/大道至簡|君臣慶會|紫府同宮|三合/);
+    });
+
+    it('ZIWEI 離線合成器應精準整合輸出命盤格局與倪師 2/3 大於 1/3 決策心法', () => {
+      const mockMsg = [{ role: 'user' as const, content: '請解析我的命宮與一生格局' }];
+      const ctx = {
+        moduleType: 'ZIWEI',
+        title: '紫微命盤',
+        rawData: {
+          elementBureau: '水二局',
+          lifePalaceBranch: '寅',
+          palaces: { 寅: { name: '命宮', isMingPalace: true, majorStars: [{ name: '紫微' }] } },
+          patterns: [
+            {
+              name: '君臣慶會',
+              level: 'excellent',
+              description: '紫微入命，左輔右弼同會，帝王得賢臣輔佐。',
+              palaces: ['命宮'],
+              conditions: { required: ['紫微坐守命宮', '左輔右弼齊會三方四正'] },
+              source: '《紫微斗數全書》',
+            },
+          ],
+          mingGongSummary: {
+            stars: ['紫微'],
+            keywords: ['尊貴統御', '領袖風範'],
+            nature: '帝王星',
+          },
+        },
+      };
+
+      const reply = generateProfessionalSynthesizerReply(mockMsg, ctx);
+      expect(reply).toContain('【君臣慶會】');
+      expect(reply).toContain('倪師');
+      expect(reply).toContain('2/3 大於 1/3');
+      expect(reply).toContain('名位相等');
+      expect(reply).not.toMatch(/老夫|貧道|天機星君|道友/);
+    });
   });
 
   describe('TC-C01: Demo Mode 外鍵安全與持久化完整性 (CR-02 & CR-04)', () => {
