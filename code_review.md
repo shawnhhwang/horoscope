@@ -108,3 +108,7 @@
 | **CR-05** | **P2** | [`InPageAiAnalysis.vue`](file:///home/coder/Codebase/Horoscope/apps/web/src/components/ai/InPageAiAnalysis.vue) | `marked.parse()` 輸出至 `v-html` 缺乏 XSS Sanitizer | Security |
 | **CR-06** | **P2** | [`docker-compose.yml`](file:///home/coder/Codebase/Horoscope/docker-compose.yml), `apps/admin` | 殘留已廢棄的 3001 獨立後台設定與舊提示詞 | Rule 7 |
 | **CR-07** | **P2** | [`api.test.ts`](file:///home/coder/Codebase/Horoscope/apps/server/test/api.test.ts) | 缺少 8 大模組 Role-RAG 注入與「去仙人化口吻」意圖驗證測試 | Rule 9 |
+| **CR-08** | **P2** | [`ZiweiView.vue`](file:///home/coder/Codebase/Horoscope/apps/web/src/views/ZiweiView.vue), [`AlmanacView.vue`](file:///home/coder/Codebase/Horoscope/apps/web/src/views/AlmanacView.vue) | 淺色模式 (Light Mode) 下文字對比度不足（黃字發白） | UX / A11y |
+| **CR-09** | **P1** | [`synastry.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/bazi/synastry.ts) | 八字合婚未吸納紫微斗數天紀合盤五步法與雙宮聯參 | Rule 8, Rule 11 |
+| **CR-10** | **P1** | [`service.ts`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/llm/service.ts) | 合盤與家庭群組未實現動態實體注入 (Structured Chart Grounding) | Rule 4, Rule 8 |
+| **CR-11** | **P2** | [`SynastryView.vue`](file:///home/coder/Codebase/Horoscope/apps/web/src/views/SynastryView.vue) | iPhone 行動端排盤與群組交互卡片寬度自適應與滾動流暢性 | Responsive |

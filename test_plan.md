@@ -35,17 +35,21 @@
 | **TC-A06** | 塔羅占卜 ([`tarot.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/tarot/index.ts)) | 輸入單張、三張（時間之流）、塞爾特十字牌陣與隨機種子 | 1. 抽出之牌卡 ID 不重複。<br>2. 正逆位狀態、元素屬性與牌位意義完整對應。 |
 | **TC-A07** | 姓名學五格 ([`naming.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/naming/index.ts)) | 輸入單姓雙名、單姓單名、複姓雙名 | 1. 康熙字典筆畫換算與天格、人格、地格、外格、總格計算正確。<br>2. 三才配置（天地人五行生剋）與 81 數理吉凶判定一致。 |
 | **TC-A08** | 通勝農民曆 ([`almanac.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/almanac/index.ts)) | 輸入指定西曆日期 | 1. 轉換農曆日期、干支紀日、值日十二建除、二十八星宿、吉神凶煞、彭祖百忌與每日宜忌完整非空。 |
+| **TC-A09** | 八字合婚與天紀合盤 ([`synastry.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/bazi/synastry.ts)) | 輸入雙方八字生辰與性別 | 1. 計算天干五合、夫妻宮合沖、五行互補評分與通關五行。<br>2. 對標 ziwei-doushu-main 產出紫微斗數×倪海廈《天紀》五步合盤法、雙宮聯參總評、夫妻宮星曜倪師原話。 |
+| **TC-A10** | 家人群組與八卦名位 ([`synastry.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/bazi/synastry.ts)) | 輸入家庭成員陣列 (父、母、長子、次女) | 1. 推算全家五行場域主導/匱乏能量與 $C(N, 2)$ 關係矩陣。<br>2. 準確配置倪海廈《天紀·地脈道》後天八卦名位（乾父西北、坤母西南、震長子正東、離次女正南）與陽宅錯位禁忌。 |
 
 ---
 
-### Suite B：8 大模組角色 RAG 與「去仙人化語氣」意圖測試 (`apps/server`)
+### Suite B：8 大模組與合婚群組角色 RAG 與「去仙人化語氣」意圖測試 (`apps/server`)
 
 | 案例 ID | 測試目標 | 測試場景與輸入 | 預期意圖斷言 (Intent Assertions) |
 | :--- | :--- | :--- | :--- |
-| **TC-B01** | 8 大模組專屬顧問角色注入 ([`service.ts`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/llm/service.ts)) | 分別以 `ZIWEI`, `BAZI`, `WESTERN`, `WESTERN_NATAL`, `TAROT`, `ICHING`, `QIZHENG`, `NAME`, `ALMANAC` 呼叫 [`executeLlmChat`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/llm/service.ts#L502) | 攔截發往 LLM Provider 的 System Prompt：<br>1. `ZIWEI` 必須注入「現代紫微斗數人生策略顧問」。<br>2. `BAZI` 必須注入「現代子平八字命理分析師」。<br>3. `WESTERN` 與 `WESTERN_NATAL` 皆須注入「現代心理與古典占星諮詢師」。<br>4. 其餘模組皆精確注入各自對應的現代專業角色與方法論。 |
-| **TC-B02** | 嚴格禁用仙人/道士口吻驗證 | 檢驗所有 8 大模組的 System Prompt 以及離線合成器 [`generateProfessionalSynthesizerReply`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/llm/service.ts#L403) 的輸出內容 | 1. System Prompt 必須明確包含禁止使用仙人道士自稱的指令。<br>2. 8 大模組的所有輸出內容中，**嚴格不得出現** `['天機星君', '貧道', '老夫', '道友', '仙人', '本座', '施主']` 任一詞彙（違反即測試失敗）。 |
-| **TC-B03** | 模組專屬 RAG 知識庫動態檢索 | 傳入各模組具代表性的 `chartContext`（如紫微命宮紫微星、八字甲木日主、西洋太陽星座、姓名五格、黃曆宜忌等） | 1. [`retrieveModuleKnowledge`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/llm/service.ts#L291) 必須成功檢索出對應的資料庫 `InterpretationRule` 或內建經典文獻條目。<br>2. `WESTERN` 與 `WESTERN_NATAL` 皆能命中資料庫中的西洋占星規則。 |
-| **TC-B04** | Ollama 免 API Key 與模型名稱大小寫保留 | 透過 `PUT /api/v1/admin/llm-config` 設定 `provider: "OLLAMA"`, `modelName: "gemma4:e2b"`, `apiKey: ""` | 1. `GET /api/v1/admin/llm-config` 回傳之 `modelName` 必須精確為小寫 `"gemma4:e2b"`。<br>2. 在無 `apiKey` 的狀態下呼叫 `/api/v1/llm/chat`，系統必須正常發起對 Ollama `/v1/chat/completions` 的請求，不得因無金鑰而阻擋。 |
+| **TC-B01** | 全術數專屬顧問角色注入 ([`service.ts`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/llm/service.ts)) | 以 `ZIWEI`, `BAZI`, `WESTERN`, `TAROT`, `ICHING`, `QIZHENG`, `NAME`, `ALMANAC`, `BAZI_SYNASTRY`, `FAMILY_GROUP` 測試 | 攔截 System Prompt：各自注入專屬現代專業顧問身分、方法論框架與客觀諮商結構。 |
+| **TC-B02** | 嚴格禁用仙人/道士口吻驗證 | 檢驗所有模組的 System Prompt 以及離線合成器 [`generateProfessionalSynthesizerReply`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/llm/service.ts#L403) 的輸出內容 | 1. System Prompt 必須明確包含禁止使用仙人道士自稱的指令。<br>2. 所有輸出內容中，**嚴格不得出現** `['天機星君', '貧道', '老夫', '道友', '仙人', '本座', '施主']` 任一詞彙（違反即測試失敗）。 |
+| **TC-B03** | 模組專屬 RAG 知識庫動態檢索 | 傳入各模組具代表性的 `chartContext`（西洋星盤、七政四餘恩難四星、黃曆建除十二神） | [`retrieveModuleKnowledge`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/llm/service.ts) 必須成功檢索出對應資料庫條目。 |
+| **TC-B04** | 倪師《天紀》紫微 RAG 檢索與離線合成器 | 傳入君臣慶會與紫府同宮盤面 | 檢索出倪師天紀大道至簡與 2/3 大於 1/3 心法，合成器精準輸出三合格局解析。 |
+| **TC-B05** | 西洋占星與塔羅大師語錄 RAG | 查詢榮格、路德雅爾、韋特、波拉克大師心法 | 成功自資料庫 RAG 辭條命中並輸出大師級心靈與逆位覺察洞見。 |
+| **TC-B06** | 八字合婚與家庭群組動態實體檢索 (Chart-Entity Grounding) | 傳入 `ziweiHeming` 與 `baguaPosition` 盤面資料 | 動態提取合盤星級、雙宮聯參、夫妻宮斷語與後天八卦名位相等法則注入提示詞與合成報告。 |
 
 ---
 

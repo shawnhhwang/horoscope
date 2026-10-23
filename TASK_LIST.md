@@ -360,6 +360,86 @@
 
 ---
 
+## Phase 17: 倪海廈《天紀》紫微斗數命相心法與正統格局 RAG 體系
+
+- [x] **Task 17.1: 紫微斗數三合派正統格局識別演算法 (`packages/astro-core/src/ziwei/patterns.ts`)**
+  - **範圍**：君臣慶會、紫府同宮、機月同梁、陽梁昌祿、火貪格、巨日同宮、太陰化忌入命等格局判定與出處條件。
+  - **驗證方式**：`astro-core.test.ts` 新增格局斷言全數通過。
+
+- [x] **Task 17.2: 倪海廈命相心法與決策哲學 RAG 種子資料庫注入 (`packages/database/src/seed.ts`)**
+  - **範圍**：天紀大道至簡、2/3 大於 1/3 改命哲學、名位相等法則。
+  - **驗證方式**：`role-rag.test.ts` 驗證檢索命中。
+
+---
+
+## Phase 18: 西洋占星與韋特塔羅當代大師級語錄 RAG 擴充
+
+- [x] **Task 18.1: 西洋占星與韋特塔羅國際大師語錄種子庫注入 (`packages/database/src/seed.ts`)**
+  - **範圍**：榮格 (Carl Jung)、丹·路德雅爾 (Dane Rudhyar)、莉茲·格林 (Liz Greene)、史蒂芬·阿若優 (Stephen Arroyo)、羅伯特·漢德 (Robert Hand)、愛德華·韋特 (A.E. Waite)、蕾切爾·波拉克 (Rachel Pollack)、瑪麗·格利爾 (Mary K. Greer)、亞歷杭德羅·佐杜洛夫斯基 (Alejandro Jodorowsky)。
+  - **驗證方式**：`seed.ts` 執行無誤，資料庫 RAG 辭條結構化落地。
+
+- [x] **Task 18.2: 宗師級 Prompt 檢索權重與離線合成器注入 (`apps/server/src/modules/llm/service.ts`)**
+  - **範圍**：關鍵字加權檢索與結構化輸出心法。
+  - **驗證方式**：`role-rag.test.ts` 驗證宗師語錄輸出。
+
+---
+
+## Phase 19: 八字合婚與家人群組比對系統
+
+- [x] **Task 19.1: 子平五維合婚與通關五行推導演算法 (`packages/astro-core/src/bazi/synastry.ts`)**
+  - **範圍**：天干五合、地支六合三合、五行互補評分、年柱納音神煞、夫妻宮合沖與通關五行。
+  - **驗證方式**：單元測試通過。
+
+- [x] **Task 19.2: 家人群組五行場域與兩兩交互矩陣演算法 (`calculateFamilyGroup`)**
+  - **範圍**：家庭主導/匱乏五行、全家氣場標題、角色配置、$C(N, 2)$ 兩兩互動矩陣。
+  - **驗證方式**：單元測試通過。
+
+- [x] **Task 19.3: 後端 API 端點與專屬現代顧問 Persona 註冊**
+  - **範圍**：`/api/v1/calculator/bazi/synastry`、`/api/v1/calculator/family/group`、`BAZI_SYNASTRY`、`FAMILY_GROUP`。
+  - **驗證方式**：Supertest API 測試與 Role-RAG 測試通過。
+
+- [x] **Task 19.4: 前端 SynastryView 雙分頁互動介面與 InPageAiAnalysis 整合**
+  - **範圍**：八字合婚與家庭群組雙分頁、一鍵載入已存檔案、全幅 AI 詳批。
+  - **驗證方式**：前台打包構建與瀏覽器互動驗證。
+
+---
+
+## Phase 20: 深度對標 ziwei-doushu-main 強化 RAG 與天紀雙軌合參
+
+- [x] **Task 20.1: 移植 heming-knowledge.ts 知識庫至 astro-core**
+  - **範圍**：十四主星夫妻宮斷語 (`STAR_IN_FUQI_GU`)、四化斷語、倪師原話、雙宮聯參鐵律、合盤五步法。
+  - **驗證方式**：`astro-core.test.ts` 斷言 `ziweiHeming` 結構完整性通過。
+
+- [x] **Task 20.2: 倪海廈《天紀·地脈道》陽宅化命後天八卦名位相等配置**
+  - **範圍**：乾坤震巽坎離艮兌八卦方位角色對應、名位法則、地天泰/水火既濟配置、陽宅越位禁忌警示。
+  - **驗證方式**：`astro-core.test.ts` 驗證家庭成員八卦方位正確。
+
+- [x] **Task 20.3: 注入 1,848 條原話語料庫精粹種子 (`packages/database/src/seed-nihai.ts`)**
+  - **範圍**：8 大高密度繁體中文專題辭條寫入 SQLite，全站辭條擴充至 61 條。
+  - **驗證方式**：`db:seed` 執行無誤。
+
+- [x] **Task 20.4: Structured Chart-Entity Grounding 動態實體檢索與 Prompt 注入**
+  - **範圍**：`retrieveModuleKnowledge` 動態提取當前盤面 `ziweiHeming` 與 `baguaPosition` 實體，連同跨模組知識注入 Prompt。
+  - **驗證方式**：`role-rag.test.ts` 驗證動態檢索通過。
+
+- [x] **Task 20.5: 前端淺色模式 (Light Mode) 對比度與卡片樣式修正**
+  - **範圍**：`ZiweiView.vue`、`AlmanacView.vue`、`SynastryView.vue` 淺色模式下文字可讀性優化。
+  - **驗證方式**：Dark/Light 切換視覺校驗通過。
+
+---
+
+## Phase 21: iPhone 行動瀏覽器相容性與全專案文件同步
+
+- [x] **Task 21.1: iPhone / 行動裝置響應式排版優化**
+  - **範圍**：手機版面單欄適配、捲軸與點擊手感提升。
+  - **驗證方式**：響應式瀏覽器預覽通過。
+
+- [x] **Task 21.2: 全專案 Markdown 文件完整同步更新**
+  - **範圍**：`README.md`、`TASK_LIST.md`、`DEVELOPMENT_LOG.md`、`TEST_REPORT.md`、`test_plan.md`、`code_review.md`。
+  - **驗證方式**：全工作區 77 項測試 100% 通過，全專案無型別錯誤構建成功。
+
+---
+
 ## 多步驟檢核點規範 (Rule 10 Checkpoint Protocol)
 
 在執行上述各子任務時，必須遵循以下多步驟總結格式：

@@ -10,14 +10,14 @@
 
 - **測試框架**：[Vitest v1.6.1](https://vitest.dev/) + [Supertest v7.0.0](https://github.com/ladjs/supertest)
 - **總測試套件數**：4 個獨立測試檔案 (`packages/astro-core`, `apps/server/test/api.test.ts`, `apps/server/test/role-rag.test.ts`, `apps/server/test/admin-features.test.ts`)
-- **總測試案例數**：**64 項**（64 passed / 0 failed / 0 skipped）
+- **總測試案例數**：**77 項**（77 passed / 0 failed / 0 skipped）
 - **測試通過率**：**100%**
 - **建置通過率**：**100%** (Monorepo 所有套件全數編譯成功)
 
 ```
 Test Files  4 passed (4)
-     Tests  64 passed (64)
-  Coverage  100% Intent Coverage on Astronomical, Divination, Role-RAG, Database Management & Admin Tools
+     Tests  77 passed (77)
+  Coverage  100% Intent Coverage on Astronomical, Divination, Synastry, Role-RAG, Database Management & Admin Tools
 ```
 
 ---
@@ -26,7 +26,7 @@ Test Files  4 passed (4)
 
 測試檔案：[`packages/astro-core/test/astro-core.test.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/test/astro-core.test.ts)  
 執行指令：`npx pnpm --filter @celestial/astro-core test`  
-測試耗時：約 740ms
+測試案例數：**22 項** (100% 通過)
 
 | 測試分類 | 測試案例名稱 | 驗證意圖 (Intent Verification) | 結果 |
 | :--- | :--- | :--- | :---: |
@@ -34,8 +34,12 @@ Test Files  4 passed (4)
 | **曆法與真太陽時** | 均時差 (Equation of Time) 應在天文合理範圍 (-20 ~ +20 分) | 驗證地球公轉橢圓軌道與黃赤交角造成的均時差修正值符合天文常理。 | **PASS** |
 | **紫微斗數排盤** | 應正確排布十二宮位與十四主星，且不遺失主星 | 驗證依命宮天干五行局（水二、木三、金四、土五、火六）與生辰定位紫微星與天府星兩大星系，14 主星無重複無遺漏。 | **PASS** |
 | **紫微斗數排盤** | 生年干四化星應準確標註在對應主星或吉星上 | 驗證生年天干（如甲干：廉貞化祿、破軍化權、武曲化科、太陽化忌）精確掛載至對應星曜。 | **PASS** |
+| **紫微斗數排盤** | 應完整排布六吉星、祿馬與六煞星，且亮度適度對應 | 驗證昌曲、輔弼、魁鉞、羊陀、火鈴、空劫與祿馬全數正確落宮。 | **PASS** |
+| **紫微斗數排盤** | 應精準識別紫微斗數三合派正統格局與倪海廈命相心法 | 驗證君臣慶會、紫府同宮、機月同梁、陽梁昌祿等三合格局與吉凶分級。 | **PASS** |
 | **四柱八字與十神** | 應準確推算十神關係 | 驗證日主天干與其他干支之生剋同異屬性（如甲木見庚金為七殺、見己土為正財）。 | **PASS** |
 | **四柱八字與十神** | 應產出完整的年月日時四柱、五行能量百分比與大運 | 驗證生辰節氣切換、地支藏干、五行能量權重分佈與起運歲數排演。 | **PASS** |
+| **四柱八字合婚** | 八字合婚演算法應能精準剖析天干五合、地支六合與五行互補評分 | 驗證天干五合、地支合沖、通關五行推導，以及對標 ziwei-doushu-main 之紫微斗數×倪海廈《天紀》合盤五步法與雙宮聯參。 | **PASS** |
+| **四柱八字群組** | 家人群組比對演算法應能聚合全家五行場域並建立兩兩成員交叉矩陣與角色定位 | 驗證全家五行場域聚合、$C(N, 2)$ 兩兩互動矩陣、角色指派，以及對標 1848 條天紀語料庫之倪海廈《天紀·地脈道》後天八卦名位相等配置（乾父西北、坤母西南、震長子正東、離次女正南）。 | **PASS** |
 | **周易卜卦** | 乾為天卦全陽，錯卦應為坤為地，綜卦亦為乾為天 | 驗證六十四卦矩陣幾何對稱性：全陽卦陰陽全反為坤為地，上下顛倒綜卦仍為乾為天。 | **PASS** |
 | **周易卜卦** | 老陽(9)與老陰(6)動爻應精準觸發之卦(變卦) | 驗證三銅錢起卦法中，老陽變少陰、老陰變少陽之動爻變卦推導精確無誤。 | **PASS** |
 | **周易卜卦** | 梅花易數數理起卦應確定性生成本卦與動爻 | 驗證上卦、下卦除以八取餘，動爻除以六取餘之先天八卦數理公式。 | **PASS** |
@@ -55,12 +59,11 @@ Test Files  4 passed (4)
 
 測試檔案：[`apps/server/test/api.test.ts`](file:///home/coder/Codebase/Horoscope/apps/server/test/api.test.ts)  
 執行指令：`npx pnpm --filter @celestial/server test`  
-測試案例數：21 項  
-結果：**21 passed (100%)**
+測試案例數：**23 項** (100% 通過)
 
 涵蓋：
 1. 認證模組 (Auth Module)：註冊、密碼校驗、JWT Token 簽發與 `/api/v1/auth/me` 個人資料讀取。
-2. 8 大排盤端點計算完整性：紫微、八字、六爻、姓名學、西洋星盤、塔羅抽牌、七政四餘、每日黃曆。
+2. 10 大排盤計算端點完整性：紫微、八字、八字合婚 (`bazi/synastry`)、家庭群組 (`family/group`)、周易六爻、姓名學、西洋星盤、塔羅抽牌、七政四餘、每日黃曆。
 3. 個人檔案庫與測算日記 CRUD：`/api/v1/profiles` 與 `/api/v1/readings` 建立、查詢與關聯驗證。
 4. 後台管理權限隔離 (RBAC)：一般 VIP 存取被拒 403 Forbidden、管理員數據大盤與命理辭庫列表查詢。
 5. LLM 智能助手與後台配置：端點狀態、命盤上下文注入與動態修改助手配置。
@@ -71,14 +74,17 @@ Test Files  4 passed (4)
 
 測試檔案：[`apps/server/test/role-rag.test.ts`](file:///home/coder/Codebase/Horoscope/apps/server/test/role-rag.test.ts)  
 執行指令：`npx pnpm --filter @celestial/server test`  
-測試案例數：12 項  
-結果：**12 passed (100%)**
+測試案例數：**19 項** (100% 通過)
 
 | 案例編號 | 測試項目 | 驗證意圖 (Intent Verification) | 結果 |
 | :--- | :--- | :--- | :---: |
-| **TC-B01** | 8 大模組專屬現代顧問角色注入 | `ZIWEI`、`BAZI`、`WESTERN`（含 `WESTERN_NATAL`）、`TAROT`、`ICHING`、`QIZHENG`、`NAME`、`ALMANAC` 各自注入專屬專業顧問身分、方法論框架與 4 階段結構。 | **PASS** |
-| **TC-B02** | 嚴格禁止仙人/道士口吻斷言 | System Prompt 與離線合成器 `generateProfessionalSynthesizerReply` 對全部 8 大模組的輸出中，絕對不得出現 `['天機星君', '貧道', '老夫', '道友', '仙人', '本座', '施主']`。 | **PASS** |
-| **TC-B03** | 模組專屬 RAG 知識庫動態檢索 | 驗證 `WESTERN` 與 `WESTERN_NATAL` 雙向相容命中西洋星盤資料庫辭庫；`QIZHENG` 檢索出恩難四星；`ALMANAC` 檢索出建除十二神。 | **PASS** |
+| **TC-B01** | 全術數專屬現代顧問角色注入 | `ZIWEI`、`BAZI`、`WESTERN`、`TAROT`、`ICHING`、`QIZHENG`、`NAME`、`ALMANAC`、`BAZI_SYNASTRY`、`FAMILY_GROUP` 各自注入專屬專業顧問身分、方法論框架與諮詢結構。 | **PASS** |
+| **TC-B02** | 嚴格禁止仙人/道士口吻斷言 | System Prompt 與離線合成器 `generateProfessionalSynthesizerReply` 對全部模組的輸出中，絕對不得出現 `['天機星君', '貧道', '老夫', '道友', '仙人', '本座', '施主']`。 | **PASS** |
+| **TC-B03** | 模組專屬 RAG 知識庫動態檢索 | 驗證西洋星盤資料庫辭庫、七政四餘恩難四星、黃曆建除十二神檢索。 | **PASS** |
+| **TC-B04** | 倪海廈《天紀》紫微 RAG 檢索與離線合成器 | 驗證 ZIWEI 檢索出倪師天紀語料與格局心法，離線合成器輸出「君臣慶會」與倪師 2/3 大於 1/3 心法。 | **PASS** |
+| **TC-B05** | 西洋占星與塔羅當代大師語錄 RAG 檢索 | 驗證檢索出榮格 (Jung)、丹·路德雅爾、莉茲·格林、愛德華·韋特 (Waite)、蕾切爾·波拉克 (Pollack) 宗師心法。 | **PASS** |
+| **TC-B06** | 八字合婚與家庭群組離線合成器輸出 | 驗證合婚評分、五行場域、通關建議與家庭舵手角色指派無誤。 | **PASS** |
+| **TC-B07** | 合婚與家庭群組動態實體檢索 (Chart-Entity Grounding) | 傳入 `ziweiHeming` 與 `baguaPosition`，驗證動態檢索出雙宮聯參、合盤五步法與後天八卦名位相等 RAG 語料。 | **PASS** |
 | **TC-C01** | Demo Mode 外鍵安全與持久化完整性 | 使用 `x-demo-mode: true` 呼叫 `POST /api/v1/profiles` 與 `POST /api/v1/readings`，成功回傳 `201 Created`，解決 SQLite 外鍵約束錯誤並支援安全刪除。 | **PASS** |
 
 ---
@@ -124,4 +130,4 @@ Test Files  4 passed (4)
 
 ## 七、結論與生產就緒宣言 (Conclusion)
 
-所有 [`code_review.md`](file:///home/coder/Codebase/Horoscope/code_review.md) 列舉之 P1 與 P2 問題均已依據 [`AGENTS.md`](file:///home/coder/Codebase/Horoscope/AGENTS.md) 核心準則外科式精確修復。全專案 64 項自動化測試 100% 通過，Monorepo 全量 Build 0 錯誤，已全面達到生產級品質標準。
+所有 [`code_review.md`](file:///home/coder/Codebase/Horoscope/code_review.md) 列舉之 P1 與 P2 問題均已依據 [`AGENTS.md`](file:///home/coder/Codebase/Horoscope/AGENTS.md) 核心準則外科式精確修復。全專案 77 項自動化測試 100% 通過，Monorepo 全量 Build 0 錯誤，已全面達到生產級品質標準。

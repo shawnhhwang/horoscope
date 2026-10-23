@@ -436,4 +436,91 @@
   - 全域意圖測試：`npx pnpm test` 39/39 項測試 100% 綠燈通過。
   - 本地 Ollama 實例端點連線驗證：成功透過本機 Ollama `gemma4:e2b` 驗證紫微斗數與四柱八字端點生成，產出均為專業現代顧問口吻，無任何仙人道士術語，結構清晰、論斷精湛。
 - **剩餘事項 (Remaining)**：
-  - 無。角色 RAG 體系與真實諮詢風格已全面上線。
+  - 前進 Phase 17：導入倪海廈《天紀》紫微斗數命相心法與正統格局 RAG 知識庫。
+
+---
+
+### 檢核點回報: Phase 17 (倪海廈《天紀》紫微斗數命相心法與三合正統格局 RAG 體系)
+- **當前任務**：Task 17.1 ~ Task 17.3 (三合派正統格局庫、格局條件識別引擎、倪師命相心法 RAG 辭條注入與測試)
+- **已完成事項 (Completed)**：
+  - **1. 正統格局識別演算法 (`packages/astro-core/src/ziwei/patterns.ts`)**：
+    - 收錄《紫微斗數全書》經典格局：君臣慶會、紫府同宮、機月同梁、陽梁昌祿、日照雷門、月朗天門、火貪格、鈴貪格、巨日同宮、太陰化忌入命、化權入官、昌曲同會、輔弼同會等。
+    - 嚴格定義成立條件（Required & Optional）、吉凶層級（`excellent` 大吉、`good` 成格、`neutral` 平和、`caution` 警示）與古籍出處。
+  - **2. 倪海廈命相心法 RAG 種子資料庫注入 (`packages/database/src/seed.ts`)**：
+    - 注入「2/3 大於 1/3」命運決策哲學（天命 1/3、地理 1/3、人事 1/3；地理+人事可改天命）。
+    - 注入「名位相等」陽宅配置哲學與以果決行決策論。
+  - **3. 前端格局標籤與古籍詳解彈窗展示 (`apps/web/src/views/ZiweiView.vue`)**：
+    - 於命盤三方四正分析區呈現識別出之格局徽章，點擊標籤即時彈出成立條件、星曜配置與古籍斷語。
+- **已驗證事項 (Verified)**：
+  - 單元測試：`astro-core.test.ts` 新增三合派格局識別測試通過。
+  - 整合測試：`role-rag.test.ts` 驗證 ZIWEI 模組檢索出倪師心法與格局辭條。
+
+---
+
+### 檢核點回報: Phase 18 (西洋占星與韋特塔羅當代大師級語錄 RAG 擴充)
+- **當前任務**：Task 18.1 ~ Task 18.3 (國際宗師文獻彙整、RAG 辭條結構化寫入、合成器與檢索增強)
+- **已完成事項 (Completed)**：
+  - **1. 當代占星與塔羅宗師文獻庫注入 (`packages/database/src/seed.ts`)**：
+    - **西洋占星大師**：卡爾·榮格 (Carl Jung，共時性與原型心法)、丹·路德雅爾 (Dane Rudhyar，人本占星與命運週期)、莉茲·格林 (Liz Greene，陰影整合與冥王土星心理學)、史蒂芬·阿若優 (Stephen Arroyo，四大元素能量占星)、羅伯特·漢德 (Robert Hand，古典象徵與行星相位)。
+    - **韋特塔羅大師**：愛德華·韋特 (A.E. Waite，象徵圖解之鑰)、蕾切爾·波拉克 (Rachel Pollack，78 度智慧與愚人之旅)、瑪麗·格利爾 (Mary K. Greer，逆位牌破局逆轉心法)、亞歷杭德羅·佐杜洛夫斯基 (Alejandro Jodorowsky，神聖塔羅潛意識重塑)。
+  - **2. 後端動態檢索與離線合成器升級 (`apps/server/src/modules/llm/service.ts`)**：
+    - 提升大師心法辭條檢索權重，使求測者在諮商本命盤或牌陣時，能精準引用宗師洞見。
+- **已驗證事項 (Verified)**：
+  - `role-rag.test.ts` 驗證 `WESTERN` 與 `TAROT` 成功檢索出榮格、路德雅爾、韋特、波拉克大師語錄。
+
+---
+
+### 檢核點回報: Phase 19 (八字合婚與家人群組比對系統)
+- **當前任務**：Task 19.1 ~ Task 19.4 (子平合婚演算法、家庭五行場域與動態矩陣、專屬 API 端點、前端 SynastryView 交互)
+- **已完成事項 (Completed)**：
+  - **1. 核心合婚演算法 (`packages/astro-core/src/bazi/synastry.ts`)**：
+    - 子平五維合婚評分：天干五合、夫妻宮六合/三合/半合/相沖/相害、五行能量互補、年柱納音神煞、四柱干支詳細交互。
+    - 通關五行精準推導（金木相戰以水通關、水火相射以木通關等）與具體生活調適建議。
+  - **2. 家人群組比對演算法 (`calculateFamilyGroup`)**：
+    - 全家五行能量聚合：家庭主導能量、匱乏能量、氣場象徵標題。
+    - 成員兩兩動態關係矩陣 ($C(N, 2)$ 交叉動態評分與描述)。
+    - 家庭角色站位（家族舵手、家族調和者、家族開拓者、家族守護者）。
+  - **3. 後端 API 與專屬 RAG 顧問模組**：
+    - 新增 `POST /api/v1/calculator/bazi/synastry` 與 `POST /api/v1/calculator/family/group`。
+    - 註冊 `BAZI_SYNASTRY` 與 `FAMILY_GROUP` 專屬專業顧問 Persona 與檢索配置。
+  - **4. 前端綜合視圖 (`apps/web/src/views/SynastryView.vue`)**：
+    - 支援「八字合婚」與「家人群組」雙分頁切換、一鍵載入已存命盤、InPageAiAnalysis 深度詳批。
+- **已驗證事項 (Verified)**：
+  - 單元測試：`astro-core.test.ts` 驗證合婚與家庭群盤計算正確性。
+  - 整合測試：`api.test.ts` 與 `role-rag.test.ts` 驗證端點與顧問角色 RAG。
+
+---
+
+### 檢核點回報: Phase 20 (深度對標 ziwei-doushu-main 強化 RAG 與天紀雙軌合參)
+- **當前任務**：Task 20.1 ~ Task 20.5 (移植 heming-knowledge.ts、注入 entries.jsonl 1848條語料、陽宅化命後天八卦名位相等配置、Structured Chart-Entity Grounding、Light 模式文字對比修正)
+- **已完成事項 (Completed)**：
+  - **1. 完整移植《天紀》合盤知識庫 (`packages/astro-core/src/bazi/synastry.ts`)**：
+    - 夫妻宮十四主星全斷語 (`STAR_IN_FUQI_GU`)、四化斷語 (`SIHUA_IN_FUQI_GU`) 與倪海廈原話引文。
+    - 紫微斗數 × 倪海廈《天紀》五步合盤法（命格基礎互補、夫妻宮互參與天作之合判定、太陽太陰互參、四化飛化互參、婚期建議與陽宅化命）。
+    - 雙宮聯參鐵律（看婚姻必同時看夫妻宮與福德宮）。
+  - **2. 倪海廈《天紀·地脈道》陽宅化命：後天八卦名位相等配置**：
+    - 成員角色對應八卦方位（乾父西北、坤母西南、震長子正東、巽長女東南、坎次子正北、離次女正南、艮三子東北、兌三女正西）。
+    - 名位法則、地天泰/水火既濟配置、紫微六親宮位註解與陽宅錯位越位禁忌警示（如長子居西北之雷天大壯）。
+  - **3. RAG 知識庫種子擴充與注入 (`packages/database/src/seed-nihai.ts`)**：
+    - 自 1,848 條原話語料庫提煉 8 大高密度繁體中文專題辭條寫入 SQLite，全站辭條達到 61 條。
+  - **4. Structured Chart-Entity Grounding（動態命盤實體注入）**：
+    - 在後端 `retrieveModuleKnowledge()` 自動提取當前合婚之 `ziweiHeming` 與家庭之 `baguaPosition` 注入 Prompt，並支援跨模組檢索。
+  - **5. 視覺對比度修復 (Light Mode Contrast)**：
+    - 修正 `ZiweiView.vue`、`AlmanacView.vue` 與 `SynastryView.vue` 在淺色模式下的卡片文字可讀性。
+- **已驗證事項 (Verified)**：
+  - `astro-core.test.ts`：22/22 passed。
+  - `server` 測試：55/55 passed (包含 `api.test.ts`, `role-rag.test.ts`, `admin-features.test.ts`)。
+  - 全專案總計 77 項測試 100% 綠燈通過。
+
+---
+
+### 檢核點回報: Phase 21 (iPhone 行動瀏覽器相容性與全專案文件同步)
+- **當前任務**：Task 21.1 ~ Task 21.2 (行動裝置可用性驗證、全專案 Markdown 文件完整同步)
+- **已完成事項 (Completed)**：
+  - 全面優化手機版寬度自適應佈局（`SynastryView.vue`、`ZiweiView.vue`、`InPageAiAnalysis.vue`），針對 iOS Safari 滾動彈性與表單按鈕點擊區域微調。
+  - 完整更新全專案 Markdown 說明文件：`README.md`、`TASK_LIST.md`、`DEVELOPMENT_LOG.md`、`TEST_REPORT.md`、`test_plan.md`、`code_review.md`。
+- **已驗證事項 (Verified)**：
+  - Monorepo 全套件構建檢查 `npx pnpm -r build` 成功。
+  - 全自動化測試 `npx pnpm -r test` 77/77 項測試 100% 通過。
+- **剩餘事項 (Remaining)**：
+  - 完成 GitHub 提交並推送更新。
