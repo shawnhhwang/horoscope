@@ -314,7 +314,66 @@ describe('🌟 Role-RAG 角色化專屬顧問與去仙人化語氣意圖測試 (
       expect(familyReply).toContain('4 位家庭成員');
       expect(familyReply).toContain('青雲得祿');
       expect(familyReply).toContain('家族舵手');
+      expect(familyReply).toContain('名位相等');
       expect(familyReply).not.toMatch(/老夫|貧道|天機星君|道友/);
+    });
+
+    it('BAZI_SYNASTRY 與 FAMILY_GROUP 應能動態檢索天紀雙宮聯參、五步合盤法與後天八卦名位相等 RAG 語料', async () => {
+      const synastryKnowledge = await retrieveModuleKnowledge(
+        'BAZI_SYNASTRY',
+        {
+          title: '八字與天紀合婚',
+          rawData: {
+            ziweiHeming: {
+              starRating: 4,
+              ratingLabel: '良緣佳配',
+              dualPalaceSummary: '看婚姻必同時看夫妻宮與福德宮',
+              p1Profile: {
+                name: '張君豪',
+                mingMajorStars: ['紫微'],
+                fuqiMajorStars: ['天府'],
+                fuqiStarVerdicts: [{ star: '天府', nature: '吉', niQuote: '天府在夫妻宮，婚姻穩定。' }],
+              },
+              p2Profile: {
+                name: '林雅婷',
+                mingMajorStars: ['太陰'],
+                fuqiMajorStars: ['太陽'],
+                fuqiStarVerdicts: [{ star: '太陽', nature: '吉', niQuote: '太陽主貴。' }],
+              },
+            },
+          },
+        },
+        '請以倪海廈雙宮聯參與合盤五步法解析夫妻宮與福德宮'
+      );
+      expect(synastryKnowledge).toContain('雙宮聯參');
+      expect(synastryKnowledge).toContain('天府');
+      expect(synastryKnowledge).toMatch(/夫妻宮|福德宮|合盤/);
+
+      const familyKnowledge = await retrieveModuleKnowledge(
+        'FAMILY_GROUP',
+        {
+          title: '家庭群盤',
+          rawData: {
+            members: [
+              {
+                name: '父親 (建華)',
+                role: '父親',
+                baguaPosition: {
+                  trigram: '乾卦',
+                  direction: '西北角',
+                  roleTitle: '父親（男主人）',
+                  niMingWeiRule: '父親居西北乾位，名位相等。',
+                  tabooWarning: '忌兒子睡西北角雷天大壯。',
+                },
+              },
+            ],
+          },
+        },
+        '請以倪海廈後天八卦名位相等與陽宅化命解析家庭房間方位'
+      );
+      expect(familyKnowledge).toContain('乾卦');
+      expect(familyKnowledge).toContain('西北角');
+      expect(familyKnowledge).toContain('名位相等');
     });
   });
 

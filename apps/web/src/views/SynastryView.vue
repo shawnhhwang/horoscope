@@ -340,6 +340,100 @@
           </table>
         </div>
 
+        <!-- ☯ 紫微斗數 × 倪海廈《天紀》雙宮聯參與五步合盤分析 (ziwei-doushu-main 架構) -->
+        <div
+          v-if="synastryResult.ziweiHeming"
+          class="glass-panel rounded-2xl p-6 sm:p-8 border border-dark-gold/35 shadow-cosmic max-w-4xl mx-auto space-y-6"
+        >
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-dark-gold/20">
+            <div>
+              <span class="text-[10px] uppercase tracking-widest text-dark-gold font-serif">
+                TIANJI ZIWEI SYNASTRY · 倪海廈《天紀》合盤體系
+              </span>
+              <h3 class="text-lg font-bold text-gold-gradient mt-0.5">
+                ☯ 紫微雙宮聯參（夫妻宮 + 福德宮）與五步合盤診斷
+              </h3>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/50 text-amber-200 text-xs font-bold">
+                🌟 天紀評級：{{ synastryResult.ziweiHeming.starRating }}
+              </span>
+              <span class="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/50 text-emerald-200 text-xs font-bold">
+                {{ synastryResult.ziweiHeming.destinyType }}
+              </span>
+            </div>
+          </div>
+
+          <!-- 倪師雙宮聯參核心鐵律橫幅 -->
+          <div class="p-4 rounded-xl bg-black/40 border border-dark-gold/25 text-xs leading-relaxed">
+            <span class="font-bold text-dark-gold block mb-1">📌 倪師《天紀》雙宮聯參鐵律：</span>
+            <p class="text-dark-text">{{ synastryResult.ziweiHeming.dualPalacePrinciple }}</p>
+          </div>
+
+          <!-- 雙方 命宮 / 夫妻宮 / 福德宮 對照卡片 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div
+              v-for="prof in [synastryResult.ziweiHeming.person1Profile, synastryResult.ziweiHeming.person2Profile]"
+              :key="prof.name"
+              class="p-4 rounded-xl bg-black/30 border border-dark-gold/20 space-y-2.5"
+            >
+              <div class="flex items-center justify-between border-b border-dark-gold/15 pb-2">
+                <span class="font-bold text-sm text-gold-gradient">{{ prof.name }} ({{ prof.gender }}命)</span>
+                <span class="px-2 py-0.5 rounded bg-dark-gold/15 text-dark-gold border border-dark-gold/30 text-[11px] font-bold">
+                  {{ prof.mingGongType }}
+                </span>
+              </div>
+              <div>
+                <span class="text-dark-muted">命宮主星：</span>
+                <span class="font-bold text-dark-text">{{ prof.mingGongStars.join('、') }}</span>
+              </div>
+              <div>
+                <span class="text-dark-muted">夫妻宮星曜：</span>
+                <span class="font-bold text-amber-300">{{ prof.fuqiStars.join('、') }}</span>
+                <span v-if="prof.fuqiSihua.length" class="ml-1.5 text-rose-300 font-bold">（{{ prof.fuqiSihua.join('、') }}）</span>
+              </div>
+              <p class="text-dark-text leading-relaxed">{{ prof.fuqiSummary }}</p>
+              <div class="text-[11px] text-emerald-300">
+                <strong>✦ 吉象優勢：</strong>{{ prof.fuqiGood }}
+              </div>
+              <div class="text-[11px] text-rose-300">
+                <strong>⚠️ 相處注意：</strong>{{ prof.fuqiBad }}
+              </div>
+              <div v-if="prof.fuqiNiQuote" class="p-2.5 rounded-lg bg-dark-gold/10 border border-dark-gold/25 text-[11px] text-dark-gold italic">
+                💬 倪師原話：「{{ prof.fuqiNiQuote }}」
+              </div>
+              <div class="pt-1 border-t border-dark-gold/10 text-[11px] text-dark-muted">
+                <strong>福德宮根基：</strong>{{ prof.fudeEvaluation }}
+              </div>
+            </div>
+          </div>
+
+          <!-- 天紀合盤五步法詳解 -->
+          <div class="space-y-2.5 text-xs">
+            <h4 class="font-bold text-dark-gold text-xs uppercase tracking-wider">✦ 天紀合盤五步法逐層拆解：</h4>
+            <div class="p-3.5 rounded-xl bg-black/30 border border-dark-gold/15">
+              <span class="font-bold text-amber-300 block mb-0.5">第一步 · 雙方命格基礎與動靜互補：</span>
+              <p class="text-dark-muted leading-relaxed">{{ synastryResult.ziweiHeming.fiveSteps.step1BaseCompatibility }}</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-black/30 border border-dark-gold/15">
+              <span class="font-bold text-amber-300 block mb-0.5">第二步 · 夫妻宮互參與天作之合判定：</span>
+              <p class="text-dark-muted leading-relaxed">{{ synastryResult.ziweiHeming.fiveSteps.step2SpouseCrossMatch }}</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-black/30 border border-dark-gold/15">
+              <span class="font-bold text-amber-300 block mb-0.5">第三步 · 太陽與太陰男女婚姻星象互參：</span>
+              <p class="text-dark-muted leading-relaxed">{{ synastryResult.ziweiHeming.fiveSteps.step3SunMoonAnalysis }}</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-black/30 border border-dark-gold/15">
+              <span class="font-bold text-amber-300 block mb-0.5">第四步 · 生年四化飛化互參（緣分引動）：</span>
+              <p class="text-dark-muted leading-relaxed">{{ synastryResult.ziweiHeming.fiveSteps.step4SihuaMutualFly }}</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-black/30 border border-dark-gold/15">
+              <span class="font-bold text-amber-300 block mb-0.5">第五步 · 婚期建議與倪師陽宅化命大法：</span>
+              <p class="text-dark-muted leading-relaxed">{{ synastryResult.ziweiHeming.fiveSteps.step5TimingAndYangzhai }}</p>
+            </div>
+          </div>
+        </div>
+
         <!-- 婚姻生活現代指引與存檔 -->
         <div class="glass-panel rounded-2xl p-6 sm:p-8 border border-dark-gold/30 max-w-4xl mx-auto space-y-4">
           <div class="flex items-center justify-between pb-3 border-b border-dark-gold/15">
@@ -628,6 +722,58 @@
           </div>
         </div>
 
+        <!-- ⊞ 倪海廈《天紀·地脈道》陽宅化命：後天八卦名位相等配置 -->
+        <div class="glass-panel rounded-2xl p-6 sm:p-8 border border-dark-gold/35 shadow-cosmic max-w-4xl mx-auto space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-dark-gold/20">
+            <div>
+              <span class="text-[10px] uppercase tracking-wider text-dark-gold">TIANJI BAGUA HOUSEHOLD POSITIONING</span>
+              <h3 class="text-base font-bold text-gold-gradient">⊞ 倪海廈《天紀·地脈道》陽宅化命：後天八卦名位相等配置</h3>
+            </div>
+            <span class="text-xs px-3 py-1 rounded-full bg-dark-gold/15 border border-dark-gold/35 text-dark-gold font-bold self-start sm:self-auto">
+              「名位相等則大吉 · 命同人不同在於位置」
+            </span>
+          </div>
+
+          <p class="text-xs text-dark-muted leading-relaxed">
+            倪師《天紀》傳世心法：「算命知天命，陽宅可改命。」家庭成員除八字五行互補外，居家臥室方位必須合乎後天八卦之長幼倫序（乾父西北、坤母西南、震長子正東、巽長女東南、坎次子正北、離次女正南、艮三子東北、兌三女正西），使天地人三才定位合一。
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div
+              v-for="m in familyResult.members"
+              :key="m.id"
+              class="p-4 rounded-xl bg-black/35 border border-dark-gold/25 flex flex-col justify-between space-y-2.5"
+            >
+              <div>
+                <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-dark-gold/15">
+                  <div>
+                    <span class="font-bold text-dark-text text-sm">{{ m.name }}</span>
+                    <span class="ml-1.5 px-2 py-0.5 rounded text-[10px] bg-dark-gold/20 text-dark-gold border border-dark-gold/30 font-semibold">
+                      {{ m.role }}
+                    </span>
+                  </div>
+                  <span v-if="m.baguaPosition" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                    {{ m.baguaPosition.trigram }} · {{ m.baguaPosition.direction }}
+                  </span>
+                </div>
+
+                <p v-if="m.ziweiFamilyPalaceNote" class="text-[11px] text-cyan-300/90 leading-relaxed mb-2">
+                  ✦ <strong>紫微六親與命主：</strong>{{ m.ziweiFamilyPalaceNote }}
+                </p>
+
+                <div v-if="m.baguaPosition" class="space-y-1.5 text-[11px] leading-relaxed">
+                  <p class="text-dark-text">
+                    <span class="text-dark-gold font-semibold">【{{ m.baguaPosition.roleTitle }}】名位法則：</span>{{ m.baguaPosition.niMingWeiRule }}
+                  </p>
+                  <p class="text-rose-300/90 bg-rose-950/20 border border-rose-500/20 rounded-lg p-2">
+                    ⚠️ <strong>陽宅越位與錯位警示：</strong>{{ m.baguaPosition.tabooWarning }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- 家族和睦調適指南與存檔 -->
         <div class="glass-panel rounded-2xl p-6 sm:p-8 border border-dark-gold/30 max-w-4xl mx-auto space-y-4">
           <div class="flex items-center justify-between pb-3 border-b border-dark-gold/15">
@@ -737,13 +883,17 @@ const familyResult = ref<FamilyGroupResult | null>(null);
 const synastryAiPrompt = computed(() => {
   if (!synastryResult.value) return '';
   const r = synastryResult.value;
-  return `請以八字合婚與親密關係深度諮詢專家身份，融匯《滴天髓》夫妻因緣五行互補與《子平真詮》天干合地支合心法，為我深度批註【${r.person1.name}】與【${r.person2.name}】之合婚盤：綜合契合度為「${r.score}分 (${r.level})」，通關五行為「${r.bridgingElement.element}」。請以專業客觀、具備同理心與建設性的視角，深入剖析雙方之性格吸引力、夫妻宮婚後相處默契、五行互濟優勢，並給予落地的情感、生活與財務調適方針。`;
+  const zh = r.ziweiHeming;
+  const ziweiInfo = zh
+    ? `；紫微《天紀》合盤星級為「${zh.starRating} (${zh.destinyType})」，雙宮聯參為「${zh.dualPalacePrinciple}」`
+    : '';
+  return `請以八字子平與倪海廈《天紀》紫微合盤雙軌專家身份，融匯《滴天髓》、《子平真詮》與《天紀》雙宮聯參（看婚姻必同時看夫妻宮與福德宮）及合盤五步法，為我深度批註【${r.person1.name}】與【${r.person2.name}】之合婚盤：綜合契合度為「${r.score}分 (${r.level})」，通關五行為「${r.bridgingElement.element}」${ziweiInfo}。請深入剖析雙方四柱五維合沖、夫妻宮與福德宮星曜互參、生年四化飛化與陽宅地天泰/水火既濟化解之道。`;
 });
 
 const familyAiPrompt = computed(() => {
   if (!familyResult.value) return '';
   const f = familyResult.value;
-  return `請以家族命理與家庭動力系統諮詢顧問身份，為我深度解析【${f.familyTitle}】（共 ${f.memberCount} 位成員）之家庭群盤：家庭核心五行場域為「${f.householdAura.auraTitle}」，主導能量為「${f.householdAura.dominantElement}」，相對匱乏五行為「${f.householdAura.lackingElement}」。請以宏觀家庭動力學與代際因材施教視角，剖析家族舵手、調和者與開拓者之角色站位、成員兩兩互動張力，並給予家運昌隆與家族和睦之具體調適指引。`;
+  return `請以家族命理與倪海廈《天紀·地脈道》陽宅家道專家身份，為我深度解析【${f.familyTitle}】（共 ${f.memberCount} 位成員）之家庭群盤：家庭核心五行場域為「${f.householdAura.auraTitle}」，主導能量為「${f.householdAura.dominantElement}」，相對匱乏五行為「${f.householdAura.lackingElement}」。請結合子平八字生剋、紫微六親宮位與後天八卦「名位相等」（乾父西北、坤母西南、震長子正東、巽長女東南、坎次子正北、離次女正南、艮三子東北、兌三女正西）法則，剖析家族角色站位、代際互動張力與居家方位佈局指引。`;
 });
 
 // 載入使用者已儲存之命盤列表

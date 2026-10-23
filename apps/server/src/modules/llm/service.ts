@@ -227,35 +227,35 @@ const MODULE_ROLES: Record<string, ModuleRoleProfile> = {
   },
 
   BAZI_SYNASTRY: {
-    title: '八字合婚與親密關係深度諮詢專家 (BaZi Marriage & Synastry Consultant)',
+    title: '八字合婚與紫微天紀合盤深度諮詢專家 (BaZi & Ziwei Tianji Synastry Consultant)',
     rolePersona:
-      '你是一位專精子平八字合婚、五行互補學與現代親密關係心理學的資深命理諮詢專家。你秉持「合婚在於知長短、互體諒、借通關以成美眷」的理性客觀視角。嚴禁使用江湖術士嚇唬、仙人神棍或宿命恐嚇口吻（不可使用「老夫」、「貧道」、「天機星君」、「道友」等稱謂）。一律以「您」稱呼求測者。',
+      '你是一位專精子平八字合婚、紫微斗數合盤、倪海廈《天紀》體系與現代親密關係心理學的資深命理諮詢專家。你秉持「合婚在於知長短、互體諒、借五行通關與陽宅定位以成美眷」的理性客觀視角。嚴禁使用江湖術士嚇唬、仙人神棍或宿命恐嚇口吻（不可使用「老夫」、「貧道」、「天機星君」、「道友」等稱謂）。一律以「您」稱呼求測者。',
     toneGuidelines:
-      '堅持「命無全美，合在人修」。剖析日主天干情義、夫妻宮地支合沖、五行喜用神互助，並給予具體可操作的溝通、財務分工與五行通關生活化解法。語氣溫暖高雅、條理分明。',
+      '堅持「命無全美，合在人修；人事努力 1/3 + 地理調整 1/3 = 2/3 > 天命 1/3」。同時剖析子平八字（日主五合、日支六合三合、喜用互濟、年柱標竿）與倪海廈《天紀》紫微合盤（夫妻宮與福德宮雙宮聯參、天作之合對應、太陽太陰星象、四化飛化互參），並給予具體可操作的溝通、財務分工、五行通關與陽宅西北乾位/西南坤位化解法。',
     consultationStructure: [
-      '1. 【日主天干與性情契合深度評析】：分析雙方日元陰陽五行、天干正合或生剋所反映之本質吸引力與溝通基調。',
-      '2. 【夫妻宮日支與婚後相處默契】：解碼雙方夫妻宮六合、三合或相沖相刑所揭示之日常作息、生活習慣與潛在摩擦點。',
+      '1. 【子平八字日主情義與夫妻宮合沖評析】：分析雙方日元陰陽五行、天干五合、日支六合三合或相沖，以及年柱納音根基。',
+      '2. 【倪師《天紀》紫微雙宮聯參與天作之合診斷】：依「看婚姻必同時看夫妻宮與福德宮」鐵律，剖析雙方命宮、夫妻宮、福德宮主星對應、太陽太陰星象與生年四化飛化互參。',
       '3. 【五行能量互補與喜用神互濟】：檢視雙方命局五行強弱消長，指出誰是誰的喜用貴人，如何達到五行圓融。',
-      '4. 【五行通關金鑰與現代生活相處策略】：提供專屬的五行通關生活佈局（色彩、擺飾、共同作息）以及情感、金錢、姻親之落地實踐指南。',
+      '4. 【五行通關金鑰與倪師陽宅化命落地策略】：提供專屬的五行通關生活佈局、主臥西北乾位/西南坤位（地天泰卦）陽宅建議，以及情感、財務、婆媳姻親之相處指南。',
     ],
     coreKnowledge:
-      '八字合婚以男女二造四柱為推步基礎。天干相合（甲己合土、乙庚合金、丙辛合水、丁壬合木、戊癸合火）主心靈深契；地支六合（子丑、寅亥、卯戌、辰酉、巳申、午未）與三合局主婚後生活步調一致、家庭向心力深厚；地支相沖（子午、丑未、寅申、卯酉、辰戌、巳亥）主作息反差或各具主見，需各自保有獨立界線。五行互補為合婚精髓：一方所缺正是另一方所旺，互為喜用神者能互相催旺家業。《滴天髓》論夫妻：「夫妻因緣宿世定，五行互補化千災。」以五行通關之理化解相剋，以人事修養成就和諧美滿。',
+      '八字與紫微雙軌合婚體系：一、子平八字以日干觀性情吸引力（甲己、乙庚、丙辛、丁壬、戊癸五合最吉），以日支夫妻宮觀婚後生活默契（六合、三合吉，六沖需磨合），以年柱觀兩姓根基（倪師云子平研究二十年最終以年柱批最準），以喜用神互補與五行通關化剋為生。二、倪海廈《天紀》紫微合盤核心：（1）雙宮聯參鐵律：「看婚姻，光看夫妻宮大錯特錯，一定要同時看福德宮」，福德宮主深層感情與一世福祿；（2）天作之合：甲方夫妻宮主星＝乙方命宮主星、乙方夫妻宮主星＝甲方命宮主星；（3）太陽太陰：女命看太陽觀夫緣，男命看太陰觀妻緣（男命太陰化忌最需留心婆媳溝通）；（4）四化飛化互參：化祿主正緣帶財、化權主積極主導、化科主理性偕老、化忌主宿世深緣需修心；（5）陽宅化命：夫妻主臥居西北乾位或西南坤位成地天泰卦，切忌西北/西南為廚房或房中央為廁所。',
   },
 
   FAMILY_GROUP: {
-    title: '家族命理與家庭動力系統諮詢顧問 (Family System & BaZi Group Dynamics Consultant)',
+    title: '家族命理與天紀陽宅家庭動力諮詢顧問 (Family System & Tianji Yangzhai Dynamics Consultant)',
     rolePersona:
-      '你是一位融匯傳統八字五行生剋與現代家庭系統排列動力的專業家族命理諮商顧問。你以宏觀大局觀看待全家氣場流轉，以慈悲、條理、不迷信的專業諮商視角溝通。嚴禁使用仙人道士、神怪小說口吻（不可使用「老夫」、「貧道」、「天機星君」、「道友」等稱謂）。一律以「您」稱呼求測者。',
+      '你是一位融匯傳統子平八字五行場域、紫微斗數六親宮位與倪海廈《天紀·地脈道》陽宅八卦名位相等法則的專業家族命理諮商顧問。你以宏觀大局觀看待全家氣場流轉，以慈悲、條理、不迷信的專業諮商視角溝通。嚴禁使用仙人道士、神怪小說口吻（不可使用「老夫」、「貧道」、「天機星君」、「道友」等稱謂）。一律以「您」稱呼求測者。',
     toneGuidelines:
-      '著眼於全家五行場域平衡、世代間的生剋照拂、夫妻與手足的角色分工。強調「和氣生財、各安其位、五行流通則家道昌盛」。語氣沉穩溫厚、高瞻遠矚。',
+      '著眼於全家五行場域平衡、世代間的生剋照拂、紫微六親宮位（子女宮、父母宮、田宅宮）以及倪師《天紀》後天八卦「名位相等」陽宅房間配置。強調「和氣生財、各安其位、把位置擺對了人自然就想通」。語氣沉穩溫厚、高瞻遠矚。',
     consultationStructure: [
       '1. 【家庭五行場域與整體氣場診斷】：評估全家合計五行分布，分析優勢主導能量與缺失匱乏維度對家風之影響。',
-      '2. 【家族核心角色定位與優勢互補】：剖析舵手引領者、心靈調和者、活力開拓者與穩健守護者的天然站位。',
-      '3. 【世代與成員互動關係矩陣】：分析父母與子女、夫妻、手足間的天干地支生剋合沖，指出親子教育與溝通關鍵點。',
-      '4. 【家運昌隆與家族和睦調適指南】：提供補強全家缺失五行的居家風水生活調適、每週定心共聚建議與跨世代界線修持心法。',
+      '2. 【家族核心角色定位與成員兩兩互動矩陣】：剖析舵手引領者、心靈調和者、活力開拓者與穩健守護者的天然站位，以及父母、夫妻、手足間的天干地支生剋合沖。',
+      '3. 【倪師《天紀》陽宅化命：後天八卦名位相等配置】：依據家庭成員角色（父乾西北、母坤西南、長子震東、長女巽東南、次子坎北、次女離南、三子艮東北、三女兌西）給出房間定位與禁忌提醒。',
+      '4. 【家運昌隆與跨世代因材施教指南】：結合子女宮/父母宮星象與五行稟賦，提供補強全家缺失五行的居家調適與親子溝通心法。',
     ],
     coreKnowledge:
-      '家庭為一個緊密的五行微觀宇宙。木旺主崇德向學家風；火旺主人氣鼎盛活力；土旺主厚重守成基業；金旺主規矩紀律方圓；水旺主深思智謀財脈。家庭成員互為齒輪：身旺財官有力者多任舵手責任；印星食傷包容者多成家庭心靈潤滑劑；比劫同氣者手足情深。父母子女宮位生剋相合代表代際相處融洽，逢沖則需「尊重個性、因材施教」。全家五行流通無滯，必能光前裕後、家道長青。',
+      '家庭為緊密的五行微觀宇宙與後天八卦空間場域。一、五行家風：木旺崇德向學、火旺熱忱活力、土旺厚重守成、金旺規矩方圓、水旺智謀通達。二、倪海廈《天紀》陽宅化命（名位相等原則）：「爸爸住爸爸的位置（西北乾宮），媽媽住媽媽的位置（西南坤宮），長子住正東震宮，長女住東南巽宮，二子住正北坎宮，二女住正南離宮，三子住東北艮宮，三女住正西兌宮。把位置擺對了，人自然而然就會想通、長幼有序。」夫妻同住西北或西南成地天泰卦；若兒子住西北乾位成雷天大壯卦，易取代父親權威而管教失序；若二兒子無正北房可住正南離位成水火既濟卦。陽宅大忌：房中央設廁所、西北/西南設廚房、西北/正東為客廳（把家當旅館）。',
   },
 };
 
@@ -319,6 +319,30 @@ export async function retrieveModuleKnowledge(
   // 1. 注入領域核心規則知識
   ragSnippets.push(`【${role.title}·核心原則與分析框架】\n${role.coreKnowledge}`);
 
+  // 1.5 動態注入 ziwei-doushu-main 架構之即時命盤實體斷語 (Structured Chart-Entity Grounding)
+  const raw = chartContext?.rawData || {};
+  if (raw.ziweiHeming) {
+    const zh = raw.ziweiHeming;
+    ragSnippets.push(
+      `【倪海廈《天紀》紫微合盤雙宮聯參與五步法即時演算】\n` +
+        `• 合盤星級：${zh.starRating}（${zh.starRatingCriteria}）｜緣分定性：${zh.destinyType}\n` +
+        `• 雙宮聯參總評：${zh.dualPalacePrinciple}\n` +
+        `• ${zh.person1Profile?.name}夫妻宮【${zh.person1Profile?.fuqiStars?.join('、')}】：${zh.person1Profile?.fuqiSummary}${zh.person1Profile?.fuqiNiQuote ? `（倪師原話：「${zh.person1Profile.fuqiNiQuote}」）` : ''}\n` +
+        `• ${zh.person2Profile?.name}夫妻宮【${zh.person2Profile?.fuqiStars?.join('、')}】：${zh.person2Profile?.fuqiSummary}${zh.person2Profile?.fuqiNiQuote ? `（倪師原話：「${zh.person2Profile.fuqiNiQuote}」）` : ''}\n` +
+        `• 五步診斷：(1) ${zh.fiveSteps?.step1BaseCompatibility} (2) ${zh.fiveSteps?.step2SpouseCrossMatch} (3) ${zh.fiveSteps?.step3SunMoonAnalysis} (4) ${zh.fiveSteps?.step4SihuaMutualFly}`
+    );
+  }
+  if (Array.isArray(raw.members) && raw.members.some((m: any) => m?.baguaPosition)) {
+    const baguaLines = raw.members
+      .filter((m: any) => m?.baguaPosition)
+      .map(
+        (m: any) =>
+          `• ${m.name}（${m.role}·${m.dayMaster}）：後天八卦本位【${m.baguaPosition.direction}·${m.baguaPosition.trigram}】（${m.baguaPosition.familyTitle}）｜紫微六親：${m.ziweiFamilyPalaceNote || ''}｜${m.baguaPosition.niMingWeiRule}`
+      )
+      .join('\n');
+    ragSnippets.push(`【倪海廈《天紀·地脈道》家庭成員後天八卦「名位相等」定位表】\n${baguaLines}`);
+  }
+
   // 2. 從資料庫 SystemInterpretation 檢索相關專業辭庫 (Dynamic DB RAG)
   try {
     const rawDataStr = JSON.stringify(chartContext?.rawData || {});
@@ -330,9 +354,9 @@ export async function retrieveModuleKnowledge(
       : targetModule === 'NAME'
       ? ['NAME', 'NAMING']
       : targetModule === 'BAZI_SYNASTRY'
-      ? ['BAZI_SYNASTRY', 'BAZI']
+      ? ['BAZI_SYNASTRY', 'BAZI', 'ZIWEI']
       : targetModule === 'FAMILY_GROUP'
-      ? ['FAMILY_GROUP', 'BAZI']
+      ? ['FAMILY_GROUP', 'BAZI', 'ZIWEI', 'ICHING']
       : [targetModule];
 
     const interpretations = await prisma.systemInterpretation.findMany({
@@ -358,6 +382,11 @@ export async function retrieveModuleKnowledge(
         const content = item.contentRich.toLowerCase();
         const tags = (item.tags || '').toLowerCase();
 
+        // 0. 同模組精準加權
+        if (item.moduleType === targetModule) {
+          score += 10;
+        }
+
         // 1. 匹配命盤辨識出的格局 (Ziwei Patterns)
         for (const pName of patternNames) {
           if (title.includes(pName.toLowerCase()) || content.includes(pName.toLowerCase()) || tags.includes(pName.toLowerCase())) {
@@ -368,18 +397,28 @@ export async function retrieveModuleKnowledge(
         // 2. 匹配倪海廈天紀核心辭條
         if (key.includes('nihai')) {
           score += 6;
-          if (queryLower.includes('倪海廈') || queryLower.includes('天紀') || queryLower.includes('格局')) {
-            score += 10;
+          if (
+            queryLower.includes('倪海廈') ||
+            queryLower.includes('倪師') ||
+            queryLower.includes('天紀') ||
+            queryLower.includes('格局') ||
+            queryLower.includes('雙宮聯參') ||
+            queryLower.includes('福德宮') ||
+            queryLower.includes('名位相等') ||
+            queryLower.includes('陽宅')
+          ) {
+            score += 12;
           }
         }
 
         // 3. 匹配國際宗師心法辭條 (Carl Jung, Rudhyar, Liz Greene, Waite, Pollack, Greer, 果老星宗)
-        if (key.includes('master') || item.category === 'MASTER_WISDOM') {
+        if (key.includes('master') || item.category === 'MASTER_WISDOM' || item.category.startsWith('NIHAI_')) {
           score += 5;
           const masterKeywords = [
             '榮格', 'jung', '路德雅爾', 'rudhyar', '莉茲格林', 'greene', '阿若優', 'arroyo', '漢德', 'hand',
             '韋特', 'waite', '波拉克', 'pollack', '格利爾', 'greer', '佐杜洛夫斯基', 'jodorowsky',
-            '果老', '耶律楚材', '滴天髓', '沈孝瞻', '合婚', '通關', '家庭場域', '代際', '宗師', '大師', '心法', '語錄', '原型', '共時性', '陰影', '愚人之旅', '逆位'
+            '果老', '耶律楚材', '滴天髓', '沈孝瞻', '合婚', '通關', '家庭場域', '代際', '宗師', '大師', '心法', '語錄', '原型', '共時性', '陰影', '愚人之旅', '逆位',
+            '雙宮聯參', '天作之合', '四化飛化', '名位相等', '後天八卦', '地天泰', '水火既濟', '雷天大壯', '以果決行'
           ];
           for (const kw of masterKeywords) {
             if (queryLower.includes(kw)) {
@@ -409,13 +448,17 @@ export async function retrieveModuleKnowledge(
           }
         }
 
-        // 6. 星座、行星、牌卡與宮位關鍵字交叉比對
+        // 6. 星座、行星、牌卡、十四主星、八卦與宮位關鍵字交叉比對
         const astrologicalTerms = [
+          '紫微', '天機', '太陽', '武曲', '天同', '廉貞', '天府', '太陰', '貪狼', '巨門', '天相', '天梁', '七殺', '破軍',
+          '化祿', '化權', '化科', '化忌', '殺破狼', '機月同梁', '火貪格', '陽梁昌祿', '君臣慶會',
+          '夫妻宮', '福德宮', '子女宮', '父母宮', '田宅宮', '官祿宮', '財帛宮', '疾厄宮',
+          '乾卦', '坤卦', '震卦', '巽卦', '坎卦', '離卦', '艮卦', '兌卦', '西北方', '西南方', '正東方', '東南方',
           '白羊座', '金牛座', '雙子座', '巨蟹座', '獅子座', '處女座',
           '天秤座', '天蠍座', '射手座', '摩羯座', '水瓶座', '雙魚座',
           '白羊', '金牛', '雙子', '巨蟹', '獅子', '處女',
           '天秤', '天蠍', '射手', '摩羯', '水瓶', '雙魚',
-          '太陽', '月亮', '水星', '金星', '火星', '木星', '土星', '天王星', '海王星', '冥王星', '上升點', '天頂',
+          '月亮', '水星', '金星', '火星', '木星', '土星', '天王星', '海王星', '冥王星', '上升點', '天頂',
           '愚者', '魔術師', '女祭司', '皇后', '皇帝', '教皇', '戀人', '戰車', '力量', '隱士',
           '命運之輪', '正義', '倒吊人', '死神', '節制', '惡魔', '高塔', '星星', '審判', '世界',
           '權杖', '聖杯', '寶劍', '錢幣',
@@ -424,7 +467,7 @@ export async function retrieveModuleKnowledge(
           '奎木狼', '婁金狗', '胃土彘', '昴日雞', '畢月烏', '觜火猴', '參水猿',
           '井木犴', '鬼金羊', '柳土獐', '星日馬', '張月鹿', '翼火蛇', '軫水蚓',
           '恩星', '難星', '仇星', '用星', '建除', '成日', '乾為天', '坤為地',
-          '八字合婚', '合婚', '夫妻宮', '天干五合', '六合', '三合', '相沖', '通關', '滴天髓', '子平真詮', '家庭五行', '家運', '代際', '因材施教'
+          '八字合婚', '合婚', '天干五合', '六合', '三合', '相沖', '通關', '滴天髓', '子平真詮', '家庭五行', '家運', '代際', '因材施教', '名位相等', '雙宮聯參'
         ];
         for (const term of astrologicalTerms) {
           if (queryLower.includes(term.toLowerCase())) {
@@ -449,9 +492,9 @@ export async function retrieveModuleKnowledge(
 
       if (selected.length > 0) {
         const dbKnowledge = selected
-          .map((i) => `• [${i.category}] ${i.title}：${i.contentRich.slice(0, 320)}`)
+          .map((i) => `• [${i.category}] ${i.title}：${i.contentRich.slice(0, 360)}`)
           .join('\n');
-        ragSnippets.push(`【權威命理辭典、倪海廈天紀與國際宗師 RAG 文獻 (Database Grounding)】\n${dbKnowledge}`);
+        ragSnippets.push(`【權威命理辭典、倪海廈天紀語料庫與國際宗師 RAG 文獻 (Database Grounding)】\n${dbKnowledge}`);
       }
     }
   } catch (err) {
@@ -676,30 +719,31 @@ ${patternContent}
         const level = raw.level || '天作之合 · 琴瑟和鳴';
         const bridging = raw.bridgingElement?.element || '水';
         const bridgingExp = raw.bridgingElement?.explanation || '以五行通關轉化相剋。';
+        const zh = raw.ziweiHeming;
 
-        return `## 現代八字合婚與親密關係深度諮詢報告（融匯《滴天髓》與五行互濟心法）
+        return `## 八字合婚與紫微《天紀》雙軌合盤深度諮詢報告（融匯《滴天髓》與倪海廈雙宮聯參心法）
 
-審視【**${p1Name}**】與【**${p2Name}**】之八字合婚盤：綜合契合度為「**${score}分**」，緣分格局評定為「**${level}**」。
+審視【**${p1Name}**】與【**${p2Name}**】之合婚盤：綜合契合度為「**${score}分**」（**${level}**）${zh ? `，天紀紫微合盤星級為「**${zh.starRating}**」（**${zh.destinyType}**）` : ''}。
 
 針對雙方的關係諮詢與心靈叩問：「**${lastUserMsg}**」，為您進行多維度結構化專業剖析：
 
-### 1. 日主天干與性情契合深度評析
+### 1. 子平八字日主情義與夫妻宮合沖評析
 * **日元本質與吸引力**：${raw.dimensions?.dayMasterSynergy?.description || '雙方日主氣機相投，既有精神理念之深度共鳴，亦能彼此欣賞對方的性格優勢。'}
-* **相處心態指引**：${raw.dimensions?.dayMasterSynergy?.advice || '珍惜這份天然的情感契合，日常遇事多主動分享內在感受，以溫和堅定之態度營造信任感。'}
+* **夫妻宮日支默契**：${raw.dimensions?.spousePalaceSynergy?.description || '夫妻宮地支氣候和諧，象徵雙方在婚後生活步調、家事分工與金錢觀念上具備高度默契。'}
 
-### 2. 夫妻宮日支與婚後相處默契
-* **生活本位互動**：${raw.dimensions?.spousePalaceSynergy?.description || '夫妻宮地支氣候和諧，象徵雙方在婚後生活步調、家事分工與金錢觀念上具備高度默契。'}
-* **磨合與盲點預防**：${raw.dimensions?.spousePalaceSynergy?.advice || '尊重彼此的個人空間與獨立興趣，遇生活瑣事時給予足夠彈性，以幽默感化解日常緊繃。'}
+### 2. 倪師《天紀》紫微雙宮聯參與五步合盤診斷
+* **雙宮聯參鐵律（夫妻宮 + 福德宮）**：${zh?.dualPalacePrinciple || '倪海廈大師強調：「看婚姻，光看夫妻宮大錯特錯，一定要同時看福德宮。」福德宮穩固則夫妻深層情分綿長。'}
+* **夫妻宮星曜互參**：${zh?.fiveSteps?.step2SpouseCrossMatch || '雙方夫妻宮與命宮三方星曜交相輝映，動靜相宜。'}
+* **太陽太陰與四化飛化**：${zh?.fiveSteps?.step3SunMoonAnalysis || ''} ${zh?.fiveSteps?.step4SihuaMutualFly || ''}
 
 ### 3. 五行能量互補與喜用神互濟
 * **互補效益**：${raw.dimensions?.fiveElementsComplementarity?.usefulElementsSupport || '雙方命中五行各具千秋，一人之盛恰補另一人之需，互為人生行運貴人。'}
 * **整體五行圓融度**：${raw.dimensions?.fiveElementsComplementarity?.lackingElementsBalance || '透過彼此的陪伴，原本偏頗之五行氣候得以中和流通，家道生機盎然。'}
 
-### 4. 五行通關金鑰與落地生活指南
+### 4. 五行通關金鑰與倪師陽宅化命落地策略
 1. **通關五行借力**：雙方關鍵通關五行為「**${bridging}**」；${bridgingExp}
-2. **溝通與生活儀式**：${raw.marriageAdvice?.emotionalCommunication || '建立每週固定心靈對話時間，只分享感謝與彼此成長，不把工作焦慮帶入臥房。'}
-3. **財務與資產配置**：${raw.marriageAdvice?.financialManagement || '建立清晰透明的家庭共同預算帳戶，同時保留雙方適度的自主支配私房額度。'}
-4. **同舟共濟願景**：${raw.marriageAdvice?.growthTogether || '每年設定一項共同完成的家庭願景，同心協力創造美滿人生。'}`;
+2. **倪師陽宅化命（2/3 > 1/3 定律）**：${zh?.fiveSteps?.step5TimingAndYangzhai || '夫妻主臥室最宜安於住宅西北方（乾宮）或西南方（坤宮），構成「地天泰卦」，切忌西北或西南角為廚房。'}
+3. **溝通與財務共識**：${raw.marriageAdvice?.emotionalCommunication || '建立每週固定心靈對話時間。'} ${raw.marriageAdvice?.financialManagement || ''}`;
       }
 
       case 'FAMILY_GROUP': {
@@ -715,7 +759,17 @@ ${patternContent}
           ? raw.familyRoles.map((r: any) => `* **${r.roleCategory}**：${r.membersAssigned?.join('、') || '全體協同'} — ${r.description}`).join('\n')
           : '* **家族舵手**：負責全局把控與方向引導。';
 
-        return `## 家族命理與家庭動力系統解析報告（融匯五行家運與代際和諧心法）
+        const baguaList = Array.isArray(raw.members)
+          ? raw.members
+              .filter((m: any) => m?.baguaPosition)
+              .map(
+                (m: any) =>
+                  `* **${m.name}（${m.role}）**：本位【**${m.baguaPosition.direction} · ${m.baguaPosition.trigram}**】（${m.baguaPosition.familyTitle}）— ${m.baguaPosition.niMingWeiRule}`
+              )
+              .join('\n')
+          : '* **乾父西北、坤母西南、震長子正東、巽長女東南**：依後天八卦各安其位。';
+
+        return `## 家族命理與《天紀》陽宅家庭動力系統解析報告
 
 審視【**${title}**】（共 ${count} 位家庭成員）之群盤氣場：家庭核心五行格局為「**${auraTitle}**」，優勢主導能量為「**${dominant}**」，相對匱乏五行為「**${lacking}**」。
 
@@ -728,14 +782,13 @@ ${patternContent}
 ### 2. 家族核心角色定位與優勢互補
 ${rolesList}
 
-### 3. 跨世代溝通與成員動態互動
-* **代際與夫妻和諧**：家庭成員間日主生剋有情。長輩以印星包容晚輩，晚輩以食傷反饋長輩；面對性格較為剛毅之成員，以柔克剛、多聽少駁為良策。
-* **因材施教原則**：父母對待不同五行稟賦之子女，應依其性格特質（木主仁慈需啟發、火主熱情需定力、土主穩重需鼓勵、金主義氣需柔和、水主智慧需引導）給予適性發展空間。
+### 3. 倪師《天紀》陽宅化命：後天八卦「名位相等」配置
+${baguaList}
 
-### 4. 家運昌隆與家庭調適心法
-1. **補強缺失五行「${lacking}」**：運用居家客廳與公共區域佈置，調和五行磁場，增進全家健康與情緒穩定。
-2. **每週定心聚會**：設立無手機干擾的家庭共聚晚餐或戶外漫步，以優質陪伴凝聚家庭向心力。
-3. **各安其位承擔**：明確成員在家事與財務上的分工，彼此感恩各司其職的付出，家和自能萬事興盛。`;
+### 4. 家運昌隆與跨世代因材施教指南
+1. **名位相等鐵律**：倪海廈大師於《天紀》強調：「我們陽宅把他位置擺對了以後，他自然而然就會想通。」切忌房屋正中央設廁所、切忌西北/西南角設廚房、切忌讓未成年兒子住進西北乾位（雷天大壯卦易致長幼失序）。
+2. **補強缺失五行「${lacking}」**：運用居家客廳與公共區域佈置，調和五行磁場，增進全家健康與情緒穩定。
+3. **因材施教與定心共聚**：依子女日主五行與紫微命宮星性因材施教，每週設立無手機干擾的家庭共聚時刻，家和萬事興。`;
       }
 
       case 'WESTERN': {

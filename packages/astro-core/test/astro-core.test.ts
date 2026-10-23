@@ -191,6 +191,17 @@ describe('🌟 萬象天儀 核心演算法庫 Intent-Based Tests', () => {
       expect(synastry.bridgingElement.dailyTips.length).toBeGreaterThanOrEqual(2);
       expect(synastry.fourPillarsDetailedCross.length).toBe(4);
       expect(synastry.marriageAdvice.emotionalCommunication).toBeDefined();
+
+      // 驗證對標 ziwei-doushu-main 之紫微斗數×倪海廈《天紀》合盤五步法與雙宮聯參
+      expect(synastry.ziweiHeming).toBeDefined();
+      expect(synastry.ziweiHeming?.starRating).toContain('星');
+      expect(synastry.ziweiHeming?.destinyType).toBeTruthy();
+      expect(synastry.ziweiHeming?.dualPalacePrinciple).toContain('夫妻宮');
+      expect(synastry.ziweiHeming?.fiveSteps.step1BaseCompatibility).toBeTruthy();
+      expect(synastry.ziweiHeming?.fiveSteps.step2SpouseCrossMatch).toBeTruthy();
+      expect(synastry.ziweiHeming?.fiveSteps.step5TimingAndYangzhai).toContain('陽宅');
+      expect(synastry.ziweiHeming?.person1Profile.fuqiStars.length).toBeGreaterThan(0);
+      expect(synastry.ziweiHeming?.person2Profile.fuqiStars.length).toBeGreaterThan(0);
     });
 
     it('家人群組比對演算法應能聚合全家五行場域並建立兩兩成員交叉矩陣與角色定位', () => {
@@ -217,6 +228,22 @@ describe('🌟 萬象天儀 核心演算法庫 Intent-Based Tests', () => {
       // 角色配置
       expect(res.familyRoles.length).toBe(4);
       expect(res.harmonyGuidelines.length).toBeGreaterThanOrEqual(2);
+
+      // 驗證對標 ziwei-doushu-main 1848條語料庫之倪海廈《天紀·地脈道》後天八卦名位相等配置
+      const father = res.members.find((m) => m.role === '父親');
+      const mother = res.members.find((m) => m.role === '母親');
+      const eldestSon = res.members.find((m) => m.role === '長子');
+      const secondDaughter = res.members.find((m) => m.role === '次女');
+
+      expect(father?.baguaPosition?.trigram).toBe('乾卦');
+      expect(father?.baguaPosition?.direction).toBe('西北方');
+      expect(mother?.baguaPosition?.trigram).toBe('坤卦');
+      expect(mother?.baguaPosition?.direction).toBe('西南方');
+      expect(eldestSon?.baguaPosition?.trigram).toBe('震卦');
+      expect(eldestSon?.baguaPosition?.direction).toBe('正東方');
+      expect(secondDaughter?.baguaPosition?.trigram).toBe('離卦');
+      expect(secondDaughter?.baguaPosition?.direction).toBe('正南方');
+      expect(father?.ziweiFamilyPalaceNote).toContain('命宮');
     });
   });
 
