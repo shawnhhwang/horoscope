@@ -252,6 +252,43 @@ html.light .text-cyan-400 {
   color: #0E7490 !important;
 }
 
+/* 格局徽章與明度 200 淺色模式高對比度修正 */
+html.light .text-amber-200 {
+  color: #92400E !important;
+}
+
+html.light .text-emerald-200 {
+  color: #065F46 !important;
+}
+
+html.light .text-rose-200 {
+  color: #9F1239 !important;
+}
+
+html.light .text-cyan-200 {
+  color: #155E75 !important;
+}
+
+html.light .bg-amber-500\/15 {
+  background-color: rgba(254, 243, 199, 0.95) !important;
+  border-color: rgba(217, 119, 6, 0.5) !important;
+}
+
+html.light .bg-emerald-500\/15 {
+  background-color: rgba(209, 250, 229, 0.95) !important;
+  border-color: rgba(16, 185, 129, 0.5) !important;
+}
+
+html.light .bg-rose-500\/15 {
+  background-color: rgba(255, 228, 230, 0.95) !important;
+  border-color: rgba(244, 63, 94, 0.5) !important;
+}
+
+html.light .bg-cyan-500\/15 {
+  background-color: rgba(207, 250, 254, 0.95) !important;
+  border-color: rgba(6, 182, 212, 0.5) !important;
+}
+
 html.light .bg-emerald-950\/20,
 html.light .bg-emerald-950\/30,
 html.light .bg-emerald-950\/60,

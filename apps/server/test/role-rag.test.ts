@@ -24,6 +24,8 @@ describe('🌟 Role-RAG 角色化專屬顧問與去仙人化語氣意圖測試 (
     { code: 'NAME', label: '姓名學五格' },
     { code: 'NAMING', label: '易經姓名學' },
     { code: 'ALMANAC', label: '通勝黃曆' },
+    { code: 'BAZI_SYNASTRY', label: '八字合婚' },
+    { code: 'FAMILY_GROUP', label: '家庭群組' },
   ];
 
   describe('TC-B01: 8 大模組專屬現代顧問角色注入驗證', () => {
@@ -263,6 +265,56 @@ describe('🌟 Role-RAG 角色化專屬顧問與去仙人化語氣意圖測試 (
       expect(tarotReply).toContain('蕾切爾·波拉克');
       expect(tarotReply).toContain('愚人之旅');
       expect(tarotReply).not.toMatch(/老夫|貧道|天機星君|道友/);
+    });
+
+    it('BAZI_SYNASTRY 與 FAMILY_GROUP 離線合成器應精準輸出合婚評分、五行場域與通關建議', () => {
+      const mockMsg = [{ role: 'user' as const, content: '請解析我們的八字合婚與契合度' }];
+
+      const synastryReply = generateProfessionalSynthesizerReply(mockMsg, {
+        moduleType: 'BAZI_SYNASTRY',
+        title: '八字合婚',
+        rawData: {
+          person1: { name: '張君豪' },
+          person2: { name: '林雅婷' },
+          score: 88,
+          level: '情深意篤 · 珠聯璧合',
+          bridgingElement: { element: '水', explanation: '金生水水生木，以水通關化解金木相剋' },
+          marriageAdvice: {
+            emotionalCommunication: '建立每週固定心靈對話時間',
+            financialManagement: '設立家庭共同帳戶',
+            growthTogether: '設定年度家庭願景',
+          },
+        },
+      });
+      expect(synastryReply).toContain('張君豪');
+      expect(synastryReply).toContain('林雅婷');
+      expect(synastryReply).toContain('88分');
+      expect(synastryReply).toContain('珠聯璧合');
+      expect(synastryReply).toContain('通關');
+      expect(synastryReply).not.toMatch(/老夫|貧道|天機星君|道友/);
+
+      const familyReply = generateProfessionalSynthesizerReply(mockMsg, {
+        moduleType: 'FAMILY_GROUP',
+        title: '家庭群盤比對',
+        rawData: {
+          familyTitle: '建華幸福之家',
+          memberCount: 4,
+          householdAura: {
+            dominantElement: '木',
+            lackingElement: '水',
+            auraTitle: '崇德向學 · 青雲得祿氣場',
+            description: '全家木氣充沛，崇尚文教。',
+          },
+          familyRoles: [
+            { roleCategory: '家族舵手 (引領者)', membersAssigned: ['父親 (建華)'], description: '全局決策' },
+          ],
+        },
+      });
+      expect(familyReply).toContain('建華幸福之家');
+      expect(familyReply).toContain('4 位家庭成員');
+      expect(familyReply).toContain('青雲得祿');
+      expect(familyReply).toContain('家族舵手');
+      expect(familyReply).not.toMatch(/老夫|貧道|天機星君|道友/);
     });
   });
 

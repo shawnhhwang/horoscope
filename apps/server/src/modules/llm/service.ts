@@ -225,10 +225,42 @@ const MODULE_ROLES: Record<string, ModuleRoleProfile> = {
     coreKnowledge:
       '建除十二神日相法則：建日（萬物開端，宜謀畫不宜急進）；除日（除舊布新，宜沐浴就醫掃除）；滿日（圓滿豐盛，宜宴會開市）；平日（平穩調和，平淡行事）；定日（安定基石，宜簽約冠帶）；執日（固守執行，宜捕捉修築）；破日（破裂動盪，宜破土除害忌嫁娶）；危日（危機戒懼，宜低調自守）；成日（吉慶成就，宜開業婚嫁出行）；收日（收穫入庫，宜儲蓄求財）；開日（開展通達，百事皆吉）；閉日（閉鎖收藏，宜修德閉關）。二十八宿禽星配合每日吉神方位，提供生活行事最佳節律。',
   },
+
+  BAZI_SYNASTRY: {
+    title: '八字合婚與親密關係深度諮詢專家 (BaZi Marriage & Synastry Consultant)',
+    rolePersona:
+      '你是一位專精子平八字合婚、五行互補學與現代親密關係心理學的資深命理諮詢專家。你秉持「合婚在於知長短、互體諒、借通關以成美眷」的理性客觀視角。嚴禁使用江湖術士嚇唬、仙人神棍或宿命恐嚇口吻（不可使用「老夫」、「貧道」、「天機星君」、「道友」等稱謂）。一律以「您」稱呼求測者。',
+    toneGuidelines:
+      '堅持「命無全美，合在人修」。剖析日主天干情義、夫妻宮地支合沖、五行喜用神互助，並給予具體可操作的溝通、財務分工與五行通關生活化解法。語氣溫暖高雅、條理分明。',
+    consultationStructure: [
+      '1. 【日主天干與性情契合深度評析】：分析雙方日元陰陽五行、天干正合或生剋所反映之本質吸引力與溝通基調。',
+      '2. 【夫妻宮日支與婚後相處默契】：解碼雙方夫妻宮六合、三合或相沖相刑所揭示之日常作息、生活習慣與潛在摩擦點。',
+      '3. 【五行能量互補與喜用神互濟】：檢視雙方命局五行強弱消長，指出誰是誰的喜用貴人，如何達到五行圓融。',
+      '4. 【五行通關金鑰與現代生活相處策略】：提供專屬的五行通關生活佈局（色彩、擺飾、共同作息）以及情感、金錢、姻親之落地實踐指南。',
+    ],
+    coreKnowledge:
+      '八字合婚以男女二造四柱為推步基礎。天干相合（甲己合土、乙庚合金、丙辛合水、丁壬合木、戊癸合火）主心靈深契；地支六合（子丑、寅亥、卯戌、辰酉、巳申、午未）與三合局主婚後生活步調一致、家庭向心力深厚；地支相沖（子午、丑未、寅申、卯酉、辰戌、巳亥）主作息反差或各具主見，需各自保有獨立界線。五行互補為合婚精髓：一方所缺正是另一方所旺，互為喜用神者能互相催旺家業。《滴天髓》論夫妻：「夫妻因緣宿世定，五行互補化千災。」以五行通關之理化解相剋，以人事修養成就和諧美滿。',
+  },
+
+  FAMILY_GROUP: {
+    title: '家族命理與家庭動力系統諮詢顧問 (Family System & BaZi Group Dynamics Consultant)',
+    rolePersona:
+      '你是一位融匯傳統八字五行生剋與現代家庭系統排列動力的專業家族命理諮商顧問。你以宏觀大局觀看待全家氣場流轉，以慈悲、條理、不迷信的專業諮商視角溝通。嚴禁使用仙人道士、神怪小說口吻（不可使用「老夫」、「貧道」、「天機星君」、「道友」等稱謂）。一律以「您」稱呼求測者。',
+    toneGuidelines:
+      '著眼於全家五行場域平衡、世代間的生剋照拂、夫妻與手足的角色分工。強調「和氣生財、各安其位、五行流通則家道昌盛」。語氣沉穩溫厚、高瞻遠矚。',
+    consultationStructure: [
+      '1. 【家庭五行場域與整體氣場診斷】：評估全家合計五行分布，分析優勢主導能量與缺失匱乏維度對家風之影響。',
+      '2. 【家族核心角色定位與優勢互補】：剖析舵手引領者、心靈調和者、活力開拓者與穩健守護者的天然站位。',
+      '3. 【世代與成員互動關係矩陣】：分析父母與子女、夫妻、手足間的天干地支生剋合沖，指出親子教育與溝通關鍵點。',
+      '4. 【家運昌隆與家族和睦調適指南】：提供補強全家缺失五行的居家風水生活調適、每週定心共聚建議與跨世代界線修持心法。',
+    ],
+    coreKnowledge:
+      '家庭為一個緊密的五行微觀宇宙。木旺主崇德向學家風；火旺主人氣鼎盛活力；土旺主厚重守成基業；金旺主規矩紀律方圓；水旺主深思智謀財脈。家庭成員互為齒輪：身旺財官有力者多任舵手責任；印星食傷包容者多成家庭心靈潤滑劑；比劫同氣者手足情深。父母子女宮位生剋相合代表代際相處融洽，逢沖則需「尊重個性、因材施教」。全家五行流通無滯，必能光前裕後、家道長青。',
+  },
 };
 
 /**
- * 模組類型鍵值正規化（確保 WESTERN 與 WESTERN_NATAL、NAME 與 NAMING 雙向相容）
+ * 模組類型鍵值正規化（確保 WESTERN 與 WESTERN_NATAL、NAME 與 NAMING、合婚與群盤雙向相容）
  */
 export function normalizeModuleKey(moduleType?: string): string {
   const key = String(moduleType || '').toUpperCase().trim();
@@ -237,6 +269,12 @@ export function normalizeModuleKey(moduleType?: string): string {
   }
   if (key === 'NAME' || key === 'NAMING') {
     return 'NAME';
+  }
+  if (key === 'BAZI_SYNASTRY' || key === 'SYNASTRY' || key === 'MARRIAGE') {
+    return 'BAZI_SYNASTRY';
+  }
+  if (key === 'FAMILY_GROUP' || key === 'FAMILY' || key === 'FAMILY_GROUP_SYNASTRY') {
+    return 'FAMILY_GROUP';
   }
   return key;
 }
@@ -291,6 +329,10 @@ export async function retrieveModuleKnowledge(
       ? ['WESTERN', 'WESTERN_NATAL']
       : targetModule === 'NAME'
       ? ['NAME', 'NAMING']
+      : targetModule === 'BAZI_SYNASTRY'
+      ? ['BAZI_SYNASTRY', 'BAZI']
+      : targetModule === 'FAMILY_GROUP'
+      ? ['FAMILY_GROUP', 'BAZI']
       : [targetModule];
 
     const interpretations = await prisma.systemInterpretation.findMany({
@@ -337,7 +379,7 @@ export async function retrieveModuleKnowledge(
           const masterKeywords = [
             '榮格', 'jung', '路德雅爾', 'rudhyar', '莉茲格林', 'greene', '阿若優', 'arroyo', '漢德', 'hand',
             '韋特', 'waite', '波拉克', 'pollack', '格利爾', 'greer', '佐杜洛夫斯基', 'jodorowsky',
-            '果老', '耶律楚材', '宗師', '大師', '心法', '語錄', '原型', '共時性', '陰影', '愚人之旅', '逆位'
+            '果老', '耶律楚材', '滴天髓', '沈孝瞻', '合婚', '通關', '家庭場域', '代際', '宗師', '大師', '心法', '語錄', '原型', '共時性', '陰影', '愚人之旅', '逆位'
           ];
           for (const kw of masterKeywords) {
             if (queryLower.includes(kw)) {
@@ -381,7 +423,8 @@ export async function retrieveModuleKnowledge(
           '斗木獬', '牛金牛', '女土蝠', '虛日鼠', '危月燕', '室火豬', '壁水貐',
           '奎木狼', '婁金狗', '胃土彘', '昴日雞', '畢月烏', '觜火猴', '參水猿',
           '井木犴', '鬼金羊', '柳土獐', '星日馬', '張月鹿', '翼火蛇', '軫水蚓',
-          '恩星', '難星', '仇星', '用星', '建除', '成日', '乾為天', '坤為地'
+          '恩星', '難星', '仇星', '用星', '建除', '成日', '乾為天', '坤為地',
+          '八字合婚', '合婚', '夫妻宮', '天干五合', '六合', '三合', '相沖', '通關', '滴天髓', '子平真詮', '家庭五行', '家運', '代際', '因材施教'
         ];
         for (const term of astrologicalTerms) {
           if (queryLower.includes(term.toLowerCase())) {
@@ -623,6 +666,76 @@ ${patternContent}
           : raw.favorableElements || '木、火';
 
         return `## 專業子平八字命理深度診斷報告\n\n審視您的四柱命造，日主天干五行為「**${dayMaster}**」，格局氣機流通，五行喜用神為「**${favorable}**」。\n\n針對您所詢問之課題：「**${lastUserMsg}**」，為您深入剖析如下：\n\n### 1. 日主元神與五行格局分析\n* **日主特質**：日主「${dayMaster}」賦予您堅定踏實、信守承諾的性格基調，做事有條不紊且注重長遠積累。\n* **格局調候**：命局五行生剋有情，局中需以「${favorable}」作為平衡氣候與流通才華的樞紐。凡喜用五行生旺之時，往往是您思維最清晰、決策最順暢之際。\n\n### 2. 十神配置與才能動力\n* **才能配置**：命盤中印星與食傷、財官星形成良性平衡，反映出您既有深層學習與策略規劃能力，又具備將概念轉化為具體收益之實踐力。\n* **人際互動**：官殺有制，代表您具備自律與管理素養，但在競爭環境中需留意避免過度苛求自我，以柔克剛方能化解摩擦。\n\n### 3. 大運走勢與轉折契機\n* 當前大運正處於能力轉化與資源整合的關鍵階段。逢喜用歲運引動，適合主動擴展視野、投資自我技能或拓展核心人脈網絡。\n\n### 4. 落地生活與決策建言\n1. **事業方向**：優先選擇契合喜用五行屬性（如${favorable}）的產業或工作型態，能事半功倍。\n2. **生活環境**：居家與工作環境可適度導入喜用五行的色彩與採光，調和心性。\n3. **行事節奏**：在運勢上升期積極進取，在調候沉潛期注重技能儲備與身心調養。`;
+      }
+
+      case 'BAZI_SYNASTRY': {
+        const raw = chartContext.rawData || {};
+        const p1Name = raw.person1?.name || '男方 (乾造)';
+        const p2Name = raw.person2?.name || '女方 (坤造)';
+        const score = raw.score || 85;
+        const level = raw.level || '天作之合 · 琴瑟和鳴';
+        const bridging = raw.bridgingElement?.element || '水';
+        const bridgingExp = raw.bridgingElement?.explanation || '以五行通關轉化相剋。';
+
+        return `## 現代八字合婚與親密關係深度諮詢報告（融匯《滴天髓》與五行互濟心法）
+
+審視【**${p1Name}**】與【**${p2Name}**】之八字合婚盤：綜合契合度為「**${score}分**」，緣分格局評定為「**${level}**」。
+
+針對雙方的關係諮詢與心靈叩問：「**${lastUserMsg}**」，為您進行多維度結構化專業剖析：
+
+### 1. 日主天干與性情契合深度評析
+* **日元本質與吸引力**：${raw.dimensions?.dayMasterSynergy?.description || '雙方日主氣機相投，既有精神理念之深度共鳴，亦能彼此欣賞對方的性格優勢。'}
+* **相處心態指引**：${raw.dimensions?.dayMasterSynergy?.advice || '珍惜這份天然的情感契合，日常遇事多主動分享內在感受，以溫和堅定之態度營造信任感。'}
+
+### 2. 夫妻宮日支與婚後相處默契
+* **生活本位互動**：${raw.dimensions?.spousePalaceSynergy?.description || '夫妻宮地支氣候和諧，象徵雙方在婚後生活步調、家事分工與金錢觀念上具備高度默契。'}
+* **磨合與盲點預防**：${raw.dimensions?.spousePalaceSynergy?.advice || '尊重彼此的個人空間與獨立興趣，遇生活瑣事時給予足夠彈性，以幽默感化解日常緊繃。'}
+
+### 3. 五行能量互補與喜用神互濟
+* **互補效益**：${raw.dimensions?.fiveElementsComplementarity?.usefulElementsSupport || '雙方命中五行各具千秋，一人之盛恰補另一人之需，互為人生行運貴人。'}
+* **整體五行圓融度**：${raw.dimensions?.fiveElementsComplementarity?.lackingElementsBalance || '透過彼此的陪伴，原本偏頗之五行氣候得以中和流通，家道生機盎然。'}
+
+### 4. 五行通關金鑰與落地生活指南
+1. **通關五行借力**：雙方關鍵通關五行為「**${bridging}**」；${bridgingExp}
+2. **溝通與生活儀式**：${raw.marriageAdvice?.emotionalCommunication || '建立每週固定心靈對話時間，只分享感謝與彼此成長，不把工作焦慮帶入臥房。'}
+3. **財務與資產配置**：${raw.marriageAdvice?.financialManagement || '建立清晰透明的家庭共同預算帳戶，同時保留雙方適度的自主支配私房額度。'}
+4. **同舟共濟願景**：${raw.marriageAdvice?.growthTogether || '每年設定一項共同完成的家庭願景，同心協力創造美滿人生。'}`;
+      }
+
+      case 'FAMILY_GROUP': {
+        const raw = chartContext.rawData || {};
+        const title = raw.familyTitle || '幸福同舟之家';
+        const count = raw.memberCount || raw.members?.length || 3;
+        const dominant = raw.householdAura?.dominantElement || '木';
+        const lacking = raw.householdAura?.lackingElement || '水';
+        const auraTitle = raw.householdAura?.auraTitle || '厚德載物 · 興家立業氣場';
+        const auraDesc = raw.householdAura?.description || '全家五行氣象宏大，家風敦厚。';
+
+        const rolesList = Array.isArray(raw.familyRoles)
+          ? raw.familyRoles.map((r: any) => `* **${r.roleCategory}**：${r.membersAssigned?.join('、') || '全體協同'} — ${r.description}`).join('\n')
+          : '* **家族舵手**：負責全局把控與方向引導。';
+
+        return `## 家族命理與家庭動力系統解析報告（融匯五行家運與代際和諧心法）
+
+審視【**${title}**】（共 ${count} 位家庭成員）之群盤氣場：家庭核心五行格局為「**${auraTitle}**」，優勢主導能量為「**${dominant}**」，相對匱乏五行為「**${lacking}**」。
+
+針對家庭的諮詢課題：「**${lastUserMsg}**」，為您進行宏觀家庭動力學結構化剖析：
+
+### 1. 家庭五行場域與整體氣場診斷
+* **家庭主氣象**：${auraDesc}
+* **環境調和建議**：${raw.householdAura?.homeEnvironmentAdvice || `居家可適度導入「${lacking}」五行的生活元素（色彩、植物或採光），活化全家氣息流動。`}
+
+### 2. 家族核心角色定位與優勢互補
+${rolesList}
+
+### 3. 跨世代溝通與成員動態互動
+* **代際與夫妻和諧**：家庭成員間日主生剋有情。長輩以印星包容晚輩，晚輩以食傷反饋長輩；面對性格較為剛毅之成員，以柔克剛、多聽少駁為良策。
+* **因材施教原則**：父母對待不同五行稟賦之子女，應依其性格特質（木主仁慈需啟發、火主熱情需定力、土主穩重需鼓勵、金主義氣需柔和、水主智慧需引導）給予適性發展空間。
+
+### 4. 家運昌隆與家庭調適心法
+1. **補強缺失五行「${lacking}」**：運用居家客廳與公共區域佈置，調和五行磁場，增進全家健康與情緒穩定。
+2. **每週定心聚會**：設立無手機干擾的家庭共聚晚餐或戶外漫步，以優質陪伴凝聚家庭向心力。
+3. **各安其位承擔**：明確成員在家事與財務上的分工，彼此感恩各司其職的付出，家和自能萬事興盛。`;
       }
 
       case 'WESTERN': {

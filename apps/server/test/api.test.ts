@@ -131,6 +131,34 @@ describe('🚀 萬象天儀 後端 API 服務整合測試', () => {
       expect(res.body.data.fourStarRelations.rulerStar).toBeDefined();
     });
 
+    it('POST /api/v1/calculator/bazi/synastry 應成功計算八字合婚契合度與維度剖析', async () => {
+      const res = await request(app).post('/api/v1/calculator/bazi/synastry').send({
+        person1: { name: '陳俊廷', gender: '男', birthDate: '1991-05-18T09:30:00Z' },
+        person2: { name: '許芳瑜', gender: '女', birthDate: '1993-08-24T15:20:00Z' },
+      });
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.score).toBeGreaterThanOrEqual(50);
+      expect(res.body.data.dimensions.dayMasterSynergy).toBeDefined();
+      expect(res.body.data.bridgingElement.element).toBeDefined();
+    });
+
+    it('POST /api/v1/calculator/bazi/family-group 應成功計算家人群組五行場域與動態矩陣', async () => {
+      const res = await request(app).post('/api/v1/calculator/bazi/family-group').send({
+        familyTitle: '溫馨同樂之家',
+        members: [
+          { name: '父親', role: '父親', gender: '男', birthDate: '1966-02-14T08:00:00Z' },
+          { name: '母親', role: '母親', gender: '女', birthDate: '1969-07-22T11:00:00Z' },
+          { name: '長子', role: '長子', gender: '男', birthDate: '1996-10-10T14:00:00Z' },
+        ],
+      });
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.memberCount).toBe(3);
+      expect(res.body.data.householdAura.dominantElement).toBeDefined();
+      expect(res.body.data.crossMatrix.length).toBe(3);
+    });
+
     it('GET /api/v1/almanac/today 與 POST /api/v1/almanac/query 應取得農曆黃曆與每日生肖運勢', async () => {
       const todayRes = await request(app).get('/api/v1/almanac/today');
       expect(todayRes.status).toBe(200);

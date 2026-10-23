@@ -3,6 +3,8 @@ import {
   calculateTrueSolarTime,
   calculateZiweiChart,
   calculateBaziChart,
+  calculateBaziSynastry,
+  calculateFamilyGroup,
   castCoinDivination,
   castPlumBlossom,
   analyzeName,
@@ -72,6 +74,74 @@ calculatorRouter.post('/bazi', async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     return res.status(500).json({ success: false, message: err.message || '八字排盤運算失敗' });
+  }
+});
+
+// 2.1 八字合婚 (二造八字契合度深度比對)
+calculatorRouter.post('/bazi/synastry', async (req: Request, res: Response) => {
+  try {
+    const { person1, person2 } = req.body;
+    if (!person1?.birthDate || !person2?.birthDate) {
+      return res.status(400).json({ success: false, message: '請提供雙方出生時間與姓名 (person1 & person2)' });
+    }
+
+    const synastry = calculateBaziSynastry(
+      {
+        name: person1.name || '男方 (乾造)',
+        gender: (person1.gender || '男') as '男' | '女',
+        birthDate: new Date(person1.birthDate),
+        role: person1.role || '乾造',
+      },
+      {
+        name: person2.name || '女方 (坤造)',
+        gender: (person2.gender || '女') as '男' | '女',
+        birthDate: new Date(person2.birthDate),
+        role: person2.role || '坤造',
+      }
+    );
+
+    const interps = await prisma.systemInterpretation.findMany({
+      where: {
+        OR: [{ moduleType: 'BAZI_SYNASTRY' }, { moduleType: 'BAZI' }],
+      },
+      take: 20,
+    });
+
+    return res.json({
+      success: true,
+      data: {
+        ...synastry,
+        interpretations: interps,
+      },
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message || '八字合婚演算失敗' });
+  }
+});
+
+// 2.2 家人群組八字多維比對解析 (Household Multi-member Cross Matrix)
+calculatorRouter.post('/bazi/family-group', async (req: Request, res: Response) => {
+  try {
+    const { members, familyTitle = '幸福同舟之家' } = req.body;
+    if (!Array.isArray(members) || members.length < 2) {
+      return res.status(400).json({ success: false, message: '家人群組比對至少需提供 2 位成員之出生資料' });
+    }
+
+    const sanitizedMembers = members.map((m: any, idx: number) => ({
+      name: m.name || `成員 ${idx + 1}`,
+      role: m.role || '家庭成員',
+      gender: (m.gender || '男') as '男' | '女',
+      birthDate: new Date(m.birthDate),
+    }));
+
+    const result = calculateFamilyGroup(sanitizedMembers, familyTitle);
+
+    return res.json({
+      success: true,
+      data: result,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message || '家人群組比對演算失敗' });
   }
 });
 

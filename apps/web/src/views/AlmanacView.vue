@@ -123,7 +123,7 @@
               <span
                 v-for="act in almanac.suitableActivities"
                 :key="act"
-                class="px-2.5 py-1 rounded-md text-xs bg-emerald-950/60 text-emerald-200 border border-emerald-500/30 font-semibold"
+                class="px-2.5 py-1 rounded-md text-xs bg-emerald-950/60 dark:bg-emerald-950/60 light:bg-emerald-100/90 text-emerald-200 dark:text-emerald-200 light:text-emerald-900 border border-emerald-500/30 light:border-emerald-400/60 font-semibold"
               >
                 {{ act }}
               </span>
@@ -140,7 +140,7 @@
               <span
                 v-for="act in almanac.unsuitableActivities"
                 :key="act"
-                class="px-2.5 py-1 rounded-md text-xs bg-rose-950/60 text-rose-200 border border-rose-500/30 font-semibold"
+                class="px-2.5 py-1 rounded-md text-xs bg-rose-950/60 dark:bg-rose-950/60 light:bg-rose-100/90 text-rose-200 dark:text-rose-200 light:text-rose-950 border border-rose-500/30 light:border-rose-400/60 font-semibold"
               >
                 {{ act }}
               </span>

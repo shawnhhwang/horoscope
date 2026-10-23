@@ -199,4 +199,53 @@ export const MASTER_INTERPRETATIONS: MasterInterpretationSeed[] = [
       '遼元之際天文律曆大宗師耶律楚材深研中西天星推步，於《大明曆》與星宗論著中指出：「天道無私，唯德是輔。日月五星之行度，寒暑伏見之節奏，皆宇宙大化之常規。智者測天星以正人心、輔國政、理人事，達天人相應、順應乾坤之道，而非惑於怪力亂神。」',
     tags: JSON.stringify(['七政四餘', '耶律楚材', '天文曆法', '天人相應', '古典天星']),
   },
+
+  // ─────────────────────────────────────────────────────────────
+  // 💍 八字合婚與家族群盤宗師心法 (BaZi Synastry & Family System Masters)
+  // ─────────────────────────────────────────────────────────────
+  {
+    moduleType: 'BAZI_SYNASTRY',
+    keyCode: 'BAZI_MASTER_DITIAN_MARRIAGE',
+    category: 'MASTER_WISDOM',
+    title: '《滴天髓》論夫妻因緣與五行互濟 (Di Tian Sui on Marriage)',
+    contentRich:
+      '子平命理最高經典《滴天髓》闡釋：「夫妻因緣宿世定，喜用互濟化千災。清氣相生家道盛，濁氣相戰需通關。」合婚之真諦，不在於盲目尋求全無剋犯之神仙伴侶，而在於審察男女二造之五行強弱能否形成「損有餘而補不足」的良性互濟。一人命中之忌神，若恰為另一人之喜神，則二人攜手必能彼此成就、同舟共濟。',
+    tags: JSON.stringify(['八字合婚', '滴天髓', '五行互補', '喜用神互助', '合婚心法']),
+  },
+  {
+    moduleType: 'BAZI_SYNASTRY',
+    keyCode: 'BAZI_MASTER_ZIPING_COMPATIBILITY',
+    category: 'MASTER_WISDOM',
+    title: '《子平真詮》論八字合婚：干合支合與性情調和',
+    contentRich:
+      '清代命理泰斗沈孝瞻於《子平真詮》論曰：「合婚之法，首重日元天干之情與日支夫妻宮之向背。天干有甲己、乙庚、丙辛、丁壬、戊癸之正合，主精神理念之契合共鳴；地支有六合三合，主生活起居之默契協調。縱使日柱有沖，若有通關之曜調停，亦能破鏡重圓、轉危為安。」明理之人，借命理以互諒互助，方得白頭偕老。',
+    tags: JSON.stringify(['八字合婚', '子平真詮', '天干五合', '夫妻宮六合', '情投意合']),
+  },
+  {
+    moduleType: 'BAZI_SYNASTRY',
+    keyCode: 'BAZI_MASTER_BRIDGING_ELEMENT',
+    category: 'MASTER_WISDOM',
+    title: '八字五行通關調適大乘法門 (The Bridging Five Elements Wisdom)',
+    contentRich:
+      '命理大師先賢指出：「五行相生為常，相剋亦為造化。金木交爭者，得水以通關則金生水、水生木，反成慈悲智巧之德；水火相激者，得木以通關則水生木、木生火，化燥急為文雅文明之美；木土相戰以火化之，火金相剋以土潤之，土水相凌以金通之。」婚姻生活之摩擦，善用通關五行之生活智慧（居家色彩、作息儀式、情感包容），便是將危機化為良緣之神妙鑰匙。',
+    tags: JSON.stringify(['八字合婚', '五行通關', '金木相剋', '水火相濟', '化解心法']),
+  },
+  {
+    moduleType: 'FAMILY_GROUP',
+    keyCode: 'FAMILY_MASTER_HOUSEHOLD_AURA',
+    category: 'MASTER_WISDOM',
+    title: '傳統家運與家庭系統五行場域論 (Family Household Energy Aura)',
+    contentRich:
+      '古之治家者云：「家和萬事興，五行調和家運昌。」家庭是由多位血脈成員構成之能量同心圓。全家五行木旺者主崇德向學之文風；火旺者主人氣熱絡之生機；土旺者主厚實穩健之基業；金旺者主紀律原則之方圓；水旺者主靈動智深之財脈。任何家庭皆有其核心主導氣場與匱乏之處，知其缺失而以環境、包容與生活節奏補足之，則滿門吉慶。',
+    tags: JSON.stringify(['家庭比對', '家運昌隆', '家庭五行場域', '家和萬事興', '家族系統']),
+  },
+  {
+    moduleType: 'FAMILY_GROUP',
+    keyCode: 'FAMILY_MASTER_GENERATIONAL_HARMONY',
+    category: 'MASTER_WISDOM',
+    title: '代際和諧與因材施教心法：父母子女五行生剋之道',
+    contentRich:
+      '命理名著《淵海子平》與現代家庭心理學相通之處在於：父母宮與子女宮之相生相剋，反映的是天然之教育風格與溝通頻率。日主相生者親子情感自然親密；日主相剋者往往具備鮮明之個性張力，此時父母應「順其五行稟賦而因材施教」，切莫以自身模子強套子女。以寬廣視角看待手足與長幼，各安其位，便是最高明之齊家之道。',
+    tags: JSON.stringify(['家庭比對', '親子溝通', '因材施教', '代際和諧', '手足情深']),
+  },
 ];

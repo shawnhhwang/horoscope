@@ -9,11 +9,13 @@ import TarotView from '../views/TarotView.vue';
 import VaultView from '../views/VaultView.vue';
 import QizhengView from '../views/QizhengView.vue';
 import AlmanacView from '../views/AlmanacView.vue';
+import SynastryView from '../views/SynastryView.vue';
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
   { path: '/ziwei', name: 'ziwei', component: ZiweiView },
   { path: '/bazi', name: 'bazi', component: BaziView },
+  { path: '/synastry', name: 'synastry', component: SynastryView },
   { path: '/qizheng', name: 'qizheng', component: QizhengView },
   { path: '/almanac', name: 'almanac', component: AlmanacView },
   { path: '/iching', name: 'iching', component: IchingView },

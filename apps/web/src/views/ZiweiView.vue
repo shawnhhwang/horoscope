@@ -57,7 +57,7 @@
           <span class="text-xl">✨</span>
           <h3 class="font-serif text-lg font-bold text-gold-gradient">命盤正統三合格局與倪師命相心法</h3>
         </div>
-        <span class="text-xs text-dark-muted font-serif">
+        <span class="text-xs text-dark-muted dark:text-dark-muted light:text-stone-700 font-serif">
           共識別出 {{ chart.patterns?.length || 0 }} 組格局 · 點擊標籤檢視古籍出處與成立條件
         </span>
       </div>
@@ -74,64 +74,64 @@
               ? 'ring-2 ring-dark-gold shadow-cosmic'
               : 'hover:opacity-90',
             pattern.level === 'excellent'
-              ? 'bg-amber-500/15 border-amber-500/50 text-amber-200'
+              ? 'bg-amber-500/15 border-amber-500/50 text-amber-200 dark:text-amber-200 light:text-amber-950 light:bg-amber-100/95 light:border-amber-400'
               : pattern.level === 'good'
-              ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-200'
+              ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-200 dark:text-emerald-200 light:text-emerald-950 light:bg-emerald-100/95 light:border-emerald-400'
               : pattern.level === 'caution'
-              ? 'bg-rose-500/15 border-rose-500/50 text-rose-200'
-              : 'bg-cyan-500/15 border-cyan-500/50 text-cyan-200',
+              ? 'bg-rose-500/15 border-rose-500/50 text-rose-200 dark:text-rose-200 light:text-rose-950 light:bg-rose-100/95 light:border-rose-400'
+              : 'bg-cyan-500/15 border-cyan-500/50 text-cyan-200 dark:text-cyan-200 light:text-cyan-950 light:bg-cyan-100/95 light:border-cyan-400',
           ]"
         >
           <span>{{ pattern.level === 'excellent' ? '👑' : pattern.level === 'good' ? '🌟' : pattern.level === 'caution' ? '⚠️' : '🔹' }}</span>
-          <span>{{ pattern.name }}</span>
-          <span class="text-[10px] px-1.5 py-0.5 rounded bg-black/40 font-normal">
+          <span class="font-bold">{{ pattern.name }}</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-black/40 dark:bg-black/40 light:bg-black/10 light:text-inherit font-semibold">
             {{ pattern.level === 'excellent' ? '大吉' : pattern.level === 'good' ? '成格' : pattern.level === 'caution' ? '警示' : '正格' }}
           </span>
         </button>
       </div>
-      <div v-else class="text-xs text-dark-muted py-2 font-serif">
+      <div v-else class="text-xs text-dark-muted dark:text-dark-muted light:text-stone-700 py-2 font-serif">
         本盤星曜中正平和，未形成極端格局，以三方四正主星廟旺各司其職論斷。
       </div>
 
       <!-- 選中格局詳情展開卡片 -->
       <div
         v-if="selectedPattern"
-        class="p-4 rounded-xl bg-black/40 border border-dark-gold/30 text-xs text-dark-muted space-y-2.5 animate-fadeIn"
+        class="p-4 rounded-xl bg-black/40 dark:bg-black/40 light:bg-amber-50/95 border border-dark-gold/30 light:border-amber-300 text-xs dark:text-dark-muted light:text-stone-800 space-y-2.5 animate-fadeIn"
       >
-        <div class="flex items-center justify-between border-b border-dark-gold/15 pb-2">
+        <div class="flex items-center justify-between border-b border-dark-gold/15 light:border-amber-200 pb-2">
           <div class="flex items-center space-x-2">
             <span class="font-serif font-bold text-sm text-gold-gradient">{{ selectedPattern.name }}</span>
-            <span class="text-[11px] text-dark-gold font-serif">【{{ selectedPattern.source || '紫微三合正宗' }}】</span>
+            <span class="text-[11px] text-dark-gold dark:text-dark-gold light:text-amber-800 font-serif font-semibold">【{{ selectedPattern.source || '紫微三合正宗' }}】</span>
           </div>
-          <button @click="selectedPattern = null" class="text-dark-muted hover:text-dark-gold text-xs px-2 py-1 cursor-pointer">關閉 ✕</button>
+          <button @click="selectedPattern = null" class="text-dark-muted dark:text-dark-muted light:text-stone-600 hover:text-dark-gold text-xs px-2 py-1 cursor-pointer">關閉 ✕</button>
         </div>
-        <p class="leading-relaxed text-dark-void dark:text-dark-gold/90 light:text-amber-950 font-serif">
+        <p class="leading-relaxed dark:text-dark-gold/90 light:text-stone-900 font-serif font-medium">
           {{ selectedPattern.description }}
         </p>
-        <div v-if="selectedPattern.conditions?.required?.length" class="text-[11px] text-emerald-300">
+        <div v-if="selectedPattern.conditions?.required?.length" class="text-[11px] text-emerald-300 dark:text-emerald-300 light:text-emerald-800 font-semibold">
           <strong>成立條件：</strong> {{ selectedPattern.conditions.required.join('；') }}
         </div>
-        <div v-if="selectedPattern.conditions?.bonus?.length" class="text-[11px] text-amber-300">
+        <div v-if="selectedPattern.conditions?.bonus?.length" class="text-[11px] text-amber-300 dark:text-amber-300 light:text-amber-800 font-semibold">
           <strong>加分項目：</strong> {{ selectedPattern.conditions.bonus.join('；') }}
         </div>
-        <div v-if="selectedPattern.conditions?.breaking?.length" class="text-[11px] text-rose-300">
+        <div v-if="selectedPattern.conditions?.breaking?.length" class="text-[11px] text-rose-300 dark:text-rose-300 light:text-rose-800 font-semibold">
           <strong>破格警示：</strong> {{ selectedPattern.conditions.breaking.join('；') }}
         </div>
       </div>
 
       <!-- 倪師天紀大師心法核心摘要 -->
-      <div class="mt-4 pt-3 border-t border-dark-gold/15 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] text-dark-muted font-serif">
-        <div class="p-2.5 rounded-lg bg-dark-gold/5 border border-dark-gold/10">
-          <span class="text-dark-gold font-bold block mb-0.5">📌 大道至簡</span>
-          三合派為正宗，命宮為先天本質，三方四正為後天用武之地。
+      <div class="mt-4 pt-3 border-t border-dark-gold/15 light:border-amber-300/40 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] dark:text-dark-muted light:text-stone-700 font-serif">
+        <div class="p-2.5 rounded-lg bg-dark-gold/5 dark:bg-dark-gold/5 light:bg-amber-100/60 border border-dark-gold/10 light:border-amber-300/50">
+          <span class="text-dark-gold dark:text-dark-gold light:text-amber-900 font-bold block mb-0.5">📌 大道至簡</span>
+          <span class="light:text-stone-800 font-medium">三合派為正宗，命宮為先天本質，三方四正為後天用武之地。</span>
         </div>
-        <div class="p-2.5 rounded-lg bg-dark-gold/5 border border-dark-gold/10">
-          <span class="text-dark-gold font-bold block mb-0.5">📌 2/3 大於 1/3</span>
-          人事努力加上地理環境調整（2/3），必定能大於先天命運（1/3）。
+        <div class="p-2.5 rounded-lg bg-dark-gold/5 dark:bg-dark-gold/5 light:bg-amber-100/60 border border-dark-gold/10 light:border-amber-300/50">
+          <span class="text-dark-gold dark:text-dark-gold light:text-amber-900 font-bold block mb-0.5">📌 2/3 大於 1/3</span>
+          <span class="light:text-stone-800 font-medium">人事努力加上地理環境調整（2/3），必定能大於先天命運（1/3）。</span>
         </div>
-        <div class="p-2.5 rounded-lg bg-dark-gold/5 border border-dark-gold/10">
-          <span class="text-dark-gold font-bold block mb-0.5">📌 知果為了修因</span>
-          算命是討論果的哲學，知果是為了在事前三年主動調和人事與陽宅。
+        <div class="p-2.5 rounded-lg bg-dark-gold/5 dark:bg-dark-gold/5 light:bg-amber-100/60 border border-dark-gold/10 light:border-amber-300/50">
+          <span class="text-dark-gold dark:text-dark-gold light:text-amber-900 font-bold block mb-0.5">📌 知果為了修因</span>
+          <span class="light:text-stone-800 font-medium">算命是討論果的哲學，知果是為了在事前三年主動調和人事與陽宅。</span>
         </div>
       </div>
     </div>

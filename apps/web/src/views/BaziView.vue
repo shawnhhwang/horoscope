@@ -182,10 +182,22 @@
             </div>
           </div>
 
-          <div class="mt-6">
+          <div class="mt-6 space-y-2">
+            <router-link
+              to="/synastry?tab=synastry"
+              class="block text-center py-2.5 rounded-lg font-serif text-xs font-bold bg-dark-gold text-dark-void hover:opacity-90 transition-all shadow-cosmic"
+            >
+              💍 進行八字合婚 (二人合盤) →
+            </router-link>
+            <router-link
+              to="/synastry?tab=family"
+              class="block text-center py-2 rounded-lg font-serif text-xs font-semibold border border-dark-gold/40 text-dark-gold hover:bg-dark-gold/10 transition-colors"
+            >
+              👨‍👩‍👧‍👦 家人群組比對 (全家五行場域) →
+            </router-link>
             <router-link
               to="/naming"
-              class="block text-center py-2.5 rounded-lg font-serif text-xs font-semibold border border-dark-gold/40 text-dark-gold hover:bg-dark-gold/10 transition-colors"
+              class="block text-center py-1.5 rounded-lg font-serif text-xs text-dark-muted hover:text-dark-text transition-colors"
             >
               以喜用神五行進行起名 →
             </router-link>
@@ -236,16 +248,16 @@ const longitude = ref(121.56);
 const loading = ref(false);
 const chart = ref<any>(null);
 
-const dayMaster = computed(() => chart.value?.fourPillars?.day?.stem?.name || '日主');
-const favorable = computed(() => chart.value?.favorableElements?.favorable?.join('、') || '木火');
-const yearPillar = computed(() => `${chart.value?.fourPillars?.year?.stem?.name || ''}${chart.value?.fourPillars?.year?.branch?.name || ''}`);
+const dayMaster = computed(() => chart.value?.dayMaster?.stem || chart.value?.pillars?.day?.stem || '日主');
+const favorable = computed(() => chart.value?.favorableElements?.useful?.join('、') || '木火');
+const yearPillar = computed(() => `${chart.value?.pillars?.year?.stem || ''}${chart.value?.pillars?.year?.branch || ''}`);
 
 const aiPrompt = computed(() => {
   if (!chart.value) return '';
-  const y = `${chart.value.fourPillars?.year?.stem?.name || ''}${chart.value.fourPillars?.year?.branch?.name || ''}`;
-  const m = `${chart.value.fourPillars?.month?.stem?.name || ''}${chart.value.fourPillars?.month?.branch?.name || ''}`;
-  const d = `${chart.value.fourPillars?.day?.stem?.name || ''}${chart.value.fourPillars?.day?.branch?.name || ''}`;
-  const h = `${chart.value.fourPillars?.hour?.stem?.name || ''}${chart.value.fourPillars?.hour?.branch?.name || ''}`;
+  const y = `${chart.value.pillars?.year?.stem || ''}${chart.value.pillars?.year?.branch || ''}`;
+  const m = `${chart.value.pillars?.month?.stem || ''}${chart.value.pillars?.month?.branch || ''}`;
+  const d = `${chart.value.pillars?.day?.stem || ''}${chart.value.pillars?.day?.branch || ''}`;
+  const h = `${chart.value.pillars?.hour?.stem || ''}${chart.value.pillars?.hour?.branch || ''}`;
   return `請以專業子平八字命理專家身份，為我深度批註此四柱八字：日主天干為「${dayMaster.value}」，年柱【${y}】、月柱【${m}】、日柱【${d}】、時柱【${h}】。五行喜用為「${favorable.value}」。請以客觀條理、不玄虛的現代命理視角，剖析日主旺衰格局、十神才能配置、喜用神調候與大運關鍵期之生涯應對方針。`;
 });
 

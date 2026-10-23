@@ -6,9 +6,10 @@ export * from './ziwei/types.js';
 export * from './ziwei/patterns.js';
 export * from './ziwei/calculator.js';
 
-// 四柱八字
+// 四柱八字與八字合婚、家人群組
 export * from './bazi/types.js';
 export * from './bazi/calculator.js';
+export * from './bazi/synastry.js';
 
 // 周易卜卦
 export * from './iching/types.js';

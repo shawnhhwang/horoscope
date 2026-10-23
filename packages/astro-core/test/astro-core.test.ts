@@ -7,6 +7,8 @@ import {
   calculateZiweiChart,
   calculateBaziChart,
   getTenGod,
+  calculateBaziSynastry,
+  calculateFamilyGroup,
   castCoinDivination,
   castPlumBlossom,
   analyzeName,
@@ -162,6 +164,59 @@ describe('🌟 萬象天儀 核心演算法庫 Intent-Based Tests', () => {
       expect(bazi.energy.status).toMatch(/身強|身弱|專旺|從格/);
       expect(bazi.favorableElements.useful.length).toBeGreaterThan(0);
       expect(bazi.luckPillars.length).toBeGreaterThanOrEqual(8);
+    });
+
+    it('八字合婚演算法應能精準剖析天干五合、地支六合與五行互補評分', () => {
+      // 乾造 (男) 與 坤造 (女)
+      const man = {
+        name: '張君豪',
+        gender: '男' as const,
+        birthDate: new Date('1992-06-18T10:30:00Z'),
+      };
+      const woman = {
+        name: '林雅婷',
+        gender: '女' as const,
+        birthDate: new Date('1994-11-22T16:15:00Z'),
+      };
+
+      const synastry = calculateBaziSynastry(man, woman);
+
+      expect(synastry.score).toBeGreaterThanOrEqual(50);
+      expect(synastry.score).toBeLessThanOrEqual(100);
+      expect(synastry.level).toBeDefined();
+      expect(synastry.dimensions.dayMasterSynergy.description).toBeDefined();
+      expect(synastry.dimensions.spousePalaceSynergy.description).toBeDefined();
+      expect(synastry.dimensions.fiveElementsComplementarity.score).toBeGreaterThan(0);
+      expect(synastry.bridgingElement.element).toMatch(/木|火|土|金|水/);
+      expect(synastry.bridgingElement.dailyTips.length).toBeGreaterThanOrEqual(2);
+      expect(synastry.fourPillarsDetailedCross.length).toBe(4);
+      expect(synastry.marriageAdvice.emotionalCommunication).toBeDefined();
+    });
+
+    it('家人群組比對演算法應能聚合全家五行場域並建立兩兩成員交叉矩陣與角色定位', () => {
+      const family = [
+        { name: '父親 (建華)', role: '父親', gender: '男' as const, birthDate: new Date('1965-03-12T08:00:00Z') },
+        { name: '母親 (淑芬)', role: '母親', gender: '女' as const, birthDate: new Date('1968-09-20T14:30:00Z') },
+        { name: '長子 (浩宇)', role: '長子', gender: '男' as const, birthDate: new Date('1995-10-24T06:30:00Z') },
+        { name: '次女 (子晴)', role: '次女', gender: '女' as const, birthDate: new Date('1999-07-08T18:45:00Z') },
+      ];
+
+      const res = calculateFamilyGroup(family, '建華一家');
+
+      expect(res.memberCount).toBe(4);
+      expect(res.members.length).toBe(4);
+      expect(res.householdAura.dominantElement).toMatch(/木|火|土|金|水/);
+      expect(res.householdAura.auraTitle).toBeDefined();
+
+      // 4 人兩兩組合共 C(4, 2) = 6 組關係
+      expect(res.crossMatrix.length).toBe(6);
+      expect(res.crossMatrix[0].fromName).toBeDefined();
+      expect(res.crossMatrix[0].toName).toBeDefined();
+      expect(res.crossMatrix[0].relationType).toBeDefined();
+
+      // 角色配置
+      expect(res.familyRoles.length).toBe(4);
+      expect(res.harmonyGuidelines.length).toBeGreaterThanOrEqual(2);
     });
   });
 

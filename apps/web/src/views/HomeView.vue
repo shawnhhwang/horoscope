@@ -112,7 +112,22 @@
           </div>
         </router-link>
 
-        <!-- 5. 周易卜卦 -->
+        <!-- 5. 八字合婚與家人群組 (新增) -->
+        <router-link to="/synastry" class="group glass-panel rounded-2xl p-6 hover:border-dark-gold transition-all duration-300 hover:shadow-cosmic relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-serif text-dark-gold tracking-widest uppercase mb-2">SYNASTRY & FAMILY</div>
+            <h3 class="font-serif text-xl font-bold mb-2 group-hover:text-dark-gold transition-colors">八字合婚與家人群盤</h3>
+            <p class="text-xs text-dark-muted leading-relaxed mb-4">
+              天干五合、地支六合三合、喜用互濟與納音相生；多維度多成員家庭五行場域與代際互動矩陣解析。
+            </p>
+          </div>
+          <div class="flex items-center text-xs font-serif text-dark-gold pt-2 border-t border-dark-gold/15">
+            <span>二人合婚 / 全家群盤</span>
+            <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+          </div>
+        </router-link>
+
+        <!-- 6. 周易卜卦 -->
         <router-link to="/iching" class="group glass-panel rounded-2xl p-6 hover:border-dark-gold transition-all duration-300 hover:shadow-cosmic relative overflow-hidden flex flex-col justify-between">
           <div>
             <div class="text-xs font-serif text-dark-gold tracking-widest uppercase mb-2">I CHING DIVINATION</div>
