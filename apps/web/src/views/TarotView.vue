@@ -152,6 +152,80 @@
         </div>
       </div>
 
+      <!-- 🔮 韋特與當代塔羅宗師心法專區 (Waite & Tarot Master Esotericism) -->
+      <div class="glass-panel rounded-2xl p-6 sm:p-8 border border-dark-gold/35 shadow-cosmic max-w-7xl mx-auto">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-dark-gold/20">
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-serif text-dark-gold uppercase tracking-wider">RIDER-WAITE & MODERN TAROT MASTERS</span>
+              <span class="px-2 py-0.5 rounded text-[10px] bg-dark-gold/20 text-dark-gold border border-dark-gold/40 font-serif">RAG 宗師心法</span>
+            </div>
+            <h3 class="font-serif text-xl font-bold text-gold-gradient mt-1">
+              韋特與當代塔羅權威宗師心靈洞察
+            </h3>
+          </div>
+          <span class="text-xs text-dark-muted italic">「牌卡是心靈的鏡像 · 逆位乃轉化之契機」</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- 愛德華·韋特 -->
+          <div class="p-4 rounded-xl bg-black/40 border border-dark-gold/20 flex flex-col justify-between hover:border-dark-gold/50 transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-serif text-xs font-bold text-amber-300">阿瑟·愛德華·韋特 (A. E. Waite)</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-300/90 border border-amber-500/30">韋特體系創始宗師</span>
+              </div>
+              <p class="text-xs text-dark-muted leading-relaxed">
+                「大阿爾克那是心靈從『愚者』純真出發，歷經現實磨礪、抵達整合與覺醒的神聖『愚人之旅』。」每張牌卡皆是潛意識意象的殿堂。
+              </p>
+            </div>
+            <span class="text-[10px] text-dark-gold/70 mt-3 pt-2 border-t border-dark-gold/10 font-serif">《塔羅圖解之鑰》</span>
+          </div>
+
+          <!-- 蕾切爾·波拉克 -->
+          <div class="p-4 rounded-xl bg-black/40 border border-dark-gold/20 flex flex-col justify-between hover:border-dark-gold/50 transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-serif text-xs font-bold text-cyan-300">蕾切爾·波拉克 (Rachel Pollack)</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300/90 border border-cyan-500/30">當代塔羅巨擘</span>
+              </div>
+              <p class="text-xs text-dark-muted leading-relaxed">
+                「塔羅牌絕非預測不可逆宿命的算命工具，而是賦予我們洞悉當下真實、掌握自由意志的心靈覺察之書。」
+              </p>
+            </div>
+            <span class="text-[10px] text-dark-gold/70 mt-3 pt-2 border-t border-dark-gold/10 font-serif">《78度的智慧》</span>
+          </div>
+
+          <!-- 瑪麗·K·格利爾 -->
+          <div class="p-4 rounded-xl bg-black/40 border border-dark-gold/20 flex flex-col justify-between hover:border-dark-gold/50 transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-serif text-xs font-bold text-violet-300">瑪麗·K·格利爾 (Mary K. Greer)</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-violet-950/60 text-violet-300/90 border border-violet-500/30">逆位牌奧祕大師</span>
+              </div>
+              <p class="text-xs text-dark-muted leading-relaxed">
+                「逆位絕非凶險厄運，而是能量正提示你向內反思。它指明了深層心理防禦或被壓抑的潛能，是心靈自我整合的轉機。」
+              </p>
+            </div>
+            <span class="text-[10px] text-dark-gold/70 mt-3 pt-2 border-t border-dark-gold/10 font-serif">《逆位塔羅牌全書》</span>
+          </div>
+
+          <!-- 阿歷安度·佐杜洛夫斯基 -->
+          <div class="p-4 rounded-xl bg-black/40 border border-dark-gold/20 flex flex-col justify-between hover:border-dark-gold/50 transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-serif text-xs font-bold text-emerald-300">佐杜洛夫斯基 (A. Jodorowsky)</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-950/60 text-emerald-300/90 border border-emerald-500/30">塔羅之道與心靈療癒</span>
+              </div>
+              <p class="text-xs text-dark-muted leading-relaxed">
+                「塔羅是一把精神手術刀，協助我們切除自我設限的幻象，直面此時此刻的真實力量。」在當下完成心靈轉化。
+              </p>
+            </div>
+            <span class="text-[10px] text-dark-gold/70 mt-3 pt-2 border-t border-dark-gold/10 font-serif">《塔羅之道：精神與療癒》</span>
+          </div>
+        </div>
+      </div>
+
       <!-- 🌟 AI 靈犀全幅深度解析專區 (位於下方一整列，長文自動展開，高雅閱讀) -->
       <InPageAiAnalysis
         v-if="readingResult"
@@ -160,7 +234,7 @@
         :summary="cardSummary"
         :raw-data="readingResult"
         :prompt="aiPrompt"
-        button-text="✨ 啟動 AI 專業塔羅牌陣心靈諮商深度解析"
+        button-text="✨ 啟動 AI 專業塔羅牌陣心靈諮商深度解析（融匯韋特與當代宗師心法）"
       />
     </div>
 
@@ -427,7 +501,7 @@ const cardSummary = computed(() => {
     .join('、');
 });
 const aiPrompt = computed(() => {
-  return `請以專業塔羅諮商師身份，為我深度解析此韋特塔羅牌陣【${spreadLabel.value}】：抽得牌位分別為：${cardSummary.value}。請以心理投射與潛意識洞察視角，解構當前局勢的核心動力、正逆位所揭示的內在盲點、四元素消長，並給出清晰、可行且賦權的三步行動方案。`;
+  return `請以專業塔羅諮商師身份，融匯愛德華·韋特（A. E. Waite）《圖解之鑰》愚人之旅神聖象徵、蕾切爾·波拉克（Rachel Pollack）《78度的智慧》超越宿命之覺察賦能，以及瑪麗·格利爾（Mary K. Greer）逆位內在轉化心法，為我深度解析此韋特塔羅牌陣【${spreadLabel.value}】：抽得牌位分別為：${cardSummary.value}。請以心理投射與潛意識洞察視角，解構當前局勢的核心動力、正逆位所揭示的內在盲點、四元素消長，並給出清晰、可行且賦權的三步行動方案。`;
 });
 
 onMounted(() => {

@@ -169,6 +169,80 @@
         </div>
       </div>
 
+      <!-- 🌌 榮格與人本占星大師心法專區 (Astrological Masters & Depth Psychology) -->
+      <div class="glass-panel rounded-2xl p-6 sm:p-8 border border-dark-gold/35 shadow-cosmic">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-dark-gold/20">
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-serif text-dark-gold uppercase tracking-wider">DEPTH PSYCHOLOGY & HUMANISTIC MASTERS</span>
+              <span class="px-2 py-0.5 rounded text-[10px] bg-dark-gold/20 text-dark-gold border border-dark-gold/40 font-serif">RAG 宗師心法</span>
+            </div>
+            <h3 class="font-serif text-xl font-bold text-gold-gradient mt-1">
+              榮格深層心理學與現代占星宗師指引
+            </h3>
+          </div>
+          <span class="text-xs text-dark-muted italic">「事件的意義高於預測 · 覺察即是個體化的起點」</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- 卡爾·榮格 -->
+          <div class="p-4 rounded-xl bg-black/40 border border-dark-gold/20 flex flex-col justify-between hover:border-dark-gold/50 transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-serif text-xs font-bold text-amber-300">卡爾·榮格 (Carl Jung)</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-300/90 border border-amber-500/30">共時性與個體化</span>
+              </div>
+              <p class="text-xs text-dark-muted leading-relaxed">
+                「在潛意識被引導為意識之前，它將主宰你的人生，而你將稱其為命運。」本命星盤是無意識原型的神聖鏡子，困難相位正是照亮心理陰影的契機。
+              </p>
+            </div>
+            <span class="text-[10px] text-dark-gold/70 mt-3 pt-2 border-t border-dark-gold/10 font-serif">《榮格心理占星心法》</span>
+          </div>
+
+          <!-- 丹·路德雅爾 -->
+          <div class="p-4 rounded-xl bg-black/40 border border-dark-gold/20 flex flex-col justify-between hover:border-dark-gold/50 transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-serif text-xs font-bold text-cyan-300">丹·路德雅爾 (Dane Rudhyar)</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300/90 border border-cyan-500/30">現代人本占星之父</span>
+              </div>
+              <p class="text-xs text-dark-muted leading-relaxed">
+                「事件不會平白無故降臨，而是人在內在心理結構中呼喚了共振的經驗。」占星諮詢核心在於為生命危機賦予意義，啟動自我實現。
+              </p>
+            </div>
+            <span class="text-[10px] text-dark-gold/70 mt-3 pt-2 border-t border-dark-gold/10 font-serif">《人本占星學綱要》</span>
+          </div>
+
+          <!-- 莉茲·格林 -->
+          <div class="p-4 rounded-xl bg-black/40 border border-dark-gold/20 flex flex-col justify-between hover:border-dark-gold/50 transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-serif text-xs font-bold text-violet-300">莉茲·格林 (Liz Greene)</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-violet-950/60 text-violet-300/90 border border-violet-500/30">土星奧祕與靈魂基石</span>
+              </div>
+              <p class="text-xs text-dark-muted leading-relaxed">
+                「土星是靈魂在物質界最嚴格也最忠實的導師。」挫折與考驗並非宿命懲罰，三十年週期鍛造後，盲點將昇華為人生不可撼動的卓越成就。
+              </p>
+            </div>
+            <span class="text-[10px] text-dark-gold/70 mt-3 pt-2 border-t border-dark-gold/10 font-serif">《土星：從新觀點看老魔鬼》</span>
+          </div>
+
+          <!-- 史蒂芬·阿若優 -->
+          <div class="p-4 rounded-xl bg-black/40 border border-dark-gold/20 flex flex-col justify-between hover:border-dark-gold/50 transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-serif text-xs font-bold text-emerald-300">史蒂芬·阿若優 (Stephen Arroyo)</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-950/60 text-emerald-300/90 border border-emerald-500/30">四元素能量心理學</span>
+              </div>
+              <p class="text-xs text-dark-muted leading-relaxed">
+                四大元素（火之靈性熱忱、土之物質定錨、風之觀念溝通、水之情感共振）在個體內的動態流轉，是心靈轉化與業力平衡的真實鑰匙。
+              </p>
+            </div>
+            <span class="text-[10px] text-dark-gold/70 mt-3 pt-2 border-t border-dark-gold/10 font-serif">《占星、業力與轉化》</span>
+          </div>
+        </div>
+      </div>
+
       <!-- 🌟 AI 靈犀全幅深度解析專區 (位於下方一整列，長文自動展開，高雅閱讀) -->
       <InPageAiAnalysis
         v-if="chart"
@@ -177,7 +251,7 @@
         :summary="`月相原型: ${phaseName} · 相位數: ${chart.aspects?.length || 0}個`"
         :raw-data="chart"
         :prompt="aiPrompt"
-        button-text="✨ 啟動 AI 現代人本與心理占星全盤深度解析"
+        button-text="✨ 啟動 AI 現代人本與心理占星全盤深度解析（融匯榮格與宗師心法）"
       />
     </div>
   </div>
@@ -200,7 +274,7 @@ const phaseName = computed(() => chart.value?.lunarPhase?.phaseName || '滿月')
 
 const aiPrompt = computed(() => {
   if (!chart.value) return '';
-  return `請以現代人本與心理占星顧問身份，為我深度解讀此西洋本命星盤：太陽落在「${sunSign.value}」，月亮落在「${moonSign.value}」，上升點 (ASC) 落在「${ascSign.value}」，月相原型為「${phaseName.value}」。請以專業、客觀且具備心理學深度的視角，剖析我的顯意識追求、潛意識安全感需索、核心相位張力，並給予具體可落地的生活實踐與心靈成長建言。`;
+  return `請以現代人本與心理占星顧問身份，融匯卡爾·榮格（Carl Jung）深層心理學、丹·路德雅爾（Dane Rudhyar）人本占星與莉茲·格林（Liz Greene）宗師心法，為我深度解讀此西洋本命星盤：太陽落在「${sunSign.value}」，月亮落在「${moonSign.value}」，上升點 (ASC) 落在「${ascSign.value}」，月相原型為「${phaseName.value}」。請以專業、客觀且具備心理學深度的視角，剖析我的顯意識英雄之旅追求、潛意識安全感需索、核心相位張力與陰影整合功課，並給予具體可落地的生活實踐與心靈成長建言。`;
 });
 
 function handleCalculate() {

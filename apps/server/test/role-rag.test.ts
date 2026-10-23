@@ -217,6 +217,53 @@ describe('🌟 Role-RAG 角色化專屬顧問與去仙人化語氣意圖測試 (
       expect(reply).toContain('名位相等');
       expect(reply).not.toMatch(/老夫|貧道|天機星君|道友/);
     });
+
+    it('WESTERN 應能檢索出榮格、人本占星與當代占星宗師 RAG 知識', async () => {
+      const westernKnowledge = await retrieveModuleKnowledge(
+        'WESTERN',
+        { title: '個人占星盤', rawData: { sunSign: '天蠍座' } },
+        '我想了解榮格深層心理學與陰影整合心法'
+      );
+      expect(westernKnowledge).toContain('榮格');
+      expect(westernKnowledge).toMatch(/共時性|個體化|陰影/);
+    });
+
+    it('TAROT 應能檢索出愛德華·韋特、蕾切爾·波拉克與瑪麗·格利爾宗師 RAG 知識', async () => {
+      const tarotKnowledge = await retrieveModuleKnowledge(
+        'TAROT',
+        { title: '每日占卜', rawData: { spreadName: '單張牌神諭' } },
+        '請以韋特與波拉克宗師心法解析逆位牌'
+      );
+      expect(tarotKnowledge).toMatch(/韋特|波拉克|格利爾/);
+      expect(tarotKnowledge).toMatch(/愚人之旅|圖解之鑰|逆位/);
+    });
+
+    it('WESTERN 與 TAROT 離線合成器應完整結構化輸出宗師心法與深層覺察章節', () => {
+      const mockMsg = [{ role: 'user' as const, content: '請為我進行深刻的心靈覺察與指導' }];
+
+      const westernReply = generateProfessionalSynthesizerReply(mockMsg, {
+        moduleType: 'WESTERN',
+        title: '西洋本命盤',
+        rawData: { sunSign: '獅子座', moonSign: '雙魚座', ascendantSign: '天蠍座' },
+      });
+      expect(westernReply).toContain('榮格');
+      expect(westernReply).toContain('個體化');
+      expect(westernReply).toContain('丹·路德雅爾');
+      expect(westernReply).not.toMatch(/老夫|貧道|天機星君|道友/);
+
+      const tarotReply = generateProfessionalSynthesizerReply(mockMsg, {
+        moduleType: 'TAROT',
+        title: '時間之流牌陣',
+        rawData: {
+          spreadName: '三張牌',
+          drawnCards: [{ card: { nameZh: '愚者' }, isReversed: false }],
+        },
+      });
+      expect(tarotReply).toContain('愛德華·韋特');
+      expect(tarotReply).toContain('蕾切爾·波拉克');
+      expect(tarotReply).toContain('愚人之旅');
+      expect(tarotReply).not.toMatch(/老夫|貧道|天機星君|道友/);
+    });
   });
 
   describe('TC-C01: Demo Mode 外鍵安全與持久化完整性 (CR-02 & CR-04)', () => {
