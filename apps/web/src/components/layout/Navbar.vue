@@ -161,6 +161,7 @@ const divinationFeatures = [
   { path: '/ziwei', title: '紫微斗數', icon: '🌌' },
   { path: '/bazi', title: '四柱八字', icon: '📜' },
   { path: '/synastry', title: '八字合婚', icon: '💍' },
+  { path: '/annual-planner', title: '流年生活曆', icon: '🗓️' },
   { path: '/qizheng', title: '七政四餘', icon: '🪐' },
   { path: '/almanac', title: '每日黃曆', icon: '📅' },
   { path: '/iching', title: '周易卜卦', icon: '☯️' },

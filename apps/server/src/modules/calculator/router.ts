@@ -12,6 +12,8 @@ import {
   calculateWesternNatalChart,
   drawTarotSpread,
   calculateQizhengChart,
+  calculateAnnualDestinyCalendar,
+  evaluateHabitResonance,
   FiveElement,
 } from '@celestial/astro-core';
 import { prisma } from '@celestial/database';
@@ -253,3 +255,57 @@ calculatorRouter.post('/qizheng', async (req: Request, res: Response) => {
     return res.status(500).json({ success: false, message: err.message || '七政四餘天星演算失敗' });
   }
 });
+
+// 9. 推算流年曆 (Annual Destiny Calendar)
+calculatorRouter.post('/annual-calendar', async (req: Request, res: Response) => {
+  try {
+    const { birthDate, gender = '男', targetYear, longitude = 120.0 } = req.body;
+    if (!birthDate) {
+      return res.status(400).json({ success: false, message: '請提供出生時間 (birthDate)' });
+    }
+
+    const calendar = calculateAnnualDestinyCalendar(
+      new Date(birthDate),
+      gender as '男' | '女',
+      targetYear ? Number(targetYear) : undefined,
+      Number(longitude)
+    );
+
+    return res.json({
+      success: true,
+      data: calendar,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message || '流年曆演算失敗' });
+  }
+});
+
+// 10. 流年生活起居與命盤諧振規劃診斷 (Annual Life Planner Diagnostic)
+calculatorRouter.post('/annual-planner/analyze', async (req: Request, res: Response) => {
+  try {
+    const { birthDate, gender = '男', targetYear, longitude = 120.0, habits = [] } = req.body;
+    if (!birthDate) {
+      return res.status(400).json({ success: false, message: '請提供出生時間 (birthDate)' });
+    }
+
+    const calendar = calculateAnnualDestinyCalendar(
+      new Date(birthDate),
+      gender as '男' | '女',
+      targetYear ? Number(targetYear) : undefined,
+      Number(longitude)
+    );
+
+    const evaluation = evaluateHabitResonance(calendar, habits);
+
+    return res.json({
+      success: true,
+      data: {
+        calendar,
+        evaluation,
+      },
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message || '起居規劃診斷失敗' });
+  }
+});
+

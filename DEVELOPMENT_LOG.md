@@ -547,4 +547,34 @@
     - 全專案 78/78 項自動化測試 100% 通過。
     - `pnpm -r build` 全套件編譯 0 警告 0 錯誤。
 - **剩餘事項 (Remaining)**：
+  - 進入 Phase 23：實作推算流年曆、生活起居紀錄與命盤諧振個人化生活規劃功能。
+
+---
+
+### 檢核點回報: Phase 23 (推算流年曆、生活起居紀錄、命盤五行諧振與生活規劃引擎)
+- **當前任務**：Task 23.1 ~ Task 23.5 (流年曆推演、生活起居資料模型、諧振評估、AI生活規劃師、前端互動視圖)
+- **已完成事項 (Completed)**：
+  - **1. 流年命曆與五虎遁十二流月推算引擎 (`packages/astro-core/src/annual-planner/`)**：
+    - 實作 `calculateAnnualDestinyCalendar`：依生辰與目標流年（如 2026 丙午年）推算歲次天干地支、納音、日主十神格局與紫微流年大盤四化。
+    - 實作五虎遁年起月法，排演正月至十二月之流月干支、月十神、紫微流月命宮、月令四化、氣場能量分與四時調神起居要旨（《黃帝內經》春生夏長秋收冬藏）。
+  - **2. 生活起居資料持久層與 CRUD API (`packages/database` & `apps/server`)**：
+    - 在 Prisma Schema 新增 `DailyHabitLog` 模型（包含作息時長、品質、飲食結構、水量、運動分鐘、精力星級、隨記備忘、標籤），完成 `db:push`。
+    - 實作 `apps/server/src/modules/habits/router.ts`，提供 `GET/POST/PUT/DELETE /api/v1/habits`，相容會員認證與 Demo Mode 訪客體驗。
+  - **3. 命盤五行諧振診斷與專屬生活規劃書 (`evaluateHabitResonance`)**：
+    - 依據生活起居數據與本命喜用五行生剋動態計算諧振調和度（0-100分），產出木火土金水五行滋養雷達與作息/飲食/運動專項建言。
+    - 生成結構化專屬行動規劃清單（子時深睡回血法、五味通關水液調理、晨曦活氧舒筋律動、重大決策避煞指引）。
+  - **4. 後端計算端點與 RAG 智能規劃顧問**：
+    - 新增 `POST /api/v1/calculator/annual-calendar` 與 `POST /api/v1/calculator/annual-planner/analyze`。
+    - 在 `modules/llm/service.ts` 註冊 `ANNUAL_PLANNER` 角色與離線專業生活規劃合成器。
+  - **5. 前端生活行運曆視圖 (`apps/web/src/views/AnnualPlannerView.vue`)**：
+    - 支援目標年份快捷切換、一鍵載入已存檔案、流年歲君總綱徽章。
+    - 十二流月卡片網格與進度條、生活起居追蹤與診斷儀表板、彈窗紀錄、示範數據注入、以及 `InPageAiAnalysis` 全幅 AI 規劃書。
+    - 在 `Navbar.vue` 增設「🗓️ 流年生活曆」快速入口。
+- **已驗證事項 (Verified)**：
+  - 單元測試：`astro-core.test.ts` 新增流年曆與起居諧振測試案例（25/25 通過）。
+  - 整合測試：`api.test.ts` 新增端點與 Habit CRUD 測試案例（26/26 通過）。
+  - RAG 測試：`role-rag.test.ts` 覆蓋率 100%（19/19 通過）。
+  - 全專案 83 項自動化測試 100% 綠燈通過。
+  - Monorepo 全套件建置檢查 `pnpm -r build` 成功。
+- **剩餘事項 (Remaining)**：
   - 將全部變更提交並推送至 GitHub remote (`git push origin main`)。

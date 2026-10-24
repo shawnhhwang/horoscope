@@ -19,6 +19,7 @@ model User {
   updatedAt     DateTime       @updatedAt
   profiles      BirthProfile[]
   readings      ReadingRecord[]
+  habitLogs     DailyHabitLog[]
 }
 
 model BirthProfile {
@@ -52,6 +53,23 @@ model ReadingRecord {
   isFavorite    Boolean       @default(false)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+}
+
+model DailyHabitLog {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date            String   // 格式 YYYY-MM-DD
+  sleepHours      Float    @default(7.0)
+  sleepQuality    String   @default("良好") // 優質, 良好, 普通, 淺眠疲倦, 嚴重失眠
+  dietType        String   @default("均衡清淡") // 均衡清淡, 多蔬少油, 辛辣油膩, 甜食生冷, 外食應酬, 間歇斷食
+  waterMl         Int      @default(2000)
+  exerciseMinutes Int      @default(30)
+  energyLevel     Int      @default(4) // 1-5
+  notes           String?
+  tags            String?  // JSON array stringified
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model SystemInterpretation {

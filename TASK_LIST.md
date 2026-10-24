@@ -464,6 +464,30 @@
 
 ---
 
+## Phase 23: 流年生活行運曆、起居習慣日記與 AI 規劃
+
+- [x] **Task 23.1: 流年命曆與五虎遁十二流月推算引擎**
+  - **範圍**：在 `packages/astro-core/src/annual-planner/` 實作 `calculateAnnualDestinyCalendar`，結合流年天干、日主十神、紫微流年命宮、流年四化與五虎遁十二流月曆（月干支、月十神、紫微流月命宮、四時生活要旨）。
+  - **驗證方式**：`astro-core.test.ts` 驗證流年歲君、十二流月干支與四化。
+
+- [x] **Task 23.2: 生活起居資料持久層與 CRUD API**
+  - **範圍**：在 `schema.prisma` 新增 `DailyHabitLog` 模型並推送 SQLite；在 `apps/server/src/modules/habits/router.ts` 實作 `GET/POST/PUT/DELETE /api/v1/habits`，相容會員認證與 Demo 模式。
+  - **驗證方式**：`api.test.ts` 測試完整起居日誌生命週期通過。
+
+- [x] **Task 23.3: 命盤五行諧振診斷與專屬生活規劃書 (Habit-Chart Resonance)**
+  - **範圍**：實作 `evaluateHabitResonance`，對比生活起居數據與本命喜用五行，產出調和度評分（0-100分）、五行滋養雷達與落地生活行動清單 (Action Plans)。
+  - **驗證方式**：單元測試斷言五行滋養分數與行動建議清單。
+
+- [x] **Task 23.4: RAG 規劃顧問 Persona 與後端計算路由**
+  - **範圍**：新增 `POST /api/v1/calculator/annual-calendar` 與 `POST /api/v1/calculator/annual-planner/analyze`；在 `modules/llm/service.ts` 註冊 `ANNUAL_PLANNER` 現代起居規劃顧問與離線合成器。
+  - **驗證方式**：`api.test.ts` 與 `role-rag.test.ts` 驗證通過。
+
+- [x] **Task 23.5: 前端 AnnualPlannerView 與導覽入口**
+  - **範圍**：建立 `apps/web/src/views/AnnualPlannerView.vue`，包含流年總綱徽章、十二流月卡片網格、起居追蹤與診斷儀表板、示範數據注入、AI 深度規劃書；在 `Navbar.vue` 增設導航入口。
+  - **驗證方式**：前端生產打包 `pnpm --filter @celestial/web build` 0 錯誤通過。
+
+---
+
 ## 多步驟檢核點規範 (Rule 10 Checkpoint Protocol)
 
 在執行上述各子任務時，必須遵循以下多步驟總結格式：

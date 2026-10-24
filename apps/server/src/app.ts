@@ -14,6 +14,7 @@ import { readingsRouter } from './modules/readings/router.js';
 import { adminRouter } from './modules/admin/router.js';
 import { llmRouter } from './modules/llm/router.js';
 import { almanacRouter } from './modules/almanac/router.js';
+import { habitsRouter } from './modules/habits/router.js';
 
 export function createApp(): Express {
   const app = express();
@@ -54,6 +55,7 @@ export function createApp(): Express {
   app.use('/api/v1/admin', adminRouter);
   app.use('/api/v1/llm', llmRouter);
   app.use('/api/v1/almanac', almanacRouter);
+  app.use('/api/v1/habits', habitsRouter);
 
   // 404 路由攔截
   app.use((_req: Request, res: Response) => {

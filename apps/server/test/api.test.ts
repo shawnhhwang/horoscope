@@ -183,6 +183,44 @@ describe('🚀 萬象天儀 後端 API 服務整合測試', () => {
       expect(queryRes.body.data.date).toBe('2026-10-20');
       expect(queryRes.body.data.suitableActivities.length).toBeGreaterThan(0);
     });
+
+    it('POST /api/v1/calculator/annual-calendar 應推算流年曆與十二流月行運', async () => {
+      const res = await request(app).post('/api/v1/calculator/annual-calendar').send({
+        birthDate: '1992-06-18T10:30:00Z',
+        gender: '男',
+        targetYear: 2026,
+      });
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.targetYear).toBe(2026);
+      expect(res.body.data.yearGanZhi).toBe('丙午');
+      expect(res.body.data.monthlyHorizons.length).toBe(12);
+      expect(res.body.data.ziweiYearlyInfo.siHua.length).toBe(4);
+    });
+
+    it('POST /api/v1/calculator/annual-planner/analyze 應結合起居習慣進行命盤諧振評估與生活規劃', async () => {
+      const res = await request(app).post('/api/v1/calculator/annual-planner/analyze').send({
+        birthDate: '1992-06-18T10:30:00Z',
+        gender: '男',
+        targetYear: 2026,
+        habits: [
+          {
+            date: '2026-06-01',
+            sleepHours: 7.5,
+            sleepQuality: '良好',
+            dietType: '均衡清淡',
+            waterMl: 2200,
+            exerciseMinutes: 30,
+            energyLevel: 4,
+          },
+        ],
+      });
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.calendar.targetYear).toBe(2026);
+      expect(res.body.data.evaluation.resonanceScore).toBeGreaterThanOrEqual(50);
+      expect(res.body.data.evaluation.actionPlans.length).toBeGreaterThanOrEqual(2);
+    });
   });
 
   describe('3. 個人命盤庫與測算日記 (Profiles & Readings)', () => {
@@ -227,6 +265,41 @@ describe('🚀 萬象天儀 後端 API 服務整合測試', () => {
         });
       expect(res.status).toBe(201);
       expect(res.body.data.aiSummary).toContain('星星牌');
+    });
+
+    it('POST / GET / DELETE /api/v1/habits 應能完整管理每日生活起居日記', async () => {
+      // 1. 新增
+      const postRes = await request(app)
+        .post('/api/v1/habits')
+        .set('Authorization', `Bearer ${memberToken}`)
+        .send({
+          date: '2026-10-24',
+          sleepHours: 8.0,
+          sleepQuality: '優質',
+          dietType: '均衡清淡',
+          waterMl: 2500,
+          exerciseMinutes: 45,
+          energyLevel: 5,
+          notes: '全天精力充沛',
+          tags: ['早起', '冥想'],
+        });
+      expect(postRes.status).toBe(201);
+      expect(postRes.body.data.date).toBe('2026-10-24');
+      const habitId = postRes.body.data.id;
+
+      // 2. 查詢
+      const getRes = await request(app)
+        .get('/api/v1/habits')
+        .set('Authorization', `Bearer ${memberToken}`);
+      expect(getRes.status).toBe(200);
+      expect(getRes.body.data.length).toBeGreaterThanOrEqual(1);
+
+      // 3. 刪除
+      const delRes = await request(app)
+        .delete(`/api/v1/habits/${habitId}`)
+        .set('Authorization', `Bearer ${memberToken}`);
+      expect(delRes.status).toBe(200);
+      expect(delRes.body.success).toBe(true);
     });
   });
 

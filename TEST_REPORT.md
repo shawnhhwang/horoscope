@@ -10,14 +10,14 @@
 
 - **測試框架**：[Vitest v1.6.1](https://vitest.dev/) + [Supertest v7.0.0](https://github.com/ladjs/supertest)
 - **總測試套件數**：4 個獨立測試檔案 (`packages/astro-core`, `apps/server/test/api.test.ts`, `apps/server/test/role-rag.test.ts`, `apps/server/test/admin-features.test.ts`)
-- **總測試案例數**：**78 項**（78 passed / 0 failed / 0 skipped）
+- **總測試案例數**：**83 項**（83 passed / 0 failed / 0 skipped）
 - **測試通過率**：**100%**
 - **建置通過率**：**100%** (Monorepo 所有套件全數編譯成功)
 
 ```
 Test Files  4 passed (4)
-     Tests  78 passed (78)
-  Coverage  100% Intent Coverage on Astronomical, Divination, Synastry, Horoscope, Role-RAG, Database Management & Admin Tools
+     Tests  83 passed (83)
+  Coverage  100% Intent Coverage on Astronomical, Divination, Synastry, Horoscope, Annual Planner, Habits, Role-RAG, Database Management & Admin Tools
 ```
 
 ---
@@ -26,7 +26,7 @@ Test Files  4 passed (4)
 
 測試檔案：[`packages/astro-core/test/astro-core.test.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/test/astro-core.test.ts)  
 執行指令：`npx pnpm --filter @celestial/astro-core test`  
-測試案例數：**23 項** (100% 通過)
+測試案例數：**25 項** (100% 通過)
 
 | 測試分類 | 測試案例名稱 | 驗證意圖 (Intent Verification) | 結果 |
 | :--- | :--- | :--- | :---: |
@@ -53,6 +53,8 @@ Test Files  4 passed (4)
 | **塔羅牌庫與牌陣** | 全套 78 張牌庫應 100% 映射至實體牌面圖片檔案且檔案非空 | 驗證大阿爾克那(22張)與小阿爾克那(56張)共78張實體畫作檔案全數存在、非空且大於 10KB。 | **PASS** |
 | **七政四餘天星盤** | 應正確推導七政（七大行星）與四餘（羅計氣孛）共11星體坐標與二十八宿 | 驗證日、月、五星、羅睺、計都、月孛、紫炁黃道天球坐標、28 宿度數與恩難仇用四星神煞格局。 | **PASS** |
 | **每日黃曆與運勢** | 應產出完整農曆年月日、建除十二神、二十八宿禽星值日與吉凶宜忌 | 驗證農曆干支、建除十二神、九星飛泊、宜忌神煞、三煞相沖與十二時辰青龍明堂吉凶推演。 | **PASS** |
+| **流年曆推演** | 應正確推演指定流年之年綱、日主十神與五虎遁十二流月行運曆 | 驗證歲次干支、納音、日主十神、紫微流年命宮四化（長度4純星名陣列）與12流月干支節氣推排。 | **PASS** |
+| **起居命盤諧振** | 應能依據生活起居紀錄精準評估命盤諧振度並產出個人化生活規劃書 | 驗證作息、飲食、運動各項指標權重、五行能量滋養度計算與客製化四時落地生活規劃行動清單。 | **PASS** |
 
 ---
 
@@ -60,12 +62,12 @@ Test Files  4 passed (4)
 
 測試檔案：[`apps/server/test/api.test.ts`](file:///home/coder/Codebase/Horoscope/apps/server/test/api.test.ts)  
 執行指令：`npx pnpm --filter @celestial/server test`  
-測試案例數：**23 項** (100% 通過)
+測試案例數：**26 項** (100% 通過)
 
 涵蓋：
 1. 認證模組 (Auth Module)：註冊、密碼校驗、JWT Token 簽發與 `/api/v1/auth/me` 個人資料讀取。
-2. 10 大排盤計算端點完整性：紫微、八字、八字合婚 (`bazi/synastry`)、家庭群組 (`family/group`)、周易六爻、姓名學、西洋星盤、塔羅抽牌、七政四餘、每日黃曆。
-3. 個人檔案庫與測算日記 CRUD：`/api/v1/profiles` 與 `/api/v1/readings` 建立、查詢與關聯驗證。
+2. 12 大排盤計算端點完整性：紫微、八字、八字合婚 (`bazi/synastry`)、家庭群組 (`family/group`)、流年曆 (`calculator/annual-calendar`)、生活起居規劃診斷 (`calculator/annual-planner/analyze`)、周易六爻、姓名學、西洋星盤、塔羅抽牌、七政四餘、每日黃曆。
+3. 個人檔案庫、測算日記與起居習慣日記 CRUD：`/api/v1/profiles`、`/api/v1/readings`、`/api/v1/habits` 建立、查詢與安全刪除全生命週期驗證。
 4. 後台管理權限隔離 (RBAC)：一般 VIP 存取被拒 403 Forbidden、管理員數據大盤與命理辭庫列表查詢。
 5. LLM 智能助手與後台配置：端點狀態、命盤上下文注入與動態修改助手配置。
 
@@ -131,4 +133,4 @@ Test Files  4 passed (4)
 
 ## 七、結論與生產就緒宣言 (Conclusion)
 
-所有 [`code_review.md`](file:///home/coder/Codebase/Horoscope/code_review.md) 列舉之 P1 與 P2 問題均已依據 [`AGENTS.md`](file:///home/coder/Codebase/Horoscope/AGENTS.md) 核心準則外科式精確修復。全專案 78 項自動化測試 100% 通過，Monorepo 全量 Build 0 錯誤，已全面達到生產級品質標準。
+所有 [`code_review.md`](file:///home/coder/Codebase/Horoscope/code_review.md) 列舉之 P1 與 P2 問題均已依據 [`AGENTS.md`](file:///home/coder/Codebase/Horoscope/AGENTS.md) 核心準則外科式精確修復。全專案 83 項自動化測試 100% 通過，Monorepo 全量 Build 0 錯誤，已全面達到生產級品質標準。

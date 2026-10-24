@@ -36,4 +36,8 @@ export * from './qizheng/calculator.js';
 export * from './almanac/types.js';
 export * from './almanac/calculator.js';
 
+// 流年曆與生活起居規劃
+export * from './annual-planner/types.js';
+export * from './annual-planner/calculator.js';
+
 

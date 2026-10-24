@@ -20,6 +20,8 @@ import {
   generateFullDeck,
   calculateQizhengChart,
   calculateDailyAlmanac,
+  calculateAnnualDestinyCalendar,
+  evaluateHabitResonance,
 } from '../src/index.js';
 
 describe('🌟 萬象天儀 核心演算法庫 Intent-Based Tests', () => {
@@ -490,6 +492,88 @@ describe('🌟 萬象天儀 核心演算法庫 Intent-Based Tests', () => {
       // 十天干日主指南
       expect(Object.keys(almanac.dayMasterGuidance).length).toBe(10);
       expect(almanac.dayMasterGuidance['甲'].tenGod).toBeDefined();
+    });
+  });
+
+  describe('10. 流年曆與生活起居規劃 (Annual Destiny Calendar & Life Planner)', () => {
+    it('應正確推演指定流年 (2026 丙午) 之年綱、日主十神與十二流月行運曆', () => {
+      const birthDate = new Date('1990-05-15T08:30:00Z');
+      const calendar = calculateAnnualDestinyCalendar(birthDate, '男', 2026);
+
+      expect(calendar.targetYear).toBe(2026);
+      expect(calendar.yearGanZhi).toBe('丙午');
+      expect(calendar.yearStem).toBe('丙');
+      expect(calendar.yearBranch).toBe('午');
+      expect(calendar.animal).toBe('馬');
+      expect(calendar.yearElement).toBe('火');
+      expect(calendar.dayMaster).toBeDefined();
+      expect(calendar.yearTenGod).toBeDefined();
+
+      // 流年紫微大盤
+      expect(calendar.ziweiYearlyInfo.palaceBranch).toBe('午');
+      expect(calendar.ziweiYearlyInfo.siHua).toEqual(['天同', '天機', '文昌', '廉貞']);
+      expect(calendar.ziweiYearlyInfo.siHua.length).toBe(4);
+
+      // 十二流月細部
+      expect(calendar.monthlyHorizons.length).toBe(12);
+      const m1 = calendar.monthlyHorizons[0];
+      expect(m1.lunarMonth).toBe(1);
+      expect(m1.branch).toBe('寅');
+      // 丙辛之歲尋庚上 (五虎遁丙年正月為庚寅)
+      expect(m1.stem).toBe('庚');
+      expect(m1.ganzhi).toBe('庚寅');
+      expect(m1.siHua).toEqual(['太陽', '武曲', '太陰', '天同']);
+      expect(m1.habitFocus.sleepRecommendation).toContain('臥');
+      expect(m1.habitFocus.dietRecommendation).toBeDefined();
+      expect(m1.habitFocus.exerciseRecommendation).toBeDefined();
+      expect(m1.habitFocus.decisionTiming).toBeDefined();
+
+      // 十二月為辛丑
+      const m12 = calendar.monthlyHorizons[11];
+      expect(m12.lunarMonth).toBe(12);
+      expect(m12.branch).toBe('丑');
+      expect(m12.stem).toBe('辛');
+    });
+
+    it('應能依據生活起居紀錄精準評估命盤諧振度並產出個人化生活規劃書', () => {
+      const birthDate = new Date('1990-05-15T08:30:00Z');
+      const calendar = calculateAnnualDestinyCalendar(birthDate, '男', 2026);
+
+      const sampleHabits = [
+        {
+          date: '2026-06-10',
+          sleepHours: 7.5,
+          sleepQuality: '良好',
+          dietType: '均衡清淡',
+          waterMl: 2200,
+          exerciseMinutes: 40,
+          energyLevel: 4,
+          notes: '晨跑 3 公里，思緒清明',
+          tags: ['早起', '慢跑'],
+        },
+        {
+          date: '2026-06-11',
+          sleepHours: 8.0,
+          sleepQuality: '優質',
+          dietType: '多蔬少油',
+          waterMl: 2500,
+          exerciseMinutes: 30,
+          energyLevel: 5,
+          notes: '專注推進合約審閱',
+          tags: ['冥想', '早睡'],
+        },
+      ];
+
+      const evaluation = evaluateHabitResonance(calendar, sampleHabits);
+
+      expect(evaluation.resonanceScore).toBeGreaterThanOrEqual(60);
+      expect(evaluation.resonanceScore).toBeLessThanOrEqual(100);
+      expect(evaluation.resonanceLevel).toMatch(/極佳|良好|普通|需調整|警示/);
+      expect(evaluation.elementalHarmony.waterScore).toBeGreaterThanOrEqual(50);
+      expect(evaluation.sleepAnalysis.avgSleepHours).toBeCloseTo(7.75, 1);
+      expect(evaluation.dietAnalysis.avgWaterMl).toBeGreaterThanOrEqual(2000);
+      expect(evaluation.actionPlans.length).toBeGreaterThanOrEqual(3);
+      expect(evaluation.holisticSummary).toContain(String(calendar.targetYear));
     });
   });
 });

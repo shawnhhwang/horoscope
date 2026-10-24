@@ -41,6 +41,11 @@
     *   每日精選宜忌（祭祀、祈福、嫁娶、出行、安葬等）、三煞方位、相沖生肖與胎神佔方。
     *   喜神、財神、福神三吉方八卦定位、日上起時十二時辰吉凶（青龍、明堂、金匱、天德等）。
     *   十二生肖今日運勢評分與四柱日主（甲乙丙丁戊己庚辛壬癸）五行生剋天干諧振指引。
+*   **流年生活行運曆與起居規劃 (Annual Destiny Calendar & Life Rhythm Planner)**：
+    *   **五虎遁年起月十二流月曆**：自動排演目標流年（如 2026 丙午年）之歲次大綱、日主十神格局、紫微流年命宮主星與流年四化（祿權科忌純星名陣列），並以五虎遁法推演十二流月干支、月十神、紫微流月命宮與四時氣場評分。
+    *   **生活起居習慣追蹤 (Daily Habit Journal)**：提供每日作息睡眠時長與品質、五味飲食結構、飲水量、運動時間、身心精力狀態（1-5星）與重要決策隨記。
+    *   **命盤五行諧振診斷 (Habit-Chart Resonance 0-100分)**：將使用者近期實際起居數據與本命喜用五行、流年火旺氣場即時交叉對比，產出木火土金水滋養度雷達、睡眠/飲食/運動專項診斷，並生成包含子時深睡、五味通關水液與決策避煞之專屬行動規劃書 (Action Plans)。
+    *   **天機靈犀 AI 規劃顧問 (In-Page AI Planner)**：專屬 `ANNUAL_PLANNER` 角色，將流年命盤與起居日記結構化注入，生成全年度生活節奏與避煞指南。
 
 ### 2. 姓名學與起名引擎 (Name Analysis & Recommendation)
 *   **康熙正統筆劃**：收錄正體字與特殊部首傳統筆劃數。
@@ -214,13 +219,13 @@ docker compose ps
 本專案遵循嚴格的 **Rule 9 (Intent-Based Testing)**，所有命理演算與業務邏輯皆有自動化測試保障：
 
 ```bash
-# 運行核心演算庫單元測試 (23 項全部通過)
+# 運行核心演算庫單元測試 (25 項全部通過)
 pnpm --filter @celestial/astro-core test
 
-# 運行後端 API、Role-RAG 與後台功能整合測試 (55 項全部通過)
+# 運行後端 API、Role-RAG 與後台功能整合測試 (58 項全部通過)
 pnpm --filter @celestial/server test
 
-# 運行全單元與整合測試 (全專案 78 項全部通過，100% 成功率)
+# 運行全單元與整合測試 (全專案 83 項全部通過，100% 成功率)
 pnpm test
 
 # 運行全專案構建檢查 (Monorepo 5 個套件全數編譯無誤)
@@ -242,6 +247,9 @@ pnpm build
 | `POST` | `/api/v1/calculator/bazi` | 四柱八字、十神與喜用神計算 | 可選 |
 | `POST` | `/api/v1/calculator/bazi/synastry` | 八字合婚五維評析、通關五行與紫微天紀合盤 | 可選 |
 | `POST` | `/api/v1/calculator/family/group` | 家庭群組比對、五行場域與後天八卦名位相等 | 可選 |
+| `POST` | `/api/v1/calculator/annual-calendar` | 流年生活行運曆推算 (歲君四化與五虎遁十二流月) | 可選 |
+| `POST` | `/api/v1/calculator/annual-planner/analyze` | 生活起居與命盤五行諧振評估及專屬生活規劃書 | 可選 |
+| `GET/POST/PUT/DELETE` | `/api/v1/habits(/:id)` | 每日生活起居習慣日記 CRUD (作息、飲食、運動、能量) | Bearer Token / Demo |
 | `POST` | `/api/v1/calculator/iching/cast` | 周易六爻金錢卦 / 梅花易數起卦 | 可選 |
 | `POST` | `/api/v1/calculator/naming/analyze` | 姓名三才五格與八字喜用評析 | 可選 |
 | `POST` | `/api/v1/calculator/western/natal` | 西洋本命星盤與五大主要相位 | 可選 |

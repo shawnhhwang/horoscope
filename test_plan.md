@@ -38,6 +38,7 @@
 | **TC-A09** | 八字合婚與天紀合盤 ([`synastry.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/bazi/synastry.ts)) | 輸入雙方八字生辰與性別 | 1. 計算天干五合、夫妻宮合沖、五行互補評分與通關五行。<br>2. 對標 ziwei-doushu-main 產出紫微斗數×倪海廈《天紀》五步合盤法、雙宮聯參總評、夫妻宮星曜倪師原話。 |
 | **TC-A10** | 家人群組與八卦名位 ([`synastry.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/bazi/synastry.ts)) | 輸入家庭成員陣列 (父、母、長子、次女) | 1. 推算全家五行場域主導/匱乏能量與 $C(N, 2)$ 關係矩陣。<br>2. 準確配置倪海廈《天紀·地脈道》後天八卦名位（乾父西北、坤母西南、震長子正東、離次女正南）與陽宅錯位禁忌。 |
 | **TC-A11** | 紫微行運大盤與純星名四化 ([`calculator.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/ziwei/calculator.ts)) | 輸入本命排盤與目標推演年份 (如 2026 丙午) | 1. 正確定位大限宮位（依虛歲命中十年區間）、流年歲次宮位（依目標年支）與小限宮位。<br>2. 大限、流年、小限各自之 `siHua` 均為長度為 4 的純星曜名稱字串陣列 `[祿, 權, 科, 忌]`。 |
+| **TC-A12** | 流年曆與生活起居規劃 ([`annual-planner`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/annual-planner/calculator.ts)) | 輸入本命生辰、目標流年與日常生活起居紀錄 (作息/飲食/運動/水份/精力) | 1. 精準推排五虎遁十二流月曆、月十神、月令四化與四時生活調神要旨。<br>2. 交叉對比本命喜用五行，計算諧振度評分 (0-100分) 並生成專屬行動規劃書 (Action Plans)。 |
 
 ---
 
@@ -61,6 +62,7 @@
 | **TC-C01** | Demo Mode 外鍵完整性驗證 ([`auth.ts`](file:///home/coder/Codebase/Horoscope/apps/server/src/middleware/auth.ts)) | 不帶真實註冊 JWT，僅帶 Header `x-demo-mode: true` 或 `Authorization: Bearer demo-admin-token`，呼叫 `POST /api/v1/profiles` 與 `POST /api/v1/readings` | 1. 後端自動映射至資料庫中真實存在的 Demo Admin 使用者 ID。<br>2. `POST /api/v1/profiles` 與 `POST /api/v1/readings` 皆回傳 `201 Created`，且可透過 `GET` 查詢與 `DELETE` 刪除，絕不發生 Foreign Key `500` 錯誤。 |
 | **TC-C02** | Admin RBAC 權限隔離 | 使用一般會員 (`role: 'MEMBER'`) 之真實 JWT 呼叫 `/api/v1/admin/stats`、`/api/v1/admin/users`、`/api/v1/admin/llm-config` | 必須回傳 `403 Forbidden`，防止越權讀取或篡改系統 LLM 設定。 |
 | **TC-C03** | 後台解釋規則 (RAG Rules) 8 大模組 CRUD | 透過 `/api/v1/admin/interpretations` 新增、修改、刪除包含 `QIZHENG`、`ALMANAC`、`WESTERN_NATAL` 等模組的規則 | 規則可正常寫入 SQLite 並立即在後續 [`retrieveModuleKnowledge`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/llm/service.ts#L291) 檢索中生效。 |
+| **TC-C04** | 起居日記 CRUD 與流年曆端點驗證 | 透過 `/api/v1/habits` 進行生活起居日記增刪改查，並呼叫 `/api/v1/calculator/annual-calendar` 與 `annual-planner/analyze` | 1. 支援依日期查詢、新增、更新、刪除起居紀錄，支援 Demo 模式。<br>2. 計算端點返回完整流年曆與諧振診斷資料。 |
 
 ---
 

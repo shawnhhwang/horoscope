@@ -26,6 +26,7 @@ describe('🌟 Role-RAG 角色化專屬顧問與去仙人化語氣意圖測試 (
     { code: 'ALMANAC', label: '通勝黃曆' },
     { code: 'BAZI_SYNASTRY', label: '八字合婚' },
     { code: 'FAMILY_GROUP', label: '家庭群組' },
+    { code: 'ANNUAL_PLANNER', label: '流年行運與生活起居規劃' },
   ];
 
   describe('TC-B01: 8 大模組專屬現代顧問角色注入驗證', () => {
