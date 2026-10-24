@@ -61,15 +61,25 @@ describe('🚀 萬象天儀 後端 API 服務整合測試', () => {
   });
 
   describe('2. 排盤計算模組 (Calculator Module)', () => {
-    it('POST /api/v1/calculator/ziwei 應成功排盤並校準真太陽時', async () => {
+    it('POST /api/v1/calculator/ziwei 應成功排盤並校準真太陽時，並輸出大限/流年/小限行運與純星曜四化', async () => {
       const res = await request(app).post('/api/v1/calculator/ziwei').send({
         birthDate: '1995-10-24T08:00:00Z',
         gender: '男',
         longitude: 121.5654,
+        targetYear: 2026,
       });
       expect(res.status).toBe(200);
       expect(res.body.data.chart.palacesList.length).toBe(12);
       expect(res.body.data.solarInfo.trueSolarTime).toBeDefined();
+
+      // 驗證 Horoscope 大限、流年、小限行運及其四化 (bare star-name array)
+      const horoscope = res.body.data.chart.horoscope;
+      expect(horoscope).toBeDefined();
+      expect(horoscope.targetYear).toBe(2026);
+      expect(horoscope.nominalAge).toBe(32);
+      expect(horoscope.decade.siHua.length).toBe(4);
+      expect(horoscope.yearly.siHua).toEqual(['天同', '天機', '文昌', '廉貞']);
+      expect(horoscope.smallLimit.siHua.length).toBe(4);
     });
 
     it('POST /api/v1/calculator/bazi 應產出四柱與十神喜用神', async () => {

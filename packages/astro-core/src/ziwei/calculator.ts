@@ -1,12 +1,17 @@
 import {
+  BareSiHuaArray,
   EarthlyBranch,
   FiveElementBureau,
   HeavenlyStem,
+  HoroscopeDecadeInfo,
+  HoroscopeSmallLimitInfo,
+  HoroscopeYearlyInfo,
   PalaceCell,
   PalaceName,
   StarBrightness,
   TransformationType,
   ZiweiChart,
+  ZiweiHoroscope,
 } from './types.js';
 import { detectPatterns, getMingGongSummary } from './patterns.js';
 import { Solar, Lunar } from 'lunar-typescript';
@@ -71,8 +76,8 @@ const YIN_STEM_MAP: Record<HeavenlyStem, HeavenlyStem> = {
   癸: '甲',
 };
 
-// 四化對應表 [化祿, 化權, 化科, 化忌]
-const SI_HUA_MAP: Record<HeavenlyStem, [string, string, string, string]> = {
+// 四化對應表 [化祿, 化權, 化科, 化忌] (Bare star-name array)
+export const SI_HUA_MAP: Record<HeavenlyStem, BareSiHuaArray> = {
   甲: ['廉貞', '破軍', '武曲', '太陽'],
   乙: ['天機', '天梁', '紫微', '太陰'],
   丙: ['天同', '天機', '文昌', '廉貞'],
@@ -160,7 +165,11 @@ function getZiweiIndex(bureauNum: number, lunarDay: number): number {
 /**
  * 核心紫微斗數排盤運算
  */
-export function calculateZiweiChart(birthDate: Date, gender: '男' | '女'): ZiweiChart {
+export function calculateZiweiChart(
+  birthDate: Date,
+  gender: '男' | '女' = '男',
+  targetDateOrYear?: Date | number
+): ZiweiChart {
   const solar = Solar.fromDate(birthDate);
   const lunar = solar.getLunar();
 
@@ -330,6 +339,20 @@ export function calculateZiweiChart(birthDate: Date, gender: '男' | '女'): Ziw
     const decadeStartAge = bureauNum + step * 10;
     const decadeEndAge = decadeStartAge + 9;
 
+    // 小限起宮計算 (寅午戌起辰4、申子辰起戌10、巳酉丑起未7、亥卯未起丑1)
+    let smallLimitStart = 4;
+    if (['申', '子', '辰'].includes(yearBranch)) {
+      smallLimitStart = 10;
+    } else if (['巳', '酉', '丑'].includes(yearBranch)) {
+      smallLimitStart = 7;
+    } else if (['亥', '卯', '未'].includes(yearBranch)) {
+      smallLimitStart = 1;
+    }
+    const smallLimitAge =
+      gender === '男'
+        ? ((branchIdx - smallLimitStart + 12) % 12) + 1
+        : ((smallLimitStart - branchIdx + 12) % 12) + 1;
+
     const cell: PalaceCell = {
       branch,
       stem,
@@ -341,6 +364,7 @@ export function calculateZiweiChart(birthDate: Date, gender: '男' | '女'): Ziw
       minorStars: [],
       decadeStartAge,
       decadeEndAge,
+      smallLimitAge,
     };
 
     // 加入主星
@@ -475,6 +499,102 @@ export function calculateZiweiChart(birthDate: Date, gender: '男' | '女'): Ziw
 
   chart.patterns = detectPatterns(chart);
   chart.mingGongSummary = getMingGongSummary(chart);
+  chart.horoscope = calculateZiweiHoroscope(chart, targetDateOrYear || new Date());
 
   return chart;
+}
+
+/**
+ * 依據目標西元日期或年份推算大限、流年、小限行運 (Horoscope)
+ * 其四化皆為乾淨的星曜名稱陣列 (bare star-name array: [祿, 權, 科, 忌])
+ */
+export function calculateZiweiHoroscope(
+  chart: ZiweiChart,
+  targetDateOrYear?: Date | number
+): ZiweiHoroscope {
+  const birthYear = new Date(chart.birthInfo.solarDate).getFullYear();
+  let targetYear: number;
+  if (typeof targetDateOrYear === 'number') {
+    targetYear = targetDateOrYear;
+  } else if (targetDateOrYear instanceof Date) {
+    targetYear = targetDateOrYear.getFullYear();
+  } else {
+    targetYear = new Date().getFullYear();
+  }
+
+  // 傳統虛歲 (Nominal Age)
+  const nominalAge = Math.max(1, targetYear - birthYear + 1);
+
+  // 1. 大限 (Decade Limit): 查找包含 nominalAge 之大限宮位
+  let decadeCell = chart.palacesList.find(
+    (p) => p.decadeStartAge <= nominalAge && nominalAge <= p.decadeEndAge
+  );
+  if (!decadeCell) {
+    decadeCell = chart.palacesList[0];
+  }
+  const decadeSiHua: BareSiHuaArray = SI_HUA_MAP[decadeCell.stem];
+  const decadeInfo: HoroscopeDecadeInfo = {
+    name: '大限',
+    palaceName: decadeCell.name,
+    branch: decadeCell.branch,
+    stem: decadeCell.stem,
+    ageRange: [decadeCell.decadeStartAge, decadeCell.decadeEndAge],
+    siHua: decadeSiHua,
+  };
+
+  // 2. 流年 (Annual Limit): 依目標年份天干地支推算
+  const yearStemIdx = (targetYear - 4) % 10;
+  const yearBranchIdx = (targetYear - 4) % 12;
+  const targetYearStem = STEMS[(yearStemIdx + 10) % 10];
+  const targetYearBranch = BRANCHES[(yearBranchIdx + 12) % 12];
+
+  const yearlyCell = chart.palaces[targetYearBranch] || chart.palacesList[0];
+  const yearlySiHua: BareSiHuaArray = SI_HUA_MAP[targetYearStem];
+  const yearlyInfo: HoroscopeYearlyInfo = {
+    name: '流年',
+    year: targetYear,
+    stem: targetYearStem,
+    branch: targetYearBranch,
+    palaceName: yearlyCell.name,
+    siHua: yearlySiHua,
+  };
+
+  // 3. 小限 (Small Limit / Minor Limit): 依出生年支與性別起宮
+  // 寅午戌起辰 (4)，申子辰起戌 (10)，巳酉丑起未 (7)，亥卯未起丑 (1)
+  const birthYearBranch = chart.birthInfo.lunarYearGanZhi.slice(-1) as EarthlyBranch;
+  let startBranchIdx = 4; // 辰
+  if (['申', '子', '辰'].includes(birthYearBranch)) {
+    startBranchIdx = 10; // 戌
+  } else if (['巳', '酉', '丑'].includes(birthYearBranch)) {
+    startBranchIdx = 7; // 未
+  } else if (['亥', '卯', '未'].includes(birthYearBranch)) {
+    startBranchIdx = 1; // 丑
+  }
+
+  // 男命順行，女命逆行
+  const isMale = chart.birthInfo.gender === '男';
+  const ageOffset = (nominalAge - 1) % 12;
+  const smallLimitBranchIdx = isMale
+    ? (startBranchIdx + ageOffset) % 12
+    : (startBranchIdx - ageOffset + 12) % 12;
+  const smallLimitBranch = BRANCHES[smallLimitBranchIdx];
+  const smallLimitCell = chart.palaces[smallLimitBranch] || chart.palacesList[0];
+  const smallLimitSiHua: BareSiHuaArray = SI_HUA_MAP[smallLimitCell.stem];
+
+  const smallLimitInfo: HoroscopeSmallLimitInfo = {
+    name: '小限',
+    age: nominalAge,
+    palaceName: smallLimitCell.name,
+    branch: smallLimitBranch,
+    stem: smallLimitCell.stem,
+    siHua: smallLimitSiHua,
+  };
+
+  return {
+    targetYear,
+    nominalAge,
+    decade: decadeInfo,
+    yearly: yearlyInfo,
+    smallLimit: smallLimitInfo,
+  };
 }

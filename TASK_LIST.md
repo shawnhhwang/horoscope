@@ -440,6 +440,30 @@
 
 ---
 
+## Phase 22: 紫微行運大盤、純星名四化陣列、語料原創合規改寫與 AGPL 感染風險修正
+
+- [x] **Task 22.1: 紫微斗數大限、流年、小限行運大盤推算引擎**
+  - **範圍**：在 `packages/astro-core/src/ziwei/` 實作 `calculateZiweiHoroscope`，回傳 `decade`、`yearly`、`smallLimit`，並在十二宮位各宮 `PalaceCell` 提供 `smallLimitAge`。
+  - **驗證方式**：`astro-core.test.ts` 驗證大限、流年、小限落宮與年歲區間正確。
+
+- [x] **Task 22.2: 流曜四化純星名陣列 (Bare Star-Name Array)**
+  - **範圍**：定義 `BareSiHuaArray = [string, string, string, string]`（如 `['廉貞', '破軍', '武曲', '太陽']`），分別對應 `[祿, 權, 科, 忌]`，避免冗贅物件包裝，便於前後端高效處理。
+  - **驗證方式**：單元測試與 API 測試驗證 `siHua` 為長度 4 之字串陣列。
+
+- [x] **Task 22.3: 命理合盤語料原創去侵權化改寫**
+  - **範圍**：改寫 `synastry.ts` 與 `seed-nihai.ts` 中的原話語料，提煉為純粹三合派易理、周易八卦方位與現代諮商視角，杜絕版權風險。
+  - **驗證方式**：種子數據重新生成無報錯，合盤功能正常。
+
+- [x] **Task 22.4: 瑞士星曆表 AGPL 感染風險更正與商用宣告**
+  - **範圍**：修正 `SPEC.MD` 與 `README.md`，釐清天體星曆為純 TypeScript 原生 Jean Meeus / 開普勒算法，0% AGPL 授權風險。
+  - **驗證方式**：文件全文審查確認無 AGPL / swisseph 殘留。
+
+- [x] **Task 22.5: 前端行運大盤展示與 API 串接**
+  - **範圍**：`ZiweiView.vue` 增設大限、流年、小限行運卡片與四化徽章；`api.test.ts` 驗證 `POST /api/v1/calculator/ziwei` 回傳 `horoscope`。
+  - **驗證方式**：78 項自動化測試全數通過，前台建置無報錯。
+
+---
+
 ## 多步驟檢核點規範 (Rule 10 Checkpoint Protocol)
 
 在執行上述各子任務時，必須遵循以下多步驟總結格式：

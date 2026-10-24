@@ -21,14 +21,15 @@ export const calculatorRouter = Router();
 // 1. 紫微斗數排盤
 calculatorRouter.post('/ziwei', async (req: Request, res: Response) => {
   try {
-    const { birthDate, gender = '男', longitude = 120 } = req.body;
+    const { birthDate, gender = '男', longitude = 120, targetDate, targetYear } = req.body;
     if (!birthDate) {
       return res.status(400).json({ success: false, message: '請提供出生時間 (birthDate)' });
     }
 
     const standardTime = new Date(birthDate);
     const solarInfo = calculateTrueSolarTime(standardTime, Number(longitude));
-    const chart = calculateZiweiChart(solarInfo.trueSolarTime, gender as '男' | '女');
+    const target = targetYear ? Number(targetYear) : targetDate ? new Date(targetDate) : undefined;
+    const chart = calculateZiweiChart(solarInfo.trueSolarTime, gender as '男' | '女', target);
 
     // 關聯後台自訂命理辭庫解讀
     const starInterps = await prisma.systemInterpretation.findMany({

@@ -400,7 +400,7 @@
                 <strong>⚠️ 相處注意：</strong>{{ prof.fuqiBad }}
               </div>
               <div v-if="prof.fuqiNiQuote" class="p-2.5 rounded-lg bg-dark-gold/10 border border-dark-gold/25 text-[11px] text-dark-gold italic">
-                💬 倪師原話：「{{ prof.fuqiNiQuote }}」
+                💬 三合易理註解：「{{ prof.fuqiNiQuote }}」
               </div>
               <div class="pt-1 border-t border-dark-gold/10 text-[11px] text-dark-muted">
                 <strong>福德宮根基：</strong>{{ prof.fudeEvaluation }}

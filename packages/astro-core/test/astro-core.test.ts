@@ -5,6 +5,8 @@ import {
   calculateTrueSolarTime,
   getEquationOfTime,
   calculateZiweiChart,
+  calculateZiweiHoroscope,
+  SI_HUA_MAP,
   calculateBaziChart,
   getTenGod,
   calculateBaziSynastry,
@@ -131,6 +133,55 @@ describe('🌟 萬象天儀 核心演算法庫 Intent-Based Tests', () => {
           expect(Array.isArray(pattern.conditions.required)).toBe(true);
         }
       }
+    });
+
+    it('應正確推算大限、流年、小限行運 (Horoscope) 且四化均為乾淨星曜名稱陣列 (bare star-name array)', () => {
+      const birthDate = new Date('1995-10-24T06:30:00Z');
+      const chart = calculateZiweiChart(birthDate, '男', 2026);
+
+      expect(chart.horoscope).toBeDefined();
+      const horoscope = chart.horoscope!;
+
+      expect(horoscope.targetYear).toBe(2026);
+      expect(horoscope.nominalAge).toBe(32); // 2026 - 1995 + 1 = 32
+
+      // 1. 大限 (Decade Limit)
+      expect(horoscope.decade).toBeDefined();
+      expect(horoscope.decade.name).toBe('大限');
+      expect(horoscope.decade.palaceName).toBeTruthy();
+      expect(horoscope.decade.ageRange[0]).toBeLessThanOrEqual(32);
+      expect(horoscope.decade.ageRange[1]).toBeGreaterThanOrEqual(32);
+      // 四化必須為 bare star-name array (長度為 4 的純字串陣列 [祿, 權, 科, 忌])
+      expect(Array.isArray(horoscope.decade.siHua)).toBe(true);
+      expect(horoscope.decade.siHua.length).toBe(4);
+      horoscope.decade.siHua.forEach((star) => expect(typeof star).toBe('string'));
+
+      // 2. 流年 (Annual Limit)
+      expect(horoscope.yearly).toBeDefined();
+      expect(horoscope.yearly.name).toBe('流年');
+      expect(horoscope.yearly.year).toBe(2026);
+      expect(horoscope.yearly.stem).toBe('丙');
+      expect(horoscope.yearly.branch).toBe('午');
+      // 2026 丙年四化：丙同機昌廉 -> ['天同', '天機', '文昌', '廉貞'] (bare star-name array)
+      expect(horoscope.yearly.siHua).toEqual(['天同', '天機', '文昌', '廉貞']);
+      expect(horoscope.yearly.siHua.length).toBe(4);
+
+      // 3. 小限 (Small Limit)
+      expect(horoscope.smallLimit).toBeDefined();
+      expect(horoscope.smallLimit.name).toBe('小限');
+      expect(horoscope.smallLimit.age).toBe(32);
+      expect(Array.isArray(horoscope.smallLimit.siHua)).toBe(true);
+      expect(horoscope.smallLimit.siHua.length).toBe(4);
+      horoscope.smallLimit.siHua.forEach((star) => expect(typeof star).toBe('string'));
+
+      // 獨立函式計算驗證
+      const customHoro = calculateZiweiHoroscope(chart, 2030);
+      expect(customHoro.targetYear).toBe(2030);
+      expect(customHoro.nominalAge).toBe(36);
+      // 2030 庚年四化：庚日武陰同 -> ['太陽', '武曲', '太陰', '天同']
+      expect(customHoro.yearly.stem).toBe('庚');
+      expect(customHoro.yearly.branch).toBe('戌');
+      expect(customHoro.yearly.siHua).toEqual(['太陽', '武曲', '太陰', '天同']);
     });
   });
 

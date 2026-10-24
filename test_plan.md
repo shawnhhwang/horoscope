@@ -37,6 +37,7 @@
 | **TC-A08** | 通勝農民曆 ([`almanac.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/almanac/index.ts)) | 輸入指定西曆日期 | 1. 轉換農曆日期、干支紀日、值日十二建除、二十八星宿、吉神凶煞、彭祖百忌與每日宜忌完整非空。 |
 | **TC-A09** | 八字合婚與天紀合盤 ([`synastry.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/bazi/synastry.ts)) | 輸入雙方八字生辰與性別 | 1. 計算天干五合、夫妻宮合沖、五行互補評分與通關五行。<br>2. 對標 ziwei-doushu-main 產出紫微斗數×倪海廈《天紀》五步合盤法、雙宮聯參總評、夫妻宮星曜倪師原話。 |
 | **TC-A10** | 家人群組與八卦名位 ([`synastry.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/bazi/synastry.ts)) | 輸入家庭成員陣列 (父、母、長子、次女) | 1. 推算全家五行場域主導/匱乏能量與 $C(N, 2)$ 關係矩陣。<br>2. 準確配置倪海廈《天紀·地脈道》後天八卦名位（乾父西北、坤母西南、震長子正東、離次女正南）與陽宅錯位禁忌。 |
+| **TC-A11** | 紫微行運大盤與純星名四化 ([`calculator.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/ziwei/calculator.ts)) | 輸入本命排盤與目標推演年份 (如 2026 丙午) | 1. 正確定位大限宮位（依虛歲命中十年區間）、流年歲次宮位（依目標年支）與小限宮位。<br>2. 大限、流年、小限各自之 `siHua` 均為長度為 4 的純星曜名稱字串陣列 `[祿, 權, 科, 忌]`。 |
 
 ---
 

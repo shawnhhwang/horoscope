@@ -136,6 +136,74 @@
       </div>
     </div>
 
+    <!-- 大限 / 流年 / 小限 行運大盤 (Horoscope & Si Hua) -->
+    <div v-if="chart?.horoscope" class="glass-panel rounded-2xl p-4 sm:p-5 border border-dark-gold/30 shadow-cosmic mb-8">
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-dark-gold/20">
+        <div class="flex items-center space-x-2">
+          <span class="text-xs uppercase tracking-wider text-dark-gold font-serif">HOROSCOPE & LIMIT DYNAMICS</span>
+          <span class="text-sm font-bold text-gold-gradient">行運大盤：大限 · 流年 · 小限三軌並參</span>
+        </div>
+        <div class="text-xs text-dark-muted font-serif">
+          西元 {{ chart.horoscope.targetYear }} 年 · 虛歲 {{ chart.horoscope.nominalAge }} 歲
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+        <!-- 大限 -->
+        <div class="p-3.5 rounded-xl bg-black/40 border border-dark-gold/20 flex flex-col justify-between space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold text-xs">大限運程</span>
+            <span class="text-xs text-dark-muted">{{ chart.horoscope.decade.ageRange[0] }} - {{ chart.horoscope.decade.ageRange[1] }} 歲</span>
+          </div>
+          <div>
+            <div class="text-sm font-bold text-white">{{ chart.horoscope.decade.palaceName }}（{{ chart.horoscope.decade.stem }}{{ chart.horoscope.decade.branch }}）</div>
+            <div class="text-[11px] text-dark-muted mt-1">宮干【{{ chart.horoscope.decade.stem }}】引動大限四化：</div>
+            <div class="grid grid-cols-4 gap-1 mt-1.5 text-center text-[10px]">
+              <span class="p-1 rounded bg-emerald-500/10 border border-emerald-500/25 text-emerald-300">祿: {{ chart.horoscope.decade.siHua[0] }}</span>
+              <span class="p-1 rounded bg-amber-500/10 border border-amber-500/25 text-amber-300">權: {{ chart.horoscope.decade.siHua[1] }}</span>
+              <span class="p-1 rounded bg-cyan-500/10 border border-cyan-500/25 text-cyan-300">科: {{ chart.horoscope.decade.siHua[2] }}</span>
+              <span class="p-1 rounded bg-rose-500/10 border border-rose-500/25 text-rose-300">忌: {{ chart.horoscope.decade.siHua[3] }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 流年 -->
+        <div class="p-3.5 rounded-xl bg-black/40 border border-dark-gold/20 flex flex-col justify-between space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 font-bold text-xs">流年歲次</span>
+            <span class="text-xs text-dark-muted">{{ chart.horoscope.yearly.year }} 年</span>
+          </div>
+          <div>
+            <div class="text-sm font-bold text-white">{{ chart.horoscope.yearly.stem }}{{ chart.horoscope.yearly.branch }}年 · {{ chart.horoscope.yearly.palaceName }}</div>
+            <div class="text-[11px] text-dark-muted mt-1">年干【{{ chart.horoscope.yearly.stem }}】引動流年四化：</div>
+            <div class="grid grid-cols-4 gap-1 mt-1.5 text-center text-[10px]">
+              <span class="p-1 rounded bg-emerald-500/10 border border-emerald-500/25 text-emerald-300">祿: {{ chart.horoscope.yearly.siHua[0] }}</span>
+              <span class="p-1 rounded bg-amber-500/10 border border-amber-500/25 text-amber-300">權: {{ chart.horoscope.yearly.siHua[1] }}</span>
+              <span class="p-1 rounded bg-cyan-500/10 border border-cyan-500/25 text-cyan-300">科: {{ chart.horoscope.yearly.siHua[2] }}</span>
+              <span class="p-1 rounded bg-rose-500/10 border border-rose-500/25 text-rose-300">忌: {{ chart.horoscope.yearly.siHua[3] }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 小限 -->
+        <div class="p-3.5 rounded-xl bg-black/40 border border-dark-gold/20 flex flex-col justify-between space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="px-2 py-0.5 rounded bg-purple-500/15 border border-purple-500/30 text-purple-300 font-bold text-xs">個人小限</span>
+            <span class="text-xs text-dark-muted">行運 {{ chart.horoscope.smallLimit.age }} 歲</span>
+          </div>
+          <div>
+            <div class="text-sm font-bold text-white">{{ chart.horoscope.smallLimit.palaceName }}（{{ chart.horoscope.smallLimit.branch }}宮）</div>
+            <div class="text-[11px] text-dark-muted mt-1">小限宮干【{{ chart.horoscope.smallLimit.stem }}】四化：</div>
+            <div class="grid grid-cols-4 gap-1 mt-1.5 text-center text-[10px]">
+              <span class="p-1 rounded bg-emerald-500/10 border border-emerald-500/25 text-emerald-300">祿: {{ chart.horoscope.smallLimit.siHua[0] }}</span>
+              <span class="p-1 rounded bg-amber-500/10 border border-amber-500/25 text-amber-300">權: {{ chart.horoscope.smallLimit.siHua[1] }}</span>
+              <span class="p-1 rounded bg-cyan-500/10 border border-cyan-500/25 text-cyan-300">科: {{ chart.horoscope.smallLimit.siHua[2] }}</span>
+              <span class="p-1 rounded bg-rose-500/10 border border-rose-500/25 text-rose-300">忌: {{ chart.horoscope.smallLimit.siHua[3] }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- 紫微十二宮 4x4 琉璃古盤 -->
     <div v-if="chart" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- 4x4 命盤主體 (佔據 2 欄) -->

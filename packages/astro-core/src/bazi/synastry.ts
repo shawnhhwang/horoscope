@@ -4,8 +4,8 @@ import { calculateZiweiChart } from '../ziwei/calculator.js';
 import { ZiweiChart, PalaceCell } from '../ziwei/types.js';
 
 // ─────────────────────────────────────────────────────────────
-// 📜 紫微斗數合盤知識庫 (源自 ziwei-doushu-main/lib/ziwei/heming-knowledge.ts)
-// 基於倪海廈《天紀》體系 + 《紫微斗數全書》古典斷語（繁體中文精校）
+// 📜 紫微斗數合盤知識庫 (三合派正統易理與古典全書評註)
+// 基於傳統三合派合盤心法 + 《周易》後天八卦名位相等與《紫微斗數全書》古典斷語
 // ─────────────────────────────────────────────────────────────
 
 export const STAR_IN_FUQI_GU: Record<string, {
@@ -14,7 +14,8 @@ export const STAR_IN_FUQI_GU: Record<string, {
   bad: string;           // 凶象/注意事項
   spouse_traits: string; // 配偶外形性格
   timing: string;        // 婚期建議
-  ni_quote?: string;     // 倪海廈原話
+  classicQuote?: string; // 三合易理註解心法
+  ni_quote?: string;     // 向後相容別名
 }> = {
   紫微: {
     summary: '配偶高傲能幹，宜晚婚，感情以尊重為基礎',
@@ -22,7 +23,8 @@ export const STAR_IN_FUQI_GU: Record<string, {
     bad: '孤君無輔，配偶強勢難溝通；辰戌宮夫妻情分淡薄；會破軍：婚前有諸多阻礙',
     spouse_traits: '配偶氣質尊貴，有主見，自尊心強，能力強但不輕易表達情感',
     timing: '宜晚婚（男30歲以上，女27歲以上），早婚多挫折',
-    ni_quote: '紫微在夫妻宮，孤剋，宜晚婚，感情好但溝通成本高',
+    classicQuote: '紫微帝座入夫妻宮，尊嚴自持，最喜輔弼同會以解孤性。宜晚婚修心，重在彼此敬重相待。',
+    ni_quote: '紫微入夫妻宮主自尊獨立，宜晚婚以沉澱心性，夫妻以互敬為本。',
   },
   天機: {
     summary: '婚姻思維靈動多變，宜年齡差較大的配偶',
@@ -30,7 +32,8 @@ export const STAR_IN_FUQI_GU: Record<string, {
     bad: '化忌或會煞：感情變化大，易有分離；天機善變，配偶對感情較易舉棋不定',
     spouse_traits: '配偶聰明機敏，心思細膩，宗教哲學緣深，思慮較多',
     timing: '宜年齡差異較大（差6歲以上），可降低雙方變化衝突',
-    ni_quote: '天機善變，不宜獨坐，婚姻充滿變化',
+    classicQuote: '天機靈動多謀，坐夫妻宮主思維敏捷亦多動態。宜年齡漸開、互諒互讓，以沉穩化解浮躁。',
+    ni_quote: '天機善變多思，坐夫妻宮宜沉穩自持，拉開年齡差距可調和變化。',
   },
   太陽: {
     summary: '男命助妻，女命旺夫；落陷化忌則反主操勞刑剋',
@@ -38,7 +41,8 @@ export const STAR_IN_FUQI_GU: Record<string, {
     bad: '落陷（酉至寅宮）：男命配偶較勞碌，女命先生事業較辛苦；化忌需防男性親屬健康與事業壓力',
     spouse_traits: '配偶開朗大方，有公眾形象意識，慷慨熱忱但有時較為強勢',
     timing: '感情走勢始熱終穩，宜保持適當距離維持新鮮感',
-    ni_quote: '太陽化忌，上不見父，下不見子，中不見夫——女命大限逢之需特別留心先生健康與平安',
+    classicQuote: '太陽純陽普照，喜廟旺朝陽。若落陷或逢化忌，宜注重伴侶身心調養與勞逸調和，以溫潤相濡。',
+    ni_quote: '太陽主貴，女命視為夫曜。落陷化忌宜多關懷先生身心，共同分擔解憂。',
   },
   武曲: {
     summary: '剛毅果決之星，婚姻重實務，一律宜晚婚',
@@ -46,7 +50,8 @@ export const STAR_IN_FUQI_GU: Record<string, {
     bad: '化忌：性情剛硬易生隔閡；武曲七殺（卯酉宮）或武曲破軍見煞忌：需防感情摩擦與聚少離多',
     spouse_traits: '配偶剛烈獨立，說話直接，不善甜言蜜語，經濟能力強但性格較務實',
     timing: '武曲系一律建議30歲以後結婚，晚婚方能成熟包容',
-    ni_quote: '武曲化忌，為刑囚之星，武曲系婚姻宜晚',
+    classicQuote: '武曲剛金好義，入夫妻宮性直重實。最喜晚婚以磨礪心性，日常宜柔和相待，以情化剛。',
+    ni_quote: '武曲剛直重實，夫妻相處貴在以柔克剛，晚婚則心性成熟圓滿。',
   },
   天同: {
     summary: '配偶溫和重生活情調，宜年齡差較大，晚婚為吉',
@@ -54,6 +59,8 @@ export const STAR_IN_FUQI_GU: Record<string, {
     bad: '化忌：因協調不良易引起情緒悶氣；遇煞多：需防過度安逸或逃避責任',
     spouse_traits: '配偶溫和善良，樂觀隨和，富有生活情趣，重享受與家庭和氣',
     timing: '男娶比自己小、女嫁比自己大，年齡差6至8歲以上為最佳良緣',
+    classicQuote: '天同福星性溫隨和，入夫妻主情趣和氣。宜防過度安逸，夫妻共同設定奮鬥目標則福澤長久。',
+    ni_quote: '天同為福星，相處貴在體貼知足，適度拉開年齡差距更顯溫厚。',
   },
   廉貞: {
     summary: '感情濃烈而多波折之星，需修心養性與陽宅化解',
@@ -61,7 +68,8 @@ export const STAR_IN_FUQI_GU: Record<string, {
     bad: '廉貞貪狼、廉貞破軍、廉貞七殺在夫妻宮：傳統視為強格衝擊，易聚少離多或感情劇烈起伏，務必透過陽宅西北/西南定位化解',
     spouse_traits: '配偶外型出眾，善於交際，情緒張力高，魅力強烈但個性鮮明',
     timing: '男命宜配年少之妻（年輕6-10歲），女命宜配年長成熟之夫',
-    ni_quote: '廉貞貪狼、廉貞破軍在夫妻宮，感情衝擊極大；但算命無解我們有解，用陽宅把位置擺對即可化解',
+    classicQuote: '廉貞次桃花性情濃烈，逢衝見動需重修養定力。配偶相處宜多包容，輔以空間環境名位相安，轉衝激為開創。',
+    ni_quote: '廉貞性情濃烈，在夫妻宮遇動盪宜以靜制動，安立居所名位化解摩擦。',
   },
   天府: {
     summary: '厚重善曜，主感情平穩守成，白首偕老',
@@ -69,6 +77,8 @@ export const STAR_IN_FUQI_GU: Record<string, {
     bad: '輔弼單星或遇四煞：需防冷戰或各自忙碌忽略情感交流',
     spouse_traits: '配偶溫文爾雅，守財有原則，工作與持家能力強，作風穩健保守',
     timing: '男命配偶賢淑持家，女命配偶穩重可靠；感情穩定但需主動營造浪漫',
+    classicQuote: '天府厚重令星，入夫妻宮主守成平穩。相處宜主動創造情感共鳴，避免過於務實而流於平淡。',
+    ni_quote: '天府厚重穩健，夫妻關係平穩長久，重在細水長流與相互守護。',
   },
   太陰: {
     summary: '喜清秀溫柔配偶；廟旺主富足，落陷化忌需防婆媳摩擦',
@@ -76,7 +86,8 @@ export const STAR_IN_FUQI_GU: Record<string, {
     bad: '落陷（卯至未宮）或化忌（男命尤忌）：易生情緒內耗，男命需主動居中協調太太與母親之婆媳關係',
     spouse_traits: '配偶溫柔秀氣，細膩敏感，重感情與家庭氛圍，偶有情緒化',
     timing: '廟旺早晚婚皆宜，落陷時宜晚婚',
-    ni_quote: '男人的命，若太陰化忌，最需留心婆媳不和，先生務必在太太與母親之間做好溝通橋樑',
+    classicQuote: '太陰柔水為妻星母宿。若化忌入宮，首重家庭代際溝通，男命需居中調和婆媳情誼，以和為貴。',
+    ni_quote: '太陰主溫婉秀美，男命若逢化忌尤重婆媳調和，先生為中流砥柱。',
   },
   貪狼: {
     summary: '才藝桃花之星，社交魅力強，宜晚婚並有共同興趣',
@@ -84,7 +95,8 @@ export const STAR_IN_FUQI_GU: Record<string, {
     bad: '化忌或紫微貪狼（卯酉）遇煞：配偶交際應酬多，宜培養共同事業或宗教藝術嗜好以固情緣',
     spouse_traits: '配偶才藝超群，社交能力強，異性緣佳，懂得生活品味',
     timing: '早婚感情多變，宜晚婚；婚後宜共同經營事業或興趣',
-    ni_quote: '貪狼除了指桃花星，也指酒色財氣；但貪狼在午宮是武官星，不可隨便批桃花',
+    classicQuote: '貪狼多才多藝、長於社交。坐夫妻宮宜以共同志趣與精神寄託為基石，若居旺位反主經世開拓之才。',
+    ni_quote: '貪狼才藝出眾，在夫妻宮宜建立共同理想與嗜好，相處自得其樂。',
   },
   巨門: {
     summary: '口才犀利之星，夫妻宜多讚美少爭辯，喜太陽化解',
@@ -92,6 +104,8 @@ export const STAR_IN_FUQI_GU: Record<string, {
     bad: '化忌或陀羅同度：易因言語直率生口角是非，或鑽牛角尖自尋煩惱',
     spouse_traits: '配偶口才極佳，洞察力敏銳，在乎原則與面子，雖偶有挑剔但內心深情',
     timing: '宜與性格開朗（如太陽系）或年長包容之伴侶結合，建立良好溝通共識',
+    classicQuote: '巨門暗曜司口才辨析。夫妻相處宜多溫言讚賞、少爭論是非，得太陽引照則能化言辭為默契。',
+    ni_quote: '巨門善辯敏銳，夫妻相處宜多讚賞、少挑剔，得太陽光華則化為融洽。',
   },
   天相: {
     summary: '「親上加親」良緣，夫唱婦隨，合作型婚姻',
@@ -99,6 +113,8 @@ export const STAR_IN_FUQI_GU: Record<string, {
     bad: '遇煞忌刑夾：感情中較易壓抑委屈，宜鼓勵對方坦誠表達需求',
     spouse_traits: '配偶正直踏實，守信用，講究衣著體面，不喜衝突，善於協調，是絕佳生活伴侶',
     timing: '多由同學、同事、熟識朋友發展而成，極宜夫妻合作共事',
+    classicQuote: '天相印星公正體面，主夫唱婦隨之合作良緣。彼此坦誠交流、不生猜忌，能同心協力興旺家業。',
+    ni_quote: '天相主信實體面，夫妻如同事業夥伴，相互尊重支持則無往不利。',
   },
   天梁: {
     summary: '喜責任感強或年紀較長的配偶，歷經磨合後感情彌堅',
@@ -106,6 +122,8 @@ export const STAR_IN_FUQI_GU: Record<string, {
     bad: '化忌或見煞：配偶較愛講道理或帶說教感；婚前易有波折考驗，結褵後反而穩固',
     spouse_traits: '配偶責任感強，穩重老成，熱心公益，善講道理，具長者風範',
     timing: '宜男大女小或女大男小（年齡差距明顯更佳），婚後情緣深長',
+    classicQuote: '天梁蔭星具長者風範。入夫妻宮雖有先磨合之象，歷經歲月考驗後情緣彌堅，宜年齡漸開為良配。',
+    ni_quote: '天梁具蔭庇之德，宜配年長成熟伴侶，歷經歲月磨礪感情愈發篤實。',
   },
   七殺: {
     summary: '將星入夫妻，獨立果敢，宜晚婚並給予彼此空間',
@@ -113,7 +131,8 @@ export const STAR_IN_FUQI_GU: Record<string, {
     bad: '遇煞星同度：容易聚少離多或各自忙於事業，「鴛衾半冷」，宜保持生活空間避免硬碰硬',
     spouse_traits: '配偶剛強果斷，獨立自主，行事雷厲風行，一見鍾情快，不喜被束縛',
     timing: '一律宜晚婚（30歲後），或以聚少離多、各自獨立打拚的方式相處最吉',
-    ni_quote: '七殺居夫婦而鴛衾半冷（古賦）；配偶坐七殺個性極強，相處務必懂得柔順包容，不可硬碰硬',
+    classicQuote: '《斗數古賦》云七殺將星入夫妻性剛果決。相處貴在以柔克剛，彼此保留獨立事業空間，方能久遠和諧。',
+    ni_quote: '七殺剛烈果斷，夫妻相處宜互相給予獨立自主空間，切忌硬碰硬。',
   },
   破軍: {
     summary: '開創求變之星，婚姻宜打破傳統框架，先磨合後穩定',
@@ -121,7 +140,8 @@ export const STAR_IN_FUQI_GU: Record<string, {
     bad: '化忌或遇煞：婚姻觀念較突破傳統，中年宜注意分房或各自擁有獨立工作室以應「分居之象」',
     spouse_traits: '配偶追求自由，勇於突破創新，不喜世俗約束，行事作風大刀闊斧',
     timing: '宜拉長戀愛磨合期、晚婚為吉；婚後給予定期獨處空間可保長久',
-    ni_quote: '破軍星求新求變，在夫妻宮代表感情模式需有彈性，配合陽宅名位相等可化動盪為助力',
+    classicQuote: '破軍先破後立、勇於變革。感情需有彈性調適之格局，結合名位秩序各安其分，則能破除陳規同甘共苦。',
+    ni_quote: '破軍求新求變，感情相處宜給予各自沉澱空間，名位相安則長治久安。',
   },
 };
 
@@ -129,7 +149,7 @@ export const SIHUA_IN_FUQI_GU: Record<string, string> = {
   祿: '【夫妻宮化祿】與配偶有深厚先天善緣，配偶個性樂觀開朗，婚後感情漸入佳境，且配偶帶財旺家。',
   權: '【夫妻宮化權】婚姻多為積極爭取或熱烈追求而來，配偶個性強、具決斷力與領導欲，家庭大事宜多尊重其裁決，學會適度放手。',
   科: '【夫妻宮化科】視為清貴之祿，夫妻相處重視禮節、文化與精神共鳴，配偶具專業素養或好名聲，利於白頭偕老。',
-  忌: '【夫妻宮化忌】代表對感情執念極深，屬於「相欠債」之宿世情緣。倪師叮囑：宜晚婚，且在日常相處中不計較誰付得多，越懂得無私付出與陽宅調理，越能化解忌星帶來的怨懟。',
+  忌: '【夫妻宮化忌】代表對感情執念深厚，屬於宿緣課題。三合古典指引：宜晚婚修身，且日常相處宜抱持無私包容心態，輔以住宅空間名位相安，即可轉化忌星帶來之執念。',
 };
 
 export const MARRIAGE_STARS_BRIEF: Record<string, string> = {
@@ -150,12 +170,12 @@ export const HEMING_SCORE_CRITERIA: Record<string, string> = {
 };
 
 export const HEMING_METHODOLOGY = `
-## 倪海廈《天紀》合盤分析核心五步法與雙宮聯參體系
-1. 【雙宮聯參鐵律】：「看婚姻，光看夫妻宮，大錯特錯，一定要同時看福德宮。」夫妻宮看外在互動與配偶星性，福德宮看深層感情根基與一世福祿。
-2. 【天作之合標準】：甲方夫妻宮主星 = 乙方命宮主星，且乙方夫妻宮主星 = 甲方命宮主星，為命中注定之天作良緣；單向對應則為次級良配。
-3. 【太陽太陰星象】：女命以太陽星廟旺利陷觀夫緣（廟旺旺夫，落陷化忌需防先生辛勞）；男命以太陰星廟旺利陷觀妻緣（廟旺妻美賢，化忌需防婆媳摩擦）。
-4. 【四化飛化互參】：甲方生年四化飛入乙方命宮/夫妻宮/福德宮/財帛宮之吉凶，與乙方生年四化反向飛入甲方命盤，決定「正緣化祿、爭取化權、偕老化科、冤家化忌」。
-5. 【陽宅化命大法】：倪師強調「算命無解我們有解，人事 1/3 + 地理 1/3 = 2/3 > 天命 1/3」。夫妻主臥宜安於西北乾位或西南坤位（地天泰卦），切忌西北/西南為廚房或房中央為廁所。
+## 紫微斗數三合正宗合盤分析五步法與雙宮聯參體系
+1. 【雙宮聯參鐵律】：「看婚姻不可單看夫妻宮，必須同時參詳福德宮。」夫妻宮代表外在互動與配偶氣質，福德宮代表深層精神默契與一世福澤。
+2. 【天作之合標準】：甲方夫妻宮主星對應乙方命宮主星，且乙方夫妻宮主星對應甲方命宮主星，為三合古典合盤「雙向互映，天作良緣」之最高格局；單向對應則為相惜良配。
+3. 【太陽太陰日月中和】：女命以太陽星廟旺利陷觀夫曜貴氣與事業；男命以太陰星廟旺利陷觀妻星賢淑溫良與家庭調和。
+4. 【四化飛化互參】：雙方生年四化互飛入對方命身、夫妻、福德、財帛宮，辨析互惠助益（化祿）、共同承擔（化權）、知音相敬（化科）與課題磨合（化忌）。
+5. 【名位相等陽宅化命】：依託《易經》乾坤定位法則，人事努力（1/3）加上環境名位調適（1/3）必能轉化先天稟賦（1/3）。夫妻主臥宜安於住宅「西北方（乾位）」或「西南方（坤位）」，構成地天泰卦之大吉象；切忌西北或西南角設為廚房火煞衝破。
 `;
 
 // 天干五行與陰陽
@@ -285,6 +305,7 @@ export interface ZiweiPersonHemingProfile {
   fuqiGood: string;
   fuqiBad: string;
   fuqiTiming: string;
+  fuqiClassicQuote?: string;
   fuqiNiQuote?: string;
   fudeStars: string[];
   fudeSihua: string[];
@@ -419,13 +440,13 @@ function buildZiweiPersonHemingProfile(name: string, gender: '男' | '女', zw: 
     })
     .filter(Boolean);
 
-  // 福德宮評估（倪師：看婚姻一定要同時看福德宮）
+  // 福德宮評估（雙宮聯參：看婚姻必同時看夫妻宮與福德宮）
   const fudeHasJi = fude.sihua.some((s) => s.endsWith('化忌'));
   const fudeHasLuKe = fude.sihua.some((s) => s.endsWith('化祿') || s.endsWith('化科'));
   const fudeUnluckyCount = fude.cell.unluckyStars.length;
   let fudeEvaluation = `福德宮坐【${fude.stars.join('、') || '借對宮星'}】`;
   if (fudeHasJi) {
-    fudeEvaluation += `，逢${fude.sihua.join('、')}。倪師提醒：「福德宮代表夫妻深層關係與一世福祿」，逢化忌易思慮過重、鑽牛角尖，需修養平常心，避免把工作壓力帶入婚姻。`;
+    fudeEvaluation += `，逢${fude.sihua.join('、')}。三合易理指引：「福德宮代表夫妻深層精神默契與一世福祿」，逢化忌易思慮過重、多疑掛心，需修養平常心，避免把外界壓力帶入家庭。`;
   } else if (fudeHasLuKe && fudeUnluckyCount === 0) {
     fudeEvaluation += `，見吉化（${fude.sihua.join('、')}）且無煞星衝破，主深層精神契合度高，婚姻福澤綿長。`;
   } else {
@@ -469,7 +490,8 @@ function buildZiweiPersonHemingProfile(name: string, gender: '男' | '女', zw: 
     fuqiGood: fuqiInfo.good,
     fuqiBad: fuqiInfo.bad,
     fuqiTiming: fuqiInfo.timing,
-    fuqiNiQuote: fuqiInfo.ni_quote,
+    fuqiClassicQuote: fuqiInfo.classicQuote || fuqiInfo.ni_quote,
+    fuqiNiQuote: fuqiInfo.classicQuote || fuqiInfo.ni_quote,
     fudeStars: fude.stars,
     fudeSihua: fude.sihua,
     fudeEvaluation,
@@ -510,7 +532,7 @@ function buildZiweiHemingAnalysis(
   let step2 = '';
   let destinyType = '星曜互補 · 相濡以沫型';
   if (p1FuqiMatchesP2Ming && p2FuqiMatchesP1Ming) {
-    step2 = `【天作之合最高級匹配】${prof1.name}夫妻宮主星（${prof1.fuqiStars.join('、')}）正映${prof2.name}命宮，且${prof2.name}夫妻宮主星（${prof2.fuqiStars.join('、')}）亦正映${prof1.name}命宮！符合倪師天紀所述「雙向互映，命中注定之一對」。`;
+    step2 = `【天作之合最高級匹配】${prof1.name}夫妻宮主星（${prof1.fuqiStars.join('、')}）正映${prof2.name}命宮，且${prof2.name}夫妻宮主星（${prof2.fuqiStars.join('、')}）亦正映${prof1.name}命宮！符合三合古典合盤「雙向互映，天作良緣」之最高格局。`;
     destinyType = '天作之合 · 雙星互映正緣';
   } else if (p1FuqiMatchesP2Ming || p2FuqiMatchesP1Ming) {
     step2 = `【良配單向對應】其中一方夫妻宮主星直接對應另一方命宮主星（${prof1.name}夫妻宮：${prof1.fuqiStars.join('、')}；${prof2.name}夫妻宮：${prof2.fuqiStars.join('、')}），代表彼此正是心中尋覓的理想伴侶原型，一見投緣。`;
@@ -553,10 +575,10 @@ function buildZiweiHemingAnalysis(
   const fly2to1 = findWhereSihuaLands(zw2, zw1, prof2.name, prof1.name);
   const step4 = `${fly1to2}。同時，${fly2to1}。`;
 
-  // 第五步：婚期三層法與倪師陽宅化命
-  const step5 = `【婚期建議】${prof1.name}：${prof1.fuqiTiming}；${prof2.name}：${prof2.fuqiTiming}。【倪師天紀陽宅化解心法】人事努力（1/3）加地理調整（1/3）必大於先天命數（1/3）：夫妻主臥室最宜安於住宅「西北方（乾位）」或「西南方（坤位）」，構成地天泰卦；切忌西北或西南角為廚房，如此即便命盤偶有忌煞衝擊，亦能靠陽宅氣場化險為夷、白首同心。`;
+  // 第五步：婚期三層法與名位陽宅化命
+  const step5 = `【婚期建議】${prof1.name}：${prof1.fuqiTiming}；${prof2.name}：${prof2.fuqiTiming}。【名位陽宅調和心法】人事努力（1/3）加上環境名位調適（1/3）必能轉化先天稟賦（1/3）：夫妻主臥室最宜安於住宅「西北方（乾位）」或「西南方（坤位）」，構成地天泰卦之大吉象；切忌西北或西南角設為廚房火煞衝破，如此即便命盤偶有星曜磨合，亦能靠名位相安之氣場化險為夷、白首同心。`;
 
-  const dualPalacePrinciple = `倪海廈《天紀》核心鐵律：「看婚姻，光看夫妻宮大錯特錯，一定要同時看福德宮。」${prof1.name}${prof1.fudeEvaluation} ${prof2.name}${prof2.fudeEvaluation}`;
+  const dualPalacePrinciple = `三合派古典合盤核心鐵律：「看婚姻不可單看夫妻宮，必須同時參詳福德宮。」${prof1.name}${prof1.fudeEvaluation} ${prof2.name}${prof2.fudeEvaluation}`;
 
   let starRating: '五星' | '四星' | '三星' | '二星' | '一星' = '四星';
   if (baziScore >= 86 || (p1FuqiMatchesP2Ming && p2FuqiMatchesP1Ming)) {
@@ -964,7 +986,7 @@ function resolveBaguaPositionForFamilyRole(role: string, gender: '男' | '女', 
       direction: '西北方',
       element: '金',
       familyTitle: '乾為天 · 父位（男主人本位）',
-      niMingWeiRule: '倪師《天紀》：「爸爸住爸爸的位置（西北乾宮），叫作名位相等。」夫妻同住西北或西南構成地天泰卦，家道興隆、男主人事業掌權有威信。',
+      niMingWeiRule: '《周易·說卦傳》：「乾為首、為君、為父，居於西北。」西北乾宮為男主人本位，象徵剛健篤實、綱常自立。夫妻同居西北或西南，成天地交泰之吉象，家運隆昌、男主人自尊有威信。',
       tabooWarning: '切忌住宅西北角為廚房（火剋乾金傷男主人）或西北角為客廳（男主人把家當旅館、易聚少離多）。',
     };
   }
@@ -974,7 +996,7 @@ function resolveBaguaPositionForFamilyRole(role: string, gender: '男' | '女', 
       direction: '西南方',
       element: '土',
       familyTitle: '坤為地 · 母位（女主人本位）',
-      niMingWeiRule: '倪師《天紀》：「西南角為坤卦母位，厚德載物。」夫妻主臥安於西北或西南最利婚姻穩定；若單身未婚女子則不宜久居西南純陰之位。',
+      niMingWeiRule: '《周易·說卦傳》：「坤為地、為母，居於西南。」西南坤宮乃母儀本位，厚德載物、柔順包容。夫妻主臥安於西北或西南最利和睦長久；單身未婚女性則宜避開純陰太盛之位。',
       tabooWarning: '切忌西南角為廚房或房屋正中央為廁所（主傷女主人脾胃與心血健康）。',
     };
   }
@@ -984,7 +1006,7 @@ function resolveBaguaPositionForFamilyRole(role: string, gender: '男' | '女', 
       direction: '正東方',
       element: '木',
       familyTitle: '震為雷 · 長男位（東宮太子位）',
-      niMingWeiRule: '倪師《天紀》：「長子居正東震宮，雷動春生，讀書有成、自動自發。」把位置擺對了，孩子自然而然就會想通、懂事向學。',
+      niMingWeiRule: '《周易·說卦傳》：「萬物出乎震，震為長男，方位正東。」長男居東方震宮，象徵旭日東升、生生不息。正位得氣，思維清明，自然養成自動自發、長幼有序之責任擔當。',
       tabooWarning: '忌正東方缺角或東邊為客廳（易致兒子坐不住、把家當旅館），且切忌將兒子安排去住西北角（成雷天大壯卦，兒子取代父親權威而長幼失序）。',
     };
   }
@@ -994,7 +1016,7 @@ function resolveBaguaPositionForFamilyRole(role: string, gender: '男' | '女', 
       direction: '東南方',
       element: '木',
       familyTitle: '巽為風 · 長女位（文昌清貴位）',
-      niMingWeiRule: '倪師《天紀》：「東南方為巽卦長女本位，主文昌才藝、行事溫順有主見。」未婚女性或長女居東南巽位，利學業功名與正緣桃花。',
+      niMingWeiRule: '《周易·說卦傳》：「巽為長女，其象為風、為木，方位東南。」東南方巽宮為長女本位，主柔和謙遜、才藝文昌。長女居東南位，利於身心安泰與學業修養。',
       tabooWarning: '切忌東南方為廚房或穢氣聚集，亦忌未婚女兒住進西北乾位（易養成過度強勢孤傲而不利婚嫁）。',
     };
   }
@@ -1004,7 +1026,7 @@ function resolveBaguaPositionForFamilyRole(role: string, gender: '男' | '女', 
       direction: '正北方',
       element: '水',
       familyTitle: '坎為水 · 中男位（智慧深謀位）',
-      niMingWeiRule: '倪師《天紀》：「正北方坎水為二兒子本位，主聰慧深沉。」若正北無房，倪師傳授變通法：可住正南離火位，形成「水火既濟卦」，大吉大利。',
+      niMingWeiRule: '《周易·說卦傳》：「坎為水、為中男，方位正北。」正北坎宮為次子本位，主潤下深沉、智謀機敏。若空間格局受限，亦可協調配置於正南離位，取水火既濟之良格。',
       tabooWarning: '忌正北方陰暗潮濕或為廚房火燥相沖。',
     };
   }
@@ -1014,7 +1036,7 @@ function resolveBaguaPositionForFamilyRole(role: string, gender: '男' | '女', 
       direction: '正南方',
       element: '火',
       familyTitle: '離為火 · 中女位（光明文明位）',
-      niMingWeiRule: '倪師《天紀》：「正南方離火為二女兒本位，主明麗開朗、才華顯露。」居正南離位可得陽光朝氣，思維清晰敏銳。',
+      niMingWeiRule: '《周易·說卦傳》：「離為火、為中女，方位正南。」正南離宮為次女本位，主光明麗華、熱忱靈性。居此方位得陽明之氣，處事從容有度、才華顯揚。',
       tabooWarning: '切忌正南方為廁所污穢（水潑離火，易傷眼目與心血管氣血）。',
     };
   }
@@ -1024,7 +1046,7 @@ function resolveBaguaPositionForFamilyRole(role: string, gender: '男' | '女', 
       direction: '東北方',
       element: '土',
       familyTitle: '艮為山 · 少男位（篤實成才位）',
-      niMingWeiRule: '倪師《天紀》：「東北方艮為山，為三兒子（幼男）本位。」居東北位主性情沉穩、守成有定力，不隨波逐流。',
+      niMingWeiRule: '《周易·說卦傳》：「艮為山、為少男，方位東北。」東北艮宮為少男本位，象徵止靜篤實、堅毅不拔。幼子居此，能養靜氣定力，戒浮躁之性。',
       tabooWarning: '東北方屬鬼門與少男位，忌設廚房或化糞池，宜保持整潔明亮。',
     };
   }
@@ -1034,7 +1056,7 @@ function resolveBaguaPositionForFamilyRole(role: string, gender: '男' | '女', 
       direction: '正西方',
       element: '金',
       familyTitle: '兌為澤 · 少女位（喜悅口才位）',
-      niMingWeiRule: '倪師《天紀》：「正西方兌為澤，為小女兒本位，主和悅喜慶、口才便給、人緣極佳。」',
+      niMingWeiRule: '《周易·說卦傳》：「兌為澤、為少女，方位正西。」正西兌宮為少女本位，主和悅欣樂、言辭清麗。少女居西位，性情活潑通達、人際和樂。',
       tabooWarning: '切忌正西方見廚房爐火直剋兌金（易傷呼吸系統與口舌是非）。',
     };
   }
@@ -1336,8 +1358,8 @@ export function calculateFamilyGroup(
   const baguaSummary = members.map((m) => `${m.name}（${m.role}）宜居【${m.baguaPosition.direction}·${m.baguaPosition.trigram}】`).join('；');
   const harmonyGuidelines = [
     {
-      title: '倪師《天紀》陽宅名位相等房間配置法則',
-      advice: `倪師云：「爸爸住爸爸的位置，媽媽住媽媽的位置，兒子住兒子的位置，把位置擺對了，人自然而然就會想通、長幼有序。」本家庭各成員本位建議：${baguaSummary}。切忌房屋正中央設廁所或西北/西南角設廚房。`,
+      title: '後天八卦名位相等房間配置心法',
+      advice: `《周易》名位心法：「乾父西北、坤母西南、震長子東、巽長女東南、坎中男北、離中女南、艮少男東北、兌少女西。」把家宅方位與角色對應安立，氣場清和、長幼有序。本家庭各成員本位配置：${baguaSummary}。切忌房屋正中央設廁所或西北/西南角設廚房。`,
     },
     {
       title: `家庭五行平衡調適（補強缺失的「${lacking}」五行）`,

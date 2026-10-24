@@ -63,6 +63,58 @@ export interface ZiweiMingGongSummary {
   nature: string;
 }
 
+/**
+ * 四化星曜純字串陣列 [化祿星, 化權星, 化科星, 化忌星] (Bare star-name array)
+ */
+export type BareSiHuaArray = [string, string, string, string];
+
+/**
+ * 大限行運資訊
+ */
+export interface HoroscopeDecadeInfo {
+  name: '大限';
+  palaceName: PalaceName;
+  branch: EarthlyBranch;
+  stem: HeavenlyStem;
+  ageRange: [number, number];
+  siHua: BareSiHuaArray; // bare star-name array [祿, 權, 科, 忌]
+}
+
+/**
+ * 流年行運資訊
+ */
+export interface HoroscopeYearlyInfo {
+  name: '流年';
+  year: number;
+  stem: HeavenlyStem;
+  branch: EarthlyBranch;
+  palaceName: PalaceName;
+  siHua: BareSiHuaArray; // bare star-name array [祿, 權, 科, 忌]
+}
+
+/**
+ * 小限行運資訊
+ */
+export interface HoroscopeSmallLimitInfo {
+  name: '小限';
+  age: number;
+  palaceName: PalaceName;
+  branch: EarthlyBranch;
+  stem: HeavenlyStem;
+  siHua: BareSiHuaArray; // bare star-name array [祿, 權, 科, 忌]
+}
+
+/**
+ * 紫微斗數大限、流年、小限行運綜合盤 (Horoscope)
+ */
+export interface ZiweiHoroscope {
+  targetYear: number;
+  nominalAge: number;
+  decade: HoroscopeDecadeInfo;
+  yearly: HoroscopeYearlyInfo;
+  smallLimit: HoroscopeSmallLimitInfo;
+}
+
 export interface ZiweiChart {
   birthInfo: {
     solarDate: string;
@@ -82,5 +134,6 @@ export interface ZiweiChart {
   palacesList: PalaceCell[];
   patterns: ZiweiPattern[];
   mingGongSummary?: ZiweiMingGongSummary;
+  horoscope?: ZiweiHoroscope;
 }
 

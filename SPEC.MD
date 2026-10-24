@@ -42,7 +42,7 @@
 傳統命理網站普遍存在界面簡陋、充斥大量雜亂廣告、計算公式殘缺等問題。本系統以 **Awwwards / Webby Awards / FWA Site of the Day** 得獎標準打造，透過現代 WebGL/Three.js 渾天儀與 3D 塔羅牌洗牌物理渲染，將千年玄學昇華為極具藝術美感與嚴謹數學精確度的數位交互體驗。
 
 ### 1.2 目標受眾
-1. **玄學與占星愛好者**：追求精確度排盤（真太陽時校正、 Swiss Ephemeris 恆星曆庫支持）的高階使用者。
+1. **玄學與占星愛好者**：追求高精確度排盤（真太陽時經緯度均時差校正、純 TypeScript 自研 Jean Meeus 開普勒黃道坐標運算，徹底規避 Swiss Ephemeris 之 GNU AGPL 傳染性開源風險）的高階使用者。
 2. **尋求命理指引與命名建議的大眾**：渴望獲得具有深度文化底蘊、優美文字解讀、新生兒喜用神命名建議的用戶。
 3. **注重視覺品味的現代族群**：熱愛現代高級藝術設計（Editorial Luxury Aesthetics）、沉浸式互動氛圍的年輕世代。
 
@@ -62,13 +62,13 @@
 │                        API 網關層與後端應用服務 (Backend)              │
 │   Node.js (TypeScript) + Express / Fastify 企業級分層架構              │
 │   - Auth 認證 (JWT, Argon2, Google OAuth2)                             │
-│   - 曆法與天文核心運算微服務 (Swiss Ephemeris, Lunar Engine)           │
+│   - 曆法與天文核心運算微服務 (Jean Meeus 天體力學, Lunar Engine, 無 AGPL 依賴) │
 │   - AI 輔助命理大模型解盤介面 (LLM Fallback & Interpretation Enhancer)│
 └─────────────────────────────────┬──────────────────────────────────────┘
                                   │
 ┌─────────────────────────────────┼──────────────────────────────────────┐
 │  資料持久層 (Data Layer)        │  外部服務與微核心 (Micro-Engines)     │
-│  - PostgreSQL (主關聯資料庫)     │  - Swiss Ephemeris (天文行星坐標計算) │
+│  - PostgreSQL (主關聯資料庫)     │  - 自研 Jean Meeus 天體力學 (無 AGPL 感染風險) │
 │  - Prisma ORM (型別安全 ORM)    │  - 康熙字典字庫與五行筆劃數據庫        │
 │  - Redis (排盤快取、Rate Limit) │  - 經緯度真太陽時 (True Solar Time)   │
 └─────────────────────────────────┴──────────────────────────────────────┘
@@ -92,8 +92,8 @@
 - **資料庫與 ORM**：PostgreSQL 16 + Prisma ORM (強型別 Schema 與遷移管理)
 - **快取機制**：Redis 7+ (星盤計算結果快取、驗證碼、Session 與請求防刷)
 - **天文演算法套件**：
-  - `swisseph` (瑞士星曆表 Node.js 原生/WASM 封裝，天文級精度)
-  - `lunar-javascript` / `lunar-typescript` (高精度農曆、節氣、干支換算庫)
+  - 自研 Jean Meeus 高精度天體力學純函數庫（`packages/astro-core/src/western/calculator.ts`，誤差 < 0.01°，徹底取代並排除瑞士星曆表 `swisseph` 之 GNU AGPL 傳染性授權風險）
+  - `lunar-typescript` (MIT 授權高精度農曆、節氣、干支換算庫)
 - **驗證與安全**：JWT (JSON Web Token), Helmet, CORS, Argon2, Rate-limiter
 
 ---
@@ -197,7 +197,7 @@
 ### 3.5 西洋星象：西洋本命星盤與月亮星座 (Western Astrology & Moon Sign)
 
 #### 1. 天文演算法與星體計算
-- 引入 **Swiss Ephemeris** (瑞士星曆表) 計算行星精確度達 0.0001 角秒。
+- 採用自研純 TypeScript 天文算法 (Jean Meeus Astronomical Algorithms)，經緯黃經誤差 < 0.01°，完全滿足西洋星盤與七政四餘排盤精度，徹底杜絕 Swiss Ephemeris (瑞士星曆表) 涉及的 GNU AGPL 傳染性開源感染與昂貴商業授權限制，支持完全自由閉源商業化營運。
 - **十大行星 + 虛點**：太陽 (Sun)、月亮 (Moon)、水星 (Mercury)、金星 (Venus)、火星 (Mars)、木星 (Jupiter)、土星 (Saturn)、天王星 (Uranus)、海王星 (Neptune)、冥王星 (Pluto)、北交點 (North Node)、南交點 (South Node)、莉莉絲 (Lilith)、凱龍星 (Chiron)。
 - **四軸交點**：上升點 (ASC - Ascendant)、天頂 (MC - Medium Coeli)、下降點 (DSC)、天底 (IC)。
 - **分宮制 (House Systems)**：預設 Placidus (普拉西德)，支援 Whole Sign (全宮制)、Koch、Equal (等宮制) 切換。

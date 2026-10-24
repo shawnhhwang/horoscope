@@ -522,5 +522,29 @@
 - **已驗證事項 (Verified)**：
   - Monorepo 全套件構建檢查 `npx pnpm -r build` 成功。
   - 全自動化測試 `npx pnpm -r test` 77/77 項測試 100% 通過。
+
+---
+
+### 檢核點回報: Phase 22 (紫微行運大盤、純星名四化陣列、原創合規改寫、純 TS 引擎 0 AGPL 感染確認)
+- **當前任務**：Task 22.1 ~ Task 22.4 (紫微大限/流年/小限行運、四化純星名陣列、RAG語料原創去侵權化、瑞士星曆表 AGPL 規格更正)
+- **已完成事項 (Completed)**：
+  - **1. 紫微斗數行運大盤推算引擎 (`packages/astro-core/src/ziwei/calculator.ts` & `types.ts`)**：
+    - 定義 `BareSiHuaArray = [string, string, string, string]`（純星曜名稱陣列，如 `['廉貞', '破軍', '武曲', '太陽']`），分別對應 `[祿, 權, 科, 忌]`。
+    - 實作 `calculateZiweiHoroscope`，支援本命十年大限起止歲數區間推算、指定目標年（如 2026 丙午年）之流年歲次宮位與流年四化、以及本命年支與性別起算之小限宮位與小限四化。
+    - 在十二宮位各宮 `PalaceCell` 內補齊小限歲數排列表 `smallLimitAge: number[]`。
+    - 後端 API `POST /api/v1/calculator/ziwei` 支援接收 `targetYear` / `targetDate` 並回傳 `horoscope`。
+    - 前端 `ZiweiView.vue` 實作「行運大盤（大限 / 流年 / 小限）」可視化折疊面板與四化星徽章呈現。
+  - **2. 語料庫原創合規改寫 (`packages/astro-core/src/bazi/synastry.ts` & `packages/database/src/seed-nihai.ts`)**：
+    - 將引用自三合派古法與天紀原話的合盤語料，全面改寫為 100% 原創繁體中文意象，以周易八卦方位、五行制化與心理諮商視角重新提煉，徹底杜絕商用侵權風險。
+  - **3. AGPL 感染風險修正 (`SPEC.MD` & `README.md`)**：
+    - 釐清系統天體與星盤算法，全面移除所有關於引用 Swiss Ephemeris (`swisseph`) 之陳述，確認全站採用純 TypeScript 原生 Jean Meeus 與開普勒幾何方程，0% AGPL 授權感染，確保商業閉源與 SaaS 營利完全合法合規。
+  - **4. 意圖自動化測試覆蓋**：
+    - `packages/astro-core/test/astro-core.test.ts` 新增行運大盤測試案例，驗證大限、流年、小限落宮與 `siHua` 長度為 4 的純星名陣列。
+    - `apps/server/test/api.test.ts` 新增端點回傳 `horoscope` 與 `siHua` 陣列驗證。
+- **已驗證事項 (Verified)**：
+    - `pnpm --filter @celestial/astro-core test`：23/23 通過。
+    - `pnpm --filter @celestial/server test`：55/55 通過。
+    - 全專案 78/78 項自動化測試 100% 通過。
+    - `pnpm -r build` 全套件編譯 0 警告 0 錯誤。
 - **剩餘事項 (Remaining)**：
-  - 完成 GitHub 提交並推送更新。
+  - 將全部變更提交並推送至 GitHub remote (`git push origin main`)。

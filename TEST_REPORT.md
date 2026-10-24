@@ -10,14 +10,14 @@
 
 - **測試框架**：[Vitest v1.6.1](https://vitest.dev/) + [Supertest v7.0.0](https://github.com/ladjs/supertest)
 - **總測試套件數**：4 個獨立測試檔案 (`packages/astro-core`, `apps/server/test/api.test.ts`, `apps/server/test/role-rag.test.ts`, `apps/server/test/admin-features.test.ts`)
-- **總測試案例數**：**77 項**（77 passed / 0 failed / 0 skipped）
+- **總測試案例數**：**78 項**（78 passed / 0 failed / 0 skipped）
 - **測試通過率**：**100%**
 - **建置通過率**：**100%** (Monorepo 所有套件全數編譯成功)
 
 ```
 Test Files  4 passed (4)
-     Tests  77 passed (77)
-  Coverage  100% Intent Coverage on Astronomical, Divination, Synastry, Role-RAG, Database Management & Admin Tools
+     Tests  78 passed (78)
+  Coverage  100% Intent Coverage on Astronomical, Divination, Synastry, Horoscope, Role-RAG, Database Management & Admin Tools
 ```
 
 ---
@@ -26,7 +26,7 @@ Test Files  4 passed (4)
 
 測試檔案：[`packages/astro-core/test/astro-core.test.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/test/astro-core.test.ts)  
 執行指令：`npx pnpm --filter @celestial/astro-core test`  
-測試案例數：**22 項** (100% 通過)
+測試案例數：**23 項** (100% 通過)
 
 | 測試分類 | 測試案例名稱 | 驗證意圖 (Intent Verification) | 結果 |
 | :--- | :--- | :--- | :---: |
@@ -36,6 +36,7 @@ Test Files  4 passed (4)
 | **紫微斗數排盤** | 生年干四化星應準確標註在對應主星或吉星上 | 驗證生年天干（如甲干：廉貞化祿、破軍化權、武曲化科、太陽化忌）精確掛載至對應星曜。 | **PASS** |
 | **紫微斗數排盤** | 應完整排布六吉星、祿馬與六煞星，且亮度適度對應 | 驗證昌曲、輔弼、魁鉞、羊陀、火鈴、空劫與祿馬全數正確落宮。 | **PASS** |
 | **紫微斗數排盤** | 應精準識別紫微斗數三合派正統格局與倪海廈命相心法 | 驗證君臣慶會、紫府同宮、機月同梁、陽梁昌祿等三合格局與吉凶分級。 | **PASS** |
+| **紫微斗數行運** | 應正確推算大限、流年、小限行運大盤且四化為純星名陣列 | 驗證本命大限起止、流年歲次干支宮位與小限地支排演，且 `siHua` 均為純淨 `[祿, 權, 科, 忌]` 星名陣列（長度為 4）。 | **PASS** |
 | **四柱八字與十神** | 應準確推算十神關係 | 驗證日主天干與其他干支之生剋同異屬性（如甲木見庚金為七殺、見己土為正財）。 | **PASS** |
 | **四柱八字與十神** | 應產出完整的年月日時四柱、五行能量百分比與大運 | 驗證生辰節氣切換、地支藏干、五行能量權重分佈與起運歲數排演。 | **PASS** |
 | **四柱八字合婚** | 八字合婚演算法應能精準剖析天干五合、地支六合與五行互補評分 | 驗證天干五合、地支合沖、通關五行推導，以及對標 ziwei-doushu-main 之紫微斗數×倪海廈《天紀》合盤五步法與雙宮聯參。 | **PASS** |
@@ -130,4 +131,4 @@ Test Files  4 passed (4)
 
 ## 七、結論與生產就緒宣言 (Conclusion)
 
-所有 [`code_review.md`](file:///home/coder/Codebase/Horoscope/code_review.md) 列舉之 P1 與 P2 問題均已依據 [`AGENTS.md`](file:///home/coder/Codebase/Horoscope/AGENTS.md) 核心準則外科式精確修復。全專案 77 項自動化測試 100% 通過，Monorepo 全量 Build 0 錯誤，已全面達到生產級品質標準。
+所有 [`code_review.md`](file:///home/coder/Codebase/Horoscope/code_review.md) 列舉之 P1 與 P2 問題均已依據 [`AGENTS.md`](file:///home/coder/Codebase/Horoscope/AGENTS.md) 核心準則外科式精確修復。全專案 78 項自動化測試 100% 通過，Monorepo 全量 Build 0 錯誤，已全面達到生產級品質標準。

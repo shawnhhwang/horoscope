@@ -319,16 +319,16 @@ export async function retrieveModuleKnowledge(
   // 1. 注入領域核心規則知識
   ragSnippets.push(`【${role.title}·核心原則與分析框架】\n${role.coreKnowledge}`);
 
-  // 1.5 動態注入 ziwei-doushu-main 架構之即時命盤實體斷語 (Structured Chart-Entity Grounding)
+  // 1.5 動態注入三合派與後天八卦名位相等之即時命盤實體斷語 (Structured Chart-Entity Grounding)
   const raw = chartContext?.rawData || {};
   if (raw.ziweiHeming) {
     const zh = raw.ziweiHeming;
     ragSnippets.push(
-      `【倪海廈《天紀》紫微合盤雙宮聯參與五步法即時演算】\n` +
+      `【紫微斗數三合合盤雙宮聯參與五步法即時演算】\n` +
         `• 合盤星級：${zh.starRating}（${zh.starRatingCriteria}）｜緣分定性：${zh.destinyType}\n` +
         `• 雙宮聯參總評：${zh.dualPalacePrinciple}\n` +
-        `• ${zh.person1Profile?.name}夫妻宮【${zh.person1Profile?.fuqiStars?.join('、')}】：${zh.person1Profile?.fuqiSummary}${zh.person1Profile?.fuqiNiQuote ? `（倪師原話：「${zh.person1Profile.fuqiNiQuote}」）` : ''}\n` +
-        `• ${zh.person2Profile?.name}夫妻宮【${zh.person2Profile?.fuqiStars?.join('、')}】：${zh.person2Profile?.fuqiSummary}${zh.person2Profile?.fuqiNiQuote ? `（倪師原話：「${zh.person2Profile.fuqiNiQuote}」）` : ''}\n` +
+        `• ${zh.person1Profile?.name}夫妻宮【${zh.person1Profile?.fuqiStars?.join('、')}】：${zh.person1Profile?.fuqiSummary}${zh.person1Profile?.fuqiNiQuote || zh.person1Profile?.fuqiClassicQuote ? `（三合易理心法：「${zh.person1Profile.fuqiClassicQuote || zh.person1Profile.fuqiNiQuote}」）` : ''}\n` +
+        `• ${zh.person2Profile?.name}夫妻宮【${zh.person2Profile?.fuqiStars?.join('、')}】：${zh.person2Profile?.fuqiSummary}${zh.person2Profile?.fuqiNiQuote || zh.person2Profile?.fuqiClassicQuote ? `（三合易理心法：「${zh.person2Profile.fuqiClassicQuote || zh.person2Profile.fuqiNiQuote}」）` : ''}\n` +
         `• 五步診斷：(1) ${zh.fiveSteps?.step1BaseCompatibility} (2) ${zh.fiveSteps?.step2SpouseCrossMatch} (3) ${zh.fiveSteps?.step3SunMoonAnalysis} (4) ${zh.fiveSteps?.step4SihuaMutualFly}`
     );
   }
@@ -340,7 +340,7 @@ export async function retrieveModuleKnowledge(
           `• ${m.name}（${m.role}·${m.dayMaster}）：後天八卦本位【${m.baguaPosition.direction}·${m.baguaPosition.trigram}】（${m.baguaPosition.familyTitle}）｜紫微六親：${m.ziweiFamilyPalaceNote || ''}｜${m.baguaPosition.niMingWeiRule}`
       )
       .join('\n');
-    ragSnippets.push(`【倪海廈《天紀·地脈道》家庭成員後天八卦「名位相等」定位表】\n${baguaLines}`);
+    ragSnippets.push(`【家庭成員後天八卦「名位相等」空間易理定位表】\n${baguaLines}`);
   }
 
   // 2. 從資料庫 SystemInterpretation 檢索相關專業辭庫 (Dynamic DB RAG)
