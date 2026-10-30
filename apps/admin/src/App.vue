@@ -96,7 +96,7 @@ const router = useRouter();
 
 const frontendUrl = computed(() => {
   const host = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-  return `http://${host}:9999`;
+  return `http://${host}:5499`;
 });
 
 function logout() {

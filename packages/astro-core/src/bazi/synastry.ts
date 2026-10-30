@@ -330,7 +330,7 @@ export interface ZiweiHemingAnalysis {
 }
 
 /**
- * 八字合婚評析報告結構 (整合子平八字 + 紫微斗數倪海廈《天紀》合盤體系)
+ * 八字合婚評析報告結構 (整合子平八字 + 紫微斗數三合天機合盤體系)
  */
 export interface BaziSynastryResult {
   person1: {
@@ -871,7 +871,7 @@ export function calculateBaziSynastry(
     formatPillar(p1Input.name, p2Input.name, '時柱 (子嗣歸宿)', `${p1.hour.stem}${p1.hour.branch}`, `${p2.hour.stem}${p2.hour.branch}`, p1.hour.stem, p2.hour.stem, p1.hour.branch, p2.hour.branch),
   ];
 
-  // 7. 紫微斗數 × 倪海廈《天紀》雙宮聯參與五步合盤分析
+  // 7. 紫微斗數 × 三合天機雙宮聯參與五步合盤分析
   const zw1 = calculateZiweiChart(d1, p1Input.gender);
   const zw2 = calculateZiweiChart(d2, p2Input.gender);
   const ziweiHeming = buildZiweiHemingAnalysis(p1Input, p2Input, zw1, zw2, finalScore);
@@ -943,7 +943,7 @@ export function calculateBaziSynastry(
 }
 
 // ─────────────────────────────────────────────────────────────
-// 👨‍👩‍👧‍👦 家人群組比對解析 (Family Group Synastry + 倪海廈《天紀》陽宅化命八卦定位)
+// 👨‍👩‍👧‍👦 家人群組比對解析 (Family Group Synastry + 《周易》後天八卦名位空間定位)
 // ─────────────────────────────────────────────────────────────
 
 export interface FamilyMemberInput {

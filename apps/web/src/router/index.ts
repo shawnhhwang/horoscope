@@ -11,11 +11,14 @@ import QizhengView from '../views/QizhengView.vue';
 import AlmanacView from '../views/AlmanacView.vue';
 import SynastryView from '../views/SynastryView.vue';
 import AnnualPlannerView from '../views/AnnualPlannerView.vue';
+import LifeSimulatorView from '../views/LifeSimulatorView.vue';
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
   { path: '/ziwei', name: 'ziwei', component: ZiweiView },
   { path: '/bazi', name: 'bazi', component: BaziView },
+  { path: '/simulator', name: 'simulator', component: LifeSimulatorView },
+  { path: '/life-simulator', redirect: '/simulator' },
   { path: '/synastry', name: 'synastry', component: SynastryView },
   { path: '/annual-planner', name: 'annual-planner', component: AnnualPlannerView },
   { path: '/planner', redirect: '/annual-planner' },

@@ -41,7 +41,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=9998
+ENV PORT=5498
 
 # 建立非 root 安全用戶
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 celestial
@@ -53,6 +53,6 @@ COPY --from=builder --chown=celestial:nodejs /app/packages ./packages
 COPY --from=builder --chown=celestial:nodejs /app/apps/server/dist ./dist
 COPY --from=builder --chown=celestial:nodejs /app/apps/server/package.json ./package.json
 
-EXPOSE 9998
+EXPOSE 5498
 
 CMD ["node", "dist/main.js"]

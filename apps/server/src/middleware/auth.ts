@@ -2,7 +2,18 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { prisma } from '@celestial/database';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'celestial_jwt_secret_dev_key_2026';
+export function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('🚨 [SECURITY WARNING]: JWT_SECRET is not set in production! A fallback key is dangerous.');
+    }
+    return 'celestial_jwt_secret_dev_key_2026';
+  }
+  return secret;
+}
+
+const JWT_SECRET = getJwtSecret();
 
 export interface AuthenticatedUser {
   id: string;
@@ -14,50 +25,61 @@ export interface AuthRequest extends Request {
   user?: AuthenticatedUser;
 }
 
-let cachedDemoAdminUser: AuthenticatedUser | null = null;
+let cachedDemoVisitorUser: AuthenticatedUser | null = null;
 
-export async function getDemoAdminUser(): Promise<AuthenticatedUser> {
-  if (cachedDemoAdminUser) return cachedDemoAdminUser;
+export async function getDemoVisitorUser(): Promise<AuthenticatedUser> {
+  if (cachedDemoVisitorUser) return cachedDemoVisitorUser;
   try {
-    let admin = await prisma.user.findFirst({
-      where: { role: 'ADMIN' },
+    let visitor = await prisma.user.findFirst({
+      where: { email: 'demo-visitor@celestial.dao' },
     });
-    if (!admin) {
-      admin = await prisma.user.upsert({
-        where: { email: 'admin@celestial.dao' },
+    if (!visitor) {
+      visitor = await prisma.user.upsert({
+        where: { email: 'demo-visitor@celestial.dao' },
         update: {},
         create: {
-          email: 'admin@celestial.dao',
-          passwordHash: '$2a$10$DemoAdminPasswordHashPlaceholder',
-          displayName: '天機天衍管理員',
-          role: 'ADMIN',
-          emailVerified: true,
+          email: 'demo-visitor@celestial.dao',
+          passwordHash: '$2a$10$DemoVisitorDisabledPasswordHashPlaceholder',
+          displayName: '訪客體驗帳號',
+          role: 'MEMBER',
+          emailVerified: false,
         },
       });
     }
-    cachedDemoAdminUser = {
-      id: admin.id,
-      email: admin.email,
-      role: admin.role,
+    cachedDemoVisitorUser = {
+      id: visitor.id,
+      email: visitor.email,
+      role: visitor.role,
     };
-    return cachedDemoAdminUser;
+    return cachedDemoVisitorUser;
   } catch (err) {
-    return { id: 'demo-admin-id', email: 'admin@celestial.dao', role: 'ADMIN' };
+    return { id: 'demo-visitor-id', email: 'demo-visitor@celestial.dao', role: 'MEMBER' };
   }
 }
 
+/**
+ * 檢查系統當前是否處於 DEMO 體驗模式 (嚴格 Fail-Closed 設計)
+ * 預設關閉；生產環境下強制關閉 (除非環境變數特別指定 ALLOW_PROD_DEMO=true)
+ */
 export function isDemoModeActive(): boolean {
-  const envVal = process.env.DEMO_MODE;
-  if (envVal === 'false' || envVal === '0') {
+  if (process.env.NODE_ENV === 'production' && process.env.ALLOW_PROD_DEMO !== 'true') {
     return false;
   }
-  return true;
+  return process.env.DEMO_MODE === 'true';
 }
 
 export function signToken(user: { id: string; email: string; role: string }): string {
   return jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, {
-    expiresIn: '7d',
+    expiresIn: '24h',
   });
+}
+
+export function verifyToken(token: string): AuthenticatedUser | null {
+  try {
+    return jwt.verify(token, JWT_SECRET) as AuthenticatedUser;
+  } catch {
+    return null;
+  }
 }
 
 export async function authenticate(req: AuthRequest, res: Response, next: NextFunction) {
@@ -67,35 +89,32 @@ export async function authenticate(req: AuthRequest, res: Response, next: NextFu
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     if (isDemoHeader) {
-      req.user = await getDemoAdminUser();
+      req.user = await getDemoVisitorUser();
       return next();
     }
     if (req.headers['x-demo-mode'] === 'true' && !demoActive) {
-      return res.status(401).json({ success: false, message: '系統已於環境變數關閉 DEMO 體驗模式，請登入真實帳號' });
+      return res.status(401).json({ success: false, message: '系統已關閉 DEMO 體驗模式，請登入真實帳號' });
     }
     return res.status(401).json({ success: false, message: '未提供授權憑證，請先登入' });
   }
 
   const token = authHeader.split(' ')[1];
-  if (token === 'demo-admin-token' || (isDemoHeader && (!token || token === 'undefined' || token === 'null'))) {
-    if (!demoActive) {
-      return res.status(401).json({ success: false, message: '系統已於環境變數關閉 DEMO 體驗模式，請登入真實帳號' });
-    }
-    req.user = await getDemoAdminUser();
+  if (isDemoHeader && (!token || token === 'undefined' || token === 'null')) {
+    req.user = await getDemoVisitorUser();
     return next();
   }
 
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET) as AuthenticatedUser;
+  const decoded = verifyToken(token);
+  if (decoded) {
     req.user = decoded;
-    next();
-  } catch (err) {
-    if (isDemoHeader) {
-      req.user = await getDemoAdminUser();
-      return next();
-    }
-    return res.status(401).json({ success: false, message: '憑證無效或已過期，請重新登入' });
+    return next();
   }
+
+  if (isDemoHeader) {
+    req.user = await getDemoVisitorUser();
+    return next();
+  }
+  return res.status(401).json({ success: false, message: '憑證無效或已過期，請重新登入' });
 }
 
 export function requireRole(allowedRoles: string[]) {

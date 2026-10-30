@@ -174,7 +174,7 @@ describe('🌟 Role-RAG 角色化專屬顧問與去仙人化語氣意圖測試 (
       expect(almanacKnowledge).toContain('建除十二神');
     });
 
-    it('ZIWEI 能檢索出倪海廈天紀 RAG 知識庫與經典格局心法', async () => {
+    it('ZIWEI 能檢索出三合天機 RAG 知識庫與經典格局心法', async () => {
       const ziweiKnowledge = await retrieveModuleKnowledge('ZIWEI', {
         title: '紫微斗數排盤',
         summary: '命宮紫微天府',
@@ -182,11 +182,11 @@ describe('🌟 Role-RAG 角色化專屬顧問與去仙人化語氣意圖測試 (
           patterns: [{ name: '君臣慶會' }, { name: '紫府同宮' }],
         },
       });
-      expect(ziweiKnowledge).toContain('倪海廈');
+      expect(ziweiKnowledge).toContain('三合派');
       expect(ziweiKnowledge).toMatch(/大道至簡|君臣慶會|紫府同宮|三合/);
     });
 
-    it('ZIWEI 離線合成器應精準整合輸出命盤格局與倪師 2/3 大於 1/3 決策心法', () => {
+    it('ZIWEI 離線合成器應精準整合輸出命盤格局與 2/3 大於 1/3 決策心法', () => {
       const mockMsg = [{ role: 'user' as const, content: '請解析我的命宮與一生格局' }];
       const ctx = {
         moduleType: 'ZIWEI',
@@ -215,7 +215,7 @@ describe('🌟 Role-RAG 角色化專屬顧問與去仙人化語氣意圖測試 (
 
       const reply = generateProfessionalSynthesizerReply(mockMsg, ctx);
       expect(reply).toContain('【君臣慶會】');
-      expect(reply).toContain('倪師');
+      expect(reply).toContain('三合天機心法');
       expect(reply).toContain('2/3 大於 1/3');
       expect(reply).toContain('名位相等');
       expect(reply).not.toMatch(/老夫|貧道|天機星君|道友/);

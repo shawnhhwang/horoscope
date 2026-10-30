@@ -69,11 +69,11 @@
           <div class="space-y-3 text-xs text-admin-muted">
             <div class="flex justify-between border-b border-admin-gold/10 pb-2">
               <span>前端與後台整合：</span>
-              <span class="text-emerald-400 font-mono">Vue 3 (Port 9999 單一服務直達)</span>
+              <span class="text-emerald-400 font-mono">Vue 3 (Port 5499 單一服務直達)</span>
             </div>
             <div class="flex justify-between border-b border-admin-gold/10 pb-2">
               <span>後端 API 引擎：</span>
-              <span class="text-emerald-400 font-mono">Node.js v20 (Express + TypeScript, Port 9998)</span>
+              <span class="text-emerald-400 font-mono">Node.js v20 (Express + TypeScript, Port 5498)</span>
             </div>
             <div class="flex justify-between border-b border-admin-gold/10 pb-2">
               <span>資料持久層：</span>
@@ -81,7 +81,7 @@
             </div>
             <div class="flex justify-between border-b border-admin-gold/10 pb-2">
               <span>雙服務純淨架構：</span>
-              <span class="text-emerald-400 font-mono">已停用獨立 3001 服務，整合於 9999</span>
+              <span class="text-emerald-400 font-mono">已停用獨立 3001 服務，整合於 5499</span>
             </div>
             <div class="flex justify-between border-b border-admin-gold/10 pb-2">
               <span>視覺渲染標竿：</span>

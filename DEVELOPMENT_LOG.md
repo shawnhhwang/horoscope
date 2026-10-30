@@ -547,7 +547,75 @@
     - 全專案 78/78 項自動化測試 100% 通過。
     - `pnpm -r build` 全套件編譯 0 警告 0 錯誤。
 - **剩餘事項 (Remaining)**：
-  - 進入 Phase 23：實作推算流年曆、生活起居紀錄與命盤諧振個人化生活規劃功能。
+  - 進入 Phase 24：實作「百歲流年·模擬一生」0～100 歲人生推演引擎。
+
+---
+
+### 檢核點回報: Phase 24 (百歲流年·模擬一生 0～100 歲人生推演引擎與互動抉擇系統)
+- **當前任務**：Task 24.1 ~ Task 24.6 (0~100歲流年時間軸、命運規則引擎、Prisma 存檔模型、後端 API 與 LLM 導航顧問、前端 LifeSimulatorView、全套意圖測試與文檔同步)
+- **已完成事項 (Completed)**：
+  - **1. Astro-Core 0～100 歲流年大運時間軸與規則引擎 (`packages/astro-core/src/life-simulator/`)**：
+    - `types.ts`：定義 `LifeAttributes` (體魄健康、財富資產、事業聲望、情感眷屬、心性智慧五維狀態)、`LifeOption` (激進開拓、穩健守成、積德修心、順應避險)、`YearlyLifeNode` (0~100 歲年輪節點)、`LifeSimulationSession` 與 `LifeFinalSummary`。
+    - `timeline.ts`：實作 `generate100YearTimeline`，依出生年月日時推算 0 到 100 歲（共 101 個節點）之西曆年、流年干支、大運切換、流年十神、五行喜忌吉凶評級（大吉/小吉/平順/小凶/大凶），並自動識別重大轉折年（換大運關口、天剋地沖、歲運並臨、天合地合、以及 6/12/18/22/28/35/45/60/70/80/90 歲社會人生階段）。
+    - `rules-engine.ts`：實作 `calculateInitialAttributes` 先天五維稟賦、`resolveTurnDecision` 抉擇差值結算（含順風加權、逆風冒險挫折扣分、60歲後老年自然生理衰減與智慧閱歷增長）、`evaluateMortalityCheck` 壽元檢驗與善終判定、以及 `generateOfflineTurnContent` / `generateOfflineFinalSummary` 離線確定性合成器。
+  - **2. Prisma 資料模型擴充與 SQLite 遷移 (`packages/database`)**：
+    - 在 `schema.prisma` 新增 `LifeSimulationRecord`，完整儲存推演 Session、當前年齡、五維狀態、101 歲歷史年輪 JSON、關鍵足跡陣列與終局自傳報告，並與 `User` 建立關聯。
+    - 成功執行 `prisma db push` 並重構 Client 與套件編譯。
+  - **3. 後端 Simulator 路由與 LLM 靈犀推演整合 (`apps/server/src/modules/simulator/` & `llm/service.ts`)**：
+    - 在 `simulator/router.ts` 實作：
+      - `POST /api/v1/simulator/start`：起局初始化，生成 101 歲骨幹並存檔。
+      - `GET /api/v1/simulator/session/:id`：讀取既有推演進度存檔。
+      - `POST /api/v1/simulator/turn/prompt`：生成本歲年初運勢、情境題與 2~3 個決策選項。
+      - `POST /api/v1/simulator/turn/choose`：結算使用者抉擇，結算屬性差值、更新存檔並檢查壽元。
+      - `POST /api/v1/simulator/fast-forward`：自動平穩快進推進至下個關鍵轉折年。
+      - `POST /api/v1/simulator/finalize`：生成《一生行誼·蓋棺錄》完整自傳長文與成就評級。
+    - 在 `modules/llm/service.ts` 註冊 `LIFE_SIMULATOR` 命運導航員角色與離線 Fallback 合成器。
+    - 在 `app.ts` 掛載 `/api/v1/simulator` 路由。
+  - **4. 意圖自動化測試覆蓋**：
+    - `packages/astro-core/test/astro-core.test.ts` 新增 11. 百歲流年推演測試案例（26/26 通過）。
+    - `apps/server/test/api.test.ts` 新增 6. 百歲流年推演整合測試（6 項案例全數通過，涵蓋起盤、存檔讀取、情境題、選項結算、快進推進、終局蓋棺錄）。
+  - **5. 前端 LifeSimulatorView 與導航串接 (`apps/web`)**：
+    - 建立 `apps/web/src/views/LifeSimulatorView.vue`，具備：
+      - 0~100 歲橫向命運時間軸輪盤（可點選回溯任一年輪歷史）。
+      - 五維狀態動態 HUD 與歷年足跡清單。
+      - 年度事件情境長文、動態抉擇卡牌（含態度標籤與屬性預覽）、自訂自由意志輸入。
+      - 快進至下個轉折年與終局自傳《一生行誼·蓋棺錄》彈窗。
+    - 在 `router/index.ts` 註冊 `/simulator` 路由。
+    - 在 `Navbar.vue` 增設「⏳ 模擬一生」快速導航項目。
+    - 在 `HomeView.vue` 增設首頁功能卡片。
+- **已驗證事項 (Verified)**：
+  - `astro-core` 測試：27/27 項通過。
+  - `apps/server` 測試：64/64 項全數通過（含 6 項 Simulator API 測試）。
+  - 全專案 91/91 項自動化測試 100% 綠燈通過。
+  - 前端生產打包 `pnpm --filter @celestial/web build` 0 警告 0 錯誤通過。
+- **剩餘事項 (Remaining)**：
+  - 功能全數驗收完成。
+
+---
+
+### 檢核點回報: Task 24.7 (台灣生活場景與歷史時代擬真度強化 Taiwan Historical Milestones)
+- **當前任務**：Task 24.7 (預設生活場景在台灣，依人物生存西曆年代對應歷史社會重大事件)
+- **已完成事項 (Completed)**：
+  - **1. 台灣近現代歷史與社會變遷大事紀庫 (`packages/astro-core/src/life-simulator/taiwan-history.ts`)**：
+    - 建立 `TAIWAN_HISTORICAL_EVENTS` 映射庫，涵蓋 1945 年至 2060+ 年（二戰結束光復、四萬換一塊幣改、美援時期、耕者有其田、八二三砲戰、客廳即工廠代工熱潮、高雄加工出口區女工、九年國教紅葉少棒、退出聯合國、十大建設、美麗島事件、竹科成立、解嚴、台灣錢淹腳目股市萬點、野百合學運、總統直選、全民健保、921大地震、2000首次政黨輪替、2003抗擊SARS、2007高鐵通車、2008金融海嘯無薪假、2014太陽花學運、2019同婚合法、2021疫情三級警戒與遠距辦公、護國神山台積電矽盾、生成式AI、2025超高齡社會長照3.0等）。
+    - 實作 `getTaiwanEraContext(year: number)`：精準對應年度大事，未列入字典之年份提供年代區間（40/50/60/70/80/90/00/10/20年代及未來）之社會氣候回退補償。
+  - **2. 流年節點與規則引擎時代年輪注入 (`timeline.ts` & `rules-engine.ts`)**：
+    - `types.ts` 新增 `taiwanEraContext?: string;`。
+    - `timeline.ts` 中 `generate100YearTimeline` 為 0～100 歲每個流年節點自動注入當年度台灣歷史時代輪廓。
+    - `rules-engine.ts` 中 `generateOfflineTurnContent` 將 `🇹🇼【台灣時代年輪】：${taiwanEraContext}` 無縫整合至事件情境長文中。
+  - **3. 後端 API 與 LLM 導航顧問提示詞深化 (`simulator/router.ts` & `llm/service.ts`)**：
+    - 在 `router.ts` 的 `POST /turn/prompt` 與 `POST /finalize` 中，將「生活舞台：台灣」與「台灣時代背景」明確傳遞給 LLM，引導生成符合台灣社會真實經驗的事件情境與抉擇代價。
+    - 在 `service.ts` 更新 `LIFE_SIMULATOR` 角色 Persona 與知識綱領，確立預設生活舞台在台灣之核心原則。
+  - **4. 前端視覺時代年輪標籤 (`apps/web/src/views/LifeSimulatorView.vue`)**：
+    - 在年度事件卡牌頂部增設 `🇹🇼 [台灣時代風貌]` 綠翠色毛玻璃標籤徽章，清晰展現該年台灣社會大背景。
+  - **5. 意圖自動化測試覆蓋 (`packages/astro-core/test/astro-core.test.ts` & `apps/server/test/api.test.ts`)**：
+    - 新增專項意圖測試，驗證 1999 年 (921)、2003 年 (SARS)、2021 年 (三級警戒) 等時代節點精準對應與年代回退推導。
+- **已驗證事項 (Verified)**：
+  - `pnpm --filter @celestial/astro-core test`：27/27 項通過。
+  - `pnpm --filter @celestial/server test`：64/64 項通過。
+  - `pnpm --filter @celestial/web build`：構建 0 警告 0 錯誤通過。
+- **剩餘事項 (Remaining)**：
+  - 無，所有功能已完成並驗收。
 
 ---
 
@@ -576,5 +644,215 @@
   - RAG 測試：`role-rag.test.ts` 覆蓋率 100%（19/19 通過）。
   - 全專案 83 項自動化測試 100% 綠燈通過。
   - Monorepo 全套件建置檢查 `pnpm -r build` 成功。
+---
+
+### 檢核點回報: 服務連接埠全面調整 (前端 5499，後端 5498，Docker Compose 與 Nginx 配置更新)
+- **當前任務**：PORT 前端改 5499，後端 5498，更新 Docker 部署配置與說明
+- **已完成事項 (Completed)**：
+  - **1. 後端連接埠 (5498)**：
+    - [`apps/server/src/main.ts`](file:///home/coder/Codebase/Horoscope/apps/server/src/main.ts)：預設 PORT 改為 `5498`。
+    - [`apps/server/.env`](file:///home/coder/Codebase/Horoscope/apps/server/.env)、[`.env`](file:///home/coder/Codebase/Horoscope/.env)、[`.env.example`](file:///home/coder/Codebase/Horoscope/.env.example)：更新 `PORT=5498`。
+    - [`deploy/docker/Dockerfile.server`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.server)：`ENV PORT=5498`、`EXPOSE 5498`。
+    - [`docker-compose.yml`](file:///home/coder/Codebase/Horoscope/docker-compose.yml)：後端 `server` 服務對外映射更新為 `"5498:5498"`。
+  - **2. 前端連接埠 (5499)**：
+    - [`apps/web/vite.config.ts`](file:///home/coder/Codebase/Horoscope/apps/web/vite.config.ts)：`port: 5499`，Vite 代理反向指向 `http://localhost:5498`。
+    - [`deploy/docker/nginx.conf`](file:///home/coder/Codebase/Horoscope/deploy/docker/nginx.conf)：`location /api/` 反向代理目標更新為 `http://server:5498/api/`。
+    - [`docker-compose.yml`](file:///home/coder/Codebase/Horoscope/docker-compose.yml)：前端 `web` 服務映射更新為 `"5499:80"`。
+    - [`AdminLayout.vue`](file:///home/coder/Codebase/Horoscope/apps/web/src/views/admin/AdminLayout.vue) 與 [`DashboardView.vue`](file:///home/coder/Codebase/Horoscope/apps/web/src/views/admin/DashboardView.vue)：更新 UI 提示為 Port 5499 與 5498。
+  - **3. 文檔與規格同步**：
+    - 更新 [`README.md`](file:///home/coder/Codebase/Horoscope/README.md)、[`SPEC.MD`](file:///home/coder/Codebase/Horoscope/SPEC.MD)、[`TASK_LIST.md`](file:///home/coder/Codebase/Horoscope/TASK_LIST.md)。
+- **已驗證事項 (Verified)**：
+  - 演算法與伺服器測試全數通過（27/27 astro-core 測試，64/64 server 測試）。
+  - 前端與後端編譯構建 0 錯誤通過。
 - **剩餘事項 (Remaining)**：
-  - 將全部變更提交並推送至 GitHub remote (`git push origin main`)。
+  - 整理完整的 Docker 打包與執行指引回覆使用者。
+
+---
+
+### 檢核點回報: Phase 24 (百歲流年·模擬一生，歷史映射庫回溯至 1845 年清代、年代平均壽命動態模型與流行病公衛機制)
+- **當前任務**：百歲流年人生模擬器全功能上線、歷史映射擴展至 1845 年清道光年間、人口平均壽命動態衰減、傳染病公衛風險機制
+- **已完成事項 (Completed)**：
+  - **1. 台灣近現代至未來歷史與公衛社會變遷映射庫擴展 (`packages/astro-core/src/life-simulator/taiwan-history.ts`)**：
+    - 將映射字典回溯至 **1845 年**（清道光二十五年）並一路推演至 2060+ 年超高齡永續社會。
+    - 結構升級為 `TaiwanEraRecord`，包含 `avgLifeExpectancy`（時代預期壽命）、`prevailingEpidemics`（主流傳染病型態）、`sanitationContext`（當代公衛醫療水準）、`isEpidemicOutbreak`（重大時疫爆發標記）。
+    - 詳盡收錄台灣重大公衛歷史節點：
+      - 1845 雲林口湖金湖大水災與霍亂瘴癘大流行
+      - 1862 同治年間全台霍亂與淡水開港行醫
+      - 1874 牡丹社事件日軍染惡性熱病（黑尿熱）
+      - 1895 乙未割台與日軍染疫、1896~1917 鼠疫（黑死病）爆發二十年與避病院
+      - 1897 公醫制度確立、巴爾頓與濱野彌四郎規劃全台自來水水道
+      - 1918 西班牙流感席捲全台奪四萬命
+      - 1937~1945 戰時肺結核、南洋瘧疾與藥品短缺
+      - 1946 戰後天花與霍亂復發
+      - 1952 小兒麻痺大流行與美援沙賓疫苗
+      - 1957 亞洲流感、1962 副霍亂
+      - 1965 WHO 認證台灣為全球第一個「瘧疾根除」地區
+      - 1984 全球首創新生兒全面施打 B 肝疫苗
+      - 1995 全民健保開辦、1998 腸病毒 71 型
+      - 2003 SARS 危機與和平醫院封院
+      - 2020~2022 COVID-19 口罩國家隊與三級警戒
+      - 2025 邁入超高齡社會與長照 3.0
+    - 提供年代內插與回退推導函式 `getTaiwanEraHealthProfile(year)` 與 `getTaiwanEraContext(year)`。
+  - **2. 壽元模型與傳染病衝擊動態規則引擎 (`packages/astro-core/src/life-simulator/rules-engine.ts`)**：
+    - `resolveTurnDecision`：年老自然生理衰退門檻不再固定於 60/80 歲，而是動態錨定於 `avgLifeExpectancy`（如 1850 年 40 歲即超過平均壽命 1.25 倍，衰退 -3；而 2026 年則在 75 歲以上才開始自然衰退）。
+    - 重大傳染病爆發年份加權：`AGGRESSIVE` 冒進奔走將承受染疫體損風險（health -2），`CONSERVATIVE` 居家避疫注重衛生獲得避險增益（health +2），`MORAL` 濟世救民提升心性與眷屬善緣（wisdom +2, relationship +2）。
+    - `evaluateMortalityCheck`：依據歷史時代天年極限與公衛環境進行天命善終與死因敘事評估，真實反映清末瘴癘、避病院隔離或現代百歲無疾善終。
+    - `generateOfflineTurnContent`：當該年爆發時疫時，自適應產生避疫求醫、草藥禳災、落實防疫等時代特徵選項。
+  - **3. 後端 API 模組與 LLM 靈犀推演強化 (`apps/server/src/modules/simulator/`)**：
+    - 在 `/turn/prompt`、`/turn/choose`、`/fast-forward` 完整傳遞 `solarYear`、`eraAvgLifeExpectancy` 與 `eraEpidemics`。
+    - LLM Prompt 注入時代平均壽命與流行病公衛警報，引導產出極富歷史擬真感的情境與抉擇。
+    - 修復端點內 `customText` 參照問題。
+  - **4. 前端時代年輪與公衛警報 UI (`apps/web/src/views/LifeSimulatorView.vue`)**：
+    - 頂部運勢橫幅顯示「🏥 時代平均壽命: 約 X 歲」徽章。
+    - 傳染病大流行年份亮起「⚠️ 疫疾大流行」呼吸警報與公衛危機說明卡片。
+    - 支援 1845 年起任意出生生辰，自適應推演百年時光。
+- **已驗證事項 (Verified)**：
+  - 核心單元測試：`packages/astro-core/test/astro-core.test.ts` 28/28 項 100% 綠燈通過（包含 1845 年出生推演、時代健康輪廓、傳染病選項生成、時代生理衰減與死因判定）。
+  - 後端整合測試：`apps/server/test/api.test.ts`、`role-rag.test.ts`、`admin-features.test.ts` 65/65 項 100% 綠燈通過（包含 1845 年 Session 起局與傳染病資訊回傳）。
+  - 全套件編譯建置檢查（core、server、web）皆無警告錯誤，生產打包成功。
+- **剩餘事項 (Remaining)**：
+  - 無，全項需求已按 AGENTS.md 準則完整實作並驗證通過。
+
+---
+
+### 檢核點回報: Phase 24 增強 (轉折年/大凶/大吉命理決策錦囊、一生回顧響應加速與終局按鈕優化)
+- **當前任務**：Task 24.10 (在轉折年和大凶或大吉年提示可做出的決定，並修復「一生回顧」點擊無反應問題)
+- **已完成事項 (Completed)**：
+  - **1. 命理決策錦囊引擎 (`packages/astro-core/src/life-simulator/rules-engine.ts` & `types.ts`)**：
+    - 實作並匯出純函數 `getYearMetaphysicalGuidance(node: YearlyLifeNode)` 與型別 `MetaphysicalDecisionGuidance`。
+    - **大凶年 (DA_XIONG)**：標注避凶化煞警報，指引「以守為攻、收縮投資戰線、護衛體魄健康、行善積德化煞」，警示切莫於逆風流年孤注一擲。
+    - **大吉年 (DA_JI)**：標注天時乘浪開拓錦囊，指引「果斷爭取晉升、創業開拓、確立正緣盟約、廣修福緣」，莫因安逸錯失良機。
+    - **轉折年 (MILESTONE)**：標注命運航向定調錦囊，指引「立足長遠五年十年維度、兼顧內外三才平衡、知機而動掌握主動權」。
+    - **轉折逢大凶/大吉之複合關卡**：自動強化雙重考驗或天賜良機特殊警語。
+  - **2. 前端決策指引卡片與選項智慧標籤 (`apps/web/src/views/LifeSimulatorView.vue`)**：
+    - 決策區上方增設彩色玻璃面板：大凶年呈現玫瑰紅警報、大吉年呈現琥珀金順風、轉折年呈現紫晶天樞。
+    - 選項卡牌動態掛載對應標籤（`✓ 避煞首選`、`⚠️ 險中求勝`、`✓ 乘風破浪`、`✓ 積德延福`、`⭐ 轉折關鍵`）。
+    - 歷史檢視年份同步展示「💡 當時錦囊指引」。
+  - **3. 「一生回顧」點擊無反應問題徹底修復與全流程加速**：
+    - **即時快取直開**：前端 `finalizeSimulation` 優先判斷若 `session.finalSummary` 已存在記憶體中，立即直接開窗（0 延遲秒開）。
+    - **後端快取與超時保護**：後端 `/finalize` 端點優先判定資料庫若已有 `finalSummaryJson` 直接秒級回傳；調用 LLM 潤色時以 `Promise.race` 設置 8 秒超時保護，避免長達 60~180 秒的請求延遲與瀏覽器超時中斷。
+    - **按鈕視覺反饋強化**：頂部按鈕重構為「📜 一生回顧」，並在請求處理中顯示 `⏳ 譜寫蓋棺錄中...` 與旋轉動畫。
+    - **主舞台終局巨幅卡片**：當達到百歲或壽元終局狀態時，主舞台中央直接呈現金光燦然的「👑 查看《一生行誼·蓋棺錄》回顧」大型操作區與重新開啟新一世按鈕。
+- **已驗證事項 (Verified)**：
+  - 核心演算法單元測試：`astro-core.test.ts` 29/29 項測試 100% 綠燈通過（新增錦囊演算法大凶/大吉/轉折/複合/平順年驗證）。
+  - 後端 API 整合測試：`api.test.ts` 65/65 項測試 100% 綠燈通過。
+  - 全套件編譯建置檢查（core、server、web）皆 0 錯誤構建成功。
+- **剩餘事項 (Remaining)**：
+  - 無，全項問題均已修復並通過驗證。
+
+---
+
+### 檢核點回報: Phase 25 (方案 C：多重視角一生回顧與 LLM 深度撰寫架構)
+- **當前任務**：Task 24.11 (一生回顧搭配 LLM —— 方案 C：風格多重視角選擇)
+- **已完成事項 (Completed)**：
+  - **1. Astro-Core 核心多重視角架構與高水準合成器 (`packages/astro-core/src/life-simulator/`)**：
+    - `types.ts` 定義 `BiographyPerspective` 型別（`'TIANJI' | 'SHIJI' | 'MEMOIR'`），擴充 `LifeFinalSummary` 具備 `activePerspective`、`perspectiveBiographies`、`perspectiveTitles` 與 `perspectiveIsAi` 字典。
+    - `rules-engine.ts` 升級 `generateOfflineFinalSummary`：一次性產生三大風格的高水準離線自傳與尊崇稱號（【倪師天紀心法】人事大於天命以德化煞、【正史太史公列傳】文言春秋筆法附「太史公曰」、【現代時代回憶錄】台灣時代浪潮打拼與溫情獨白），確保離線與 0ms 開啟時皆具備極高文學與命理造詣。
+    - `astro-core.test.ts` 新增三重視角合成與切換之意圖單元測試（29/29 通過）。
+  - **2. 後端 `/finalize` 支援視角切換與 LLM 深度生成 (`apps/server/src/modules/simulator/router.ts`)**：
+    - 支援接收 `perspective` 與 `forceLlm` 參數。
+    - 當 `forceLlm: false` 且快取已有該視角時，**0 毫秒極速回傳**。
+    - 當 `forceLlm: true` 時，使用針對三大視角個別定制的精緻 Prompt，調用 LLM 生成專屬傳記與稱號，配置 75 秒超時防護以容納本地大模型推論時間，完成後快取寫入 DB `finalSummaryJson`。
+    - `apps/server/test/api.test.ts` 新增視角切換與多重視角快取驗證（65/65 通過）。
+  - **3. 前端《一生行誼·蓋棺錄》彈窗多重視角互動體驗 (`apps/web/src/views/LifeSimulatorView.vue`)**：
+    - 彈窗頂部增設 3 大視角切換按鈕（🔮 倪師天紀心法、📜 正史太史公列傳、☕ 現代時代回憶錄），支援即時 0ms 切換。
+    - 標注當前版本標籤（`✨ 靈犀 AI 深度成卷` 或 `🏷️ 演算法傳承經典`）。
+    - 自傳區增設「✨ 召喚靈犀 AI 深度撰寫」互動按鈕與旋轉載入進度動態提示。
+- **已驗證事項 (Verified)**：
+  - `pnpm --filter @celestial/astro-core test`：29/29 測試全數通過 (100% Pass)。
+  - `pnpm --filter @celestial/server test`：65/65 測試全數通過 (100% Pass)。
+  - `pnpm --filter @celestial/web build` 與 `pnpm --filter @celestial/server build`：構建 0 錯誤。
+- **剩餘事項 (Remaining)**：
+  - 交付成果與回覆使用者。
+
+---
+
+### 檢核點回報: Phase 26 (全年歲月年輪敘事、男性視角紅顏盲盒相遇與 80 億分之一的遊戲)
+- **當前任務**：Task 24.12 (每一年生成一段人生階段說明文字；男性視角多位女性友人盲盒相遇；一生回顧搭配「80億分之一的遊戲」)
+- **已完成事項 (Completed)**：
+  - **1. 0~100 歲人生階段與流年深度年輪敘事 (`packages/astro-core/src/life-simulator/timeline.ts`)**：
+    - 實作 `generateAnnualLifeStory`，細分 0~100 歲為 22 個經典人生階段（襁褓撫育、幼學啟蒙、總角之年、舞勺束髮、志學青春、弱冠之年、初涉商海、立志成家、而立奮發、不惑蓄勢、中流砥柱、沉穩掌舵、知命豁達、花甲耳順、榮退交棒、從心所欲、古稀康寧、懸車告老、杖朝之壽、耄耋至境、頤樂長春、期頤百歲）。
+    - 結合流年干支、值年十神（正官/七殺/正印/偏印/正財/偏財/食神/傷官/比肩/劫財）、吉凶氣象與台灣歷史年輪，為全部 101 個節點生成專屬深度敘事段落 `node.annualStory` 與標題 `node.lifeStageTitle`。
+    - 前端在主舞台及點閱時間軸任意年份時，均顯眼展示 `【歲月年輪 · 當前人生階段】` 深度敘事卡片。
+  - **2. 男性視角紅顏盲盒相遇機制 (`packages/astro-core/src/life-simulator/female-friends.ts`)**：
+    - 塑造五大紅顏知己原型：沈婉晴（青梅竹馬）、林若曦（熱血同窗）、宋雨薇（藝術靈動）、蘇珮儀（職場菁英）、趙敏芝（世交千金），各自具備五行屬性、性格描繪與盲盒情境化身。
+    - 在 18、22、26、30、34 歲自動觸發浪漫盲盒相遇事件；相遇情境只給出外貌氣質線索與神秘代號（如「【素雅白裙的知性女子】」），嚴格不暴雷真實姓名。
+    - 透過玩家自由意志抉擇，即時結算羈絆值與因緣狀態（`SPOUSE` / `BONDED` / `MET` / `MISSED`）。
+    - Prisma 模型擴充 `femaleFriendsJson`，支援資料庫持久化。
+  - **3. 一生回顧「80億分之一的遊戲」命運概率與因緣真面目大揭曉**：
+    - 實作 `calculateOneInEightBillion`：計算 80 億人中唯一的專屬命運代碼（如 `#DESTINY-TW-8B-xxxxx`）、八字格局罕見度、自由意志 $3.48 \times 10^9$ 種分歧排列與紅顏因緣總結。
+    - 在《一生行誼·蓋棺錄》彈窗增加第 4 視角 Tab【🌌 80億分之一的遊戲】，震撼揭開五位女子的真實姓名、最初盲盒化身、當時抉擇回憶與最終命中注定的宿命結局。
+- **已驗證事項 (Verified)**：
+  - `pnpm --filter @celestial/astro-core test`：30/30 測試全數通過 (100% Pass)（新增每一年年輪段落、盲盒相遇與 80 億分之一結算意圖測試）。
+  - `pnpm --filter @celestial/server test`：65/65 測試全數通過 (100% Pass)（包含 80 億分之一視角切換與紅顏盲盒數據驗證）。
+  - 前端與後端生產構建（`pnpm build`）狀態碼 0，無任何報錯。
+- **剩餘事項 (Remaining)**：
+  - 無，全項需求已驗證完成並交付。
+
+---
+
+### 檢核點回報: Phase 27 (女性友人生辰 KEYIN、年歲動態對齊、相手好感度、四大領域生命數值演進與全套日式寫實插畫)
+- **當前任務**：Task 24.13 (1.女性友人KEYIN生日 2.出現年歲搭配對齊 3.媒合對方好感度 4.健康/知識/財富/情感四大領域數值流年演進 5.各階段卡牌新海誠日式寫實風格插畫)
+- **已完成事項 (Completed)**：
+  - **1. 女性友人自訂生辰 (KEYIN) 與年歲搭配對齊 (`packages/astro-core/src/life-simulator/`)**：
+    - `types.ts` 擴充 `FemaleFriendProfile`：新增 `birthDate?: string`、`ageOffset?: number`、`herAffinity: number`、`compatibilityScore?: number`、`herEncounterAge?: number`、`illustration?: string`。
+    - `female-friends.ts`：更新 `getInitialFemaleFriends`，根據男主角出生年份動態計算預設生日，並完整接收使用者自訂 KEYIN 之出生日期；更新 `getBlindRomanticEncounter`，以流年西曆年動態扣除友人出生年算出實歲 `herEncounterAge = solarYear - femaleBirthYear`，情境敘事融入歲數搭配與年齡差描述。
+    - 前端 `LifeSimulatorView.vue` 起盤設定卡片提供 5 位友人個別 `🎂 自訂生辰 (KEYIN)` 日期輸入框、年齡差徽章（`同齡`、`小 X 歲`、`大 X 歲`）與預設日式肖像。
+  - **2. 相手好感度 (`herAffinity`) 媒合追蹤機制**：
+    - 引入雙向好感度演算法：主角好感 `affinity` 與對方好感 `herAffinity` 共同演進，並計算宿命默契相合度 `compatibilityScore`。
+    - 抉擇時依態度（專注深情 +30、溫和互助 +18、冷淡迴避 -15）即時更新雙向好感。
+    - 終局「80億分之一的遊戲」大揭曉時，完整展示對方對主角的終局好感度百分比與相合評語。
+  - **3. 健康/知識/財富/情感四大領域數值流年演化 (`rules-engine.ts` & `timeline.ts`)**：
+    - 聚焦核心四大領域：**❤️ 體魄健康 (`health`)**、**📖 知識才識 (`knowledge`)**、**🪙 財富資產 (`wealth`)**、**🌸 情感眷屬 (`relationship`)**（維持 `career` 與 `wisdom` 相容映射）。
+    - 實作 `evolveLifeAttributesByAgeAndFortune` 生命週期動態演化模型：幼年期知識成長、求學期文昌爆發、青壯年財富與事業積累、老年體魄健康自然衰退與知識沉澱通達，結合流年十神五行起伏。
+    - 前端 HUD 狀態儀表升級為四大領域專屬面板，點選時間軸任一年份即可即時檢視該年四大領域快照數值。
+  - **4. 14 幅日式寫實風格高解析度插畫全套生成與落地 (`apps/web/public/images/life-simulator/`)**：
+    - 運用圖像生成引擎，以新海誠光影與精緻日式寫實動畫風格製作 14 幅 1024x1024 插畫：
+      - 9 大人生階段：`stage_01_infancy.jpg`（0~2歲）、`stage_02_childhood.jpg`（3~11歲）、`stage_03_youth.jpg`（12~17歲）、`stage_04_capping.jpg`（18~21歲）、`stage_05_early_career.jpg`（22~29歲）、`stage_06_prime.jpg`（30~49歲）、`stage_07_mature.jpg`（50~64歲）、`stage_08_elder.jpg`（65~79歲）、`stage_09_centenarian.jpg`（80~100歲）。
+      - 5 大紅顏立繪：`romance_wanqing.jpg`、`romance_ruoxi.jpg`、`romance_yuwei.jpg`、`romance_peiyi.jpg`、`romance_minzhi.jpg`。
+    - 在 `timeline.ts` 實作 `getLifeStageIllustration`，為 0~100 歲 101 個節點全自動掛載階段插畫，相遇時掛載紅顏專屬立繪。
+    - 前端年度卡牌、相遇事件卡與終局 80 億分之一揭曉彈窗全幅無縫渲染。
+- **已驗證事項 (Verified)**：
+  - `pnpm --filter @celestial/astro-core test`：30/30 測試全數綠燈 (100% Pass)。
+  - `pnpm --filter @celestial/server test`：65/65 測試全數綠燈 (100% Pass)。
+  - `pnpm --filter @celestial/web build`：構建成功，狀態碼 0。
+- **剩餘事項 (Remaining)**：
+  - 進入 Phase 28：依據 REFINE_LIST.md 進行商用侵權審查改善、資安強化與架構合規。
+
+---
+
+### 檢核點回報: Phase 28 (REFINE_LIST 商用侵權審查改善、系統資安全面防護、限流與架構合規)
+- **當前任務**：Task 24.14 (根據 REFINE_LIST.md 進行修正，完成後更新所有 MD 並提交 GitHub)
+- **已完成事項 (Completed)**：
+  - **1. 商用侵權與法律合規全面去風險化 (Legal & IP Compliance)**：
+    - **L-01 移除名師姓名與侵權風險用語**：UI、Prompt、資料庫種子與格局檔案全面替換為「三合天機合盤體系」、「三合正統雙宮聯參鐵律」、「《周易》後天八卦空間名位相等配置」、「三合天機心法」；刪除「1,848 條原話語料庫」之宣稱。
+    - **L-02 偉特塔羅牌面來源與商標規範**：全站改稱「Waite-Smith 1909 經典偉特體系」，建立 `ASSETS_LICENSE.md` 正式歸檔 Pamela Colman Smith 1909 年作品已屬公有領域之法律狀態。
+    - **L-03 閉源商用專有授權更換**：根目錄替換為 `CelestialDao Proprietary Commercial License`，聲明專有財產權。
+    - **L-04 / L-07 隱私保護與免責聲明**：全站頁尾補齊《個人資料保護法》法定告知條款與文化娛樂/非醫療/非投資免責宣告；LLM System Prompt 注入醫療與金融護欄。
+    - **L-05 虛擬角色警報**：在 `LifeSimulatorView.vue` 女性友人生辰輸入區顯眼增設隱私保護與虛構角色聲明橫幅。
+    - **L-06 插畫授權**：內部文件與對外文案去除在世藝術家姓名，統一使用「日式寫實動畫風格」，授權規範歸檔於 `ASSETS_LICENSE.md`。
+  - **2. 系統資訊安全全面加固 (Security Hardening)**：
+    - **S-01 DEMO 模式 Fail-Closed**：預設環境變數未設置時關閉 Demo；生產環境強制禁用 Demo；訪客角色限定為唯讀 `MEMBER`；徹底清除寫死之 `demo-admin-token`。
+    - **S-02 / A-03 JWT 集中管理與消除重複**：由 `middleware/auth.ts` 集中匯出 `verifyToken`，消除 `simulator/router.ts` 重複密鑰與解析邏輯。
+    - **S-03 SSRF 與 API Key 外洩防護**：後台 `PUT /llm-config` 強制驗證 http(s) 協定，阻擋 loopback、內部私有網段及雲端 Metadata IP；變更端點網域時自動抹除舊 API Key。
+    - **S-04 移除 Redis 攻擊面**：自 `docker-compose.yml` 徹底移除未授權且無人使用的 Redis 服務及其 volume。
+    - **S-05 資料庫檢視脫敏與提權防護**：後台 `GET /database/tables/User` 排除 `passwordHash`；資料表直接更新時強制刪除 `data.role`。
+    - **S-06 速率限制保護 (Rate Limiting)**：引入 `express-rate-limit`，覆蓋 `/auth/login` (30次/15分)、`/auth/register` (30次/15分)、`/llm/chat` (40次/分) 與 `/simulator/start` (50次/分)。
+    - **S-07 Prompt Injection 防護**：過濾用戶端傳入之 messages，嚴格剔除 `role: 'system'`，限制歷史上限 20 則與單則 4,000 字元。
+    - **S-08 推演 Session IDOR 鑑權**：在 `/session/:id`、`/turn/*`、`/fast-forward`、`/finalize` 比對 Token 擁有者與存檔 `userId`，跨帳號存取回傳 403 Forbidden。
+    - **S-09 XSS 防護成熟化**：引入 `DOMPurify.sanitize()` 全面取代前端自製脆弱正則。
+    - **S-11 CORS 與錯誤脫敏**：生產環境禁止萬用網域反射；全域錯誤處理器在 production 隱藏伺服器堆疊與 SQL 語句。
+    - **S-12 套件漏洞修復**：在 `pnpm-workspace.yaml` 配置 `overrides: body-parser: '>=1.20.9'`，`pnpm audit --prod` 達成 0 漏洞。
+  - **3. Nginx 負載與反向代理逾時修復**：
+    - **P-01 解決 504 Gateway Timeout**：在 `deploy/docker/nginx.conf` 的 `/api/` 增加 `proxy_connect_timeout 60s; proxy_send_timeout 200s; proxy_read_timeout 200s;`。
+    - **P-07 現代 Gzip 支援**：在 `nginx.conf` 補齊 `application/javascript`。
+  - **4. 全站 Markdown 文件同步**：
+    - 完整同步 `REFINE_LIST.md`、`README.md`、`SPEC.MD`、`TASK_LIST.md`、`DEVELOPMENT_LOG.md`、`SIMULATE_LIFE.md`、`ASSETS_LICENSE.md`。
+- **已驗證事項 (Verified)**：
+  - 依賴安全審查：`pnpm audit --prod` ➔ 0 known vulnerabilities。
+  - 核心演算法單元測試：`pnpm --filter @celestial/astro-core test` ➔ 30/30 passed (100% Pass)。
+  - 後端 API 與安全整合測試：`pnpm --filter @celestial/server test` ➔ 66/66 passed (包含 IDOR 阻斷與 Fail-Closed 意圖測試)。
+  - 全專案 96 項測試 100% 綠燈通過。
+  - 前端與後台生產構建：`pnpm --filter @celestial/web build` 與 `pnpm --filter @celestial/admin build` 狀態碼 0，編譯無錯誤。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫。

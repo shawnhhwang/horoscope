@@ -35,8 +35,8 @@
 | **TC-A06** | 塔羅占卜 ([`tarot.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/tarot/index.ts)) | 輸入單張、三張（時間之流）、塞爾特十字牌陣與隨機種子 | 1. 抽出之牌卡 ID 不重複。<br>2. 正逆位狀態、元素屬性與牌位意義完整對應。 |
 | **TC-A07** | 姓名學五格 ([`naming.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/naming/index.ts)) | 輸入單姓雙名、單姓單名、複姓雙名 | 1. 康熙字典筆畫換算與天格、人格、地格、外格、總格計算正確。<br>2. 三才配置（天地人五行生剋）與 81 數理吉凶判定一致。 |
 | **TC-A08** | 通勝農民曆 ([`almanac.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/almanac/index.ts)) | 輸入指定西曆日期 | 1. 轉換農曆日期、干支紀日、值日十二建除、二十八星宿、吉神凶煞、彭祖百忌與每日宜忌完整非空。 |
-| **TC-A09** | 八字合婚與天紀合盤 ([`synastry.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/bazi/synastry.ts)) | 輸入雙方八字生辰與性別 | 1. 計算天干五合、夫妻宮合沖、五行互補評分與通關五行。<br>2. 對標 ziwei-doushu-main 產出紫微斗數×倪海廈《天紀》五步合盤法、雙宮聯參總評、夫妻宮星曜倪師原話。 |
-| **TC-A10** | 家人群組與八卦名位 ([`synastry.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/bazi/synastry.ts)) | 輸入家庭成員陣列 (父、母、長子、次女) | 1. 推算全家五行場域主導/匱乏能量與 $C(N, 2)$ 關係矩陣。<br>2. 準確配置倪海廈《天紀·地脈道》後天八卦名位（乾父西北、坤母西南、震長子正東、離次女正南）與陽宅錯位禁忌。 |
+| **TC-A09** | 八字合婚與三合合盤 ([`synastry.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/bazi/synastry.ts)) | 輸入雙方八字生辰與性別 | 1. 計算天干五合、夫妻宮合沖、五行互補評分與通關五行。<br>2. 產出三合派天機五步合盤法、雙宮聯參總評、夫妻宮星曜正統斷語。 |
+| **TC-A10** | 家人群組與八卦名位 ([`synastry.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/bazi/synastry.ts)) | 輸入家庭成員陣列 (父、母、長子、次女) | 1. 推算全家五行場域主導/匱乏能量與 $C(N, 2)$ 關係矩陣。<br>2. 準確配置《周易》後天八卦名位（乾父西北、坤母西南、震長子正東、離次女正南）與陽宅錯位禁忌。 |
 | **TC-A11** | 紫微行運大盤與純星名四化 ([`calculator.ts`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/ziwei/calculator.ts)) | 輸入本命排盤與目標推演年份 (如 2026 丙午) | 1. 正確定位大限宮位（依虛歲命中十年區間）、流年歲次宮位（依目標年支）與小限宮位。<br>2. 大限、流年、小限各自之 `siHua` 均為長度為 4 的純星曜名稱字串陣列 `[祿, 權, 科, 忌]`。 |
 | **TC-A12** | 流年曆與生活起居規劃 ([`annual-planner`](file:///home/coder/Codebase/Horoscope/packages/astro-core/src/annual-planner/calculator.ts)) | 輸入本命生辰、目標流年與日常生活起居紀錄 (作息/飲食/運動/水份/精力) | 1. 精準推排五虎遁十二流月曆、月十神、月令四化與四時生活調神要旨。<br>2. 交叉對比本命喜用五行，計算諧振度評分 (0-100分) 並生成專屬行動規劃書 (Action Plans)。 |
 
@@ -49,7 +49,7 @@
 | **TC-B01** | 全術數專屬顧問角色注入 ([`service.ts`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/llm/service.ts)) | 以 `ZIWEI`, `BAZI`, `WESTERN`, `TAROT`, `ICHING`, `QIZHENG`, `NAME`, `ALMANAC`, `BAZI_SYNASTRY`, `FAMILY_GROUP` 測試 | 攔截 System Prompt：各自注入專屬現代專業顧問身分、方法論框架與客觀諮商結構。 |
 | **TC-B02** | 嚴格禁用仙人/道士口吻驗證 | 檢驗所有模組的 System Prompt 以及離線合成器 [`generateProfessionalSynthesizerReply`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/llm/service.ts#L403) 的輸出內容 | 1. System Prompt 必須明確包含禁止使用仙人道士自稱的指令。<br>2. 所有輸出內容中，**嚴格不得出現** `['天機星君', '貧道', '老夫', '道友', '仙人', '本座', '施主']` 任一詞彙（違反即測試失敗）。 |
 | **TC-B03** | 模組專屬 RAG 知識庫動態檢索 | 傳入各模組具代表性的 `chartContext`（西洋星盤、七政四餘恩難四星、黃曆建除十二神） | [`retrieveModuleKnowledge`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/llm/service.ts) 必須成功檢索出對應資料庫條目。 |
-| **TC-B04** | 倪師《天紀》紫微 RAG 檢索與離線合成器 | 傳入君臣慶會與紫府同宮盤面 | 檢索出倪師天紀大道至簡與 2/3 大於 1/3 心法，合成器精準輸出三合格局解析。 |
+| **TC-B04** | 三合天機紫微 RAG 檢索與離線合成器 | 傳入君臣慶會與紫府同宮盤面 | 檢索出天機大道至簡與 2/3 大於 1/3 心法，合成器精準輸出三合格局解析。 |
 | **TC-B05** | 西洋占星與塔羅大師語錄 RAG | 查詢榮格、路德雅爾、韋特、波拉克大師心法 | 成功自資料庫 RAG 辭條命中並輸出大師級心靈與逆位覺察洞見。 |
 | **TC-B06** | 八字合婚與家庭群組動態實體檢索 (Chart-Entity Grounding) | 傳入 `ziweiHeming` 與 `baguaPosition` 盤面資料 | 動態提取合盤星級、雙宮聯參、夫妻宮斷語與後天八卦名位相等法則注入提示詞與合成報告。 |
 

@@ -19,16 +19,24 @@
     <LlmAssistantModal />
 
     <!-- 頁尾 (Awwwards 奢華幾何裝飾，在後台 CMS 時隱藏，適配 iPhone 底部安全區) -->
-    <footer v-if="!isAdminRoute" class="glass-panel border-t border-dark-gold/15 py-12 px-4 sm:px-6 mt-20 text-center text-xs text-dark-muted pb-[calc(3rem+env(safe-area-inset-bottom,0px))]">
-      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="flex items-center space-x-2">
-          <span class="font-serif text-dark-gold font-bold">萬象天儀</span>
-          <span>· Astraea CelestialDao</span>
+    <footer v-if="!isAdminRoute" class="glass-panel border-t border-dark-gold/15 py-10 px-4 sm:px-6 mt-20 text-center text-xs text-dark-muted pb-[calc(3rem+env(safe-area-inset-bottom,0px))]">
+      <div class="max-w-7xl mx-auto flex flex-col items-center justify-between gap-4">
+        <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-dark-gold/10 pb-4">
+          <div class="flex items-center space-x-2">
+            <span class="font-serif text-dark-gold font-bold">萬象天儀</span>
+            <span>· Astraea CelestialDao</span>
+          </div>
+          <p class="font-serif text-[11px]">
+            以 Awwwards / Webby Awards / FWA Site of the Day 得獎標準精雕細琢
+          </p>
+          <p class="text-[11px]">© 2026 萬象天儀 版權所有 · 探究天地人三才至理</p>
         </div>
-        <p class="font-serif">
-          以 Awwwards / Webby Awards / FWA Site of the Day 得獎標準精雕細琢
-        </p>
-        <p>© 2026 萬象天儀 版權所有 · 探究天地人三才至理</p>
+        <div class="text-[10px] text-dark-muted/80 leading-relaxed max-w-4xl text-center">
+          <p class="mb-1 font-semibold text-dark-gold/90">【法規免責與個人資料保護聲明】</p>
+          <p>
+            本平台所提供之東西方命理排盤、占卜測算、歷史大事紀對映與 AI 靈犀諮詢，均屬中華傳統哲學、古典曆法數學演算與心理映照之文創生活體驗，所有分析均不具備醫療診斷、心理治療、法律訴訟或金融證券投資之專業依據。本站恪遵《個人資料保護法》，嚴格保護會員生辰與測算隱私，絕不向未授權第三方販售或洩漏個資。
+          </p>
+        </div>
       </div>
     </footer>
   </div>

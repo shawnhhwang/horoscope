@@ -1,7 +1,7 @@
 /**
  * 紫微斗數格局識別引擎（繁體中文正統三合派版）
  *
- * 遵循倪海廈天紀命相心法與古典三合派法則：
+ * 遵循古典三合派正統易理心法與格局法則：
  * 1. 古書條件優先：每個格局列出「必須 / 加分 / 破格」三層結構，出處可考
  * 2. 倪師立場：大道至簡，不使用宮干自化、飛星飛來飛去等繁瑣枝節，以命宮為本、三方四正為用
  * 3. 廟旺利陷：以亮度評估吉星發揮與破格機率
@@ -12,7 +12,7 @@
  *  - 《紫微斗數全集》（陳摶祖師傳，明代刊本）
  *  - 《紫微斗數全書》（羅洪先編，明代刊本）
  *  - 《骨髓賦》《女命骨髓賦》《十二宮諸星得地合格訣》
- *  - 倪海廈《天紀》紫微斗數講義與命相心法
+ *  - 古典三合派紫微斗數講義與命相心法
  */
 
 import {
@@ -151,7 +151,7 @@ function detectJunChenQingHui(chart: ZiweiChart, ming: PalaceCell, patterns: Ziw
       '紫微入命，左輔右弼同會，帝王得賢臣輔佐，主大富大貴、統御群倫之命。倪師天紀指出：「紫微最喜左右，如君王得賢相，文武兼備，一生貴人常伴，宜走政商高位或領袖之途。」',
     palaces: ['命宮'],
     conditions: { required, bonus, breaking },
-    source: '《紫微斗數全書·君臣慶會格》及倪海廈《天紀》紫微心法',
+    source: '《紫微斗數全書·君臣慶會格》及古典三合派要旨',
   });
 }
 
@@ -282,7 +282,7 @@ function detectHuoTanLingTan(chart: ZiweiChart, ming: PalaceCell, patterns: Ziwe
       description: `貪狼遇${shaName}${tan.branch === shaPalace.branch ? '同度' : '三方會照'}，主突發橫財、商機湧現。倪師天紀指出：「貪狼遇火鈴主橫發，開拓力極強，唯需居安思危、見好就收，方能守成傳承。」`,
       palaces: [tan.name, shaPalace.name],
       conditions: { required, bonus, breaking },
-      source: '《紫微斗數骨髓賦》及倪海廈《天紀》',
+      source: '《紫微斗數骨髓賦》及古典三合派要訣',
     });
   }
 }
@@ -345,7 +345,7 @@ function detectShaPoLang(chart: ZiweiChart, ming: PalaceCell, patterns: ZiweiPat
       .filter((p) => has.includes(getMajorStarNames(p)[0]))
       .map((p) => p.name),
     conditions: { required, bonus, breaking },
-    source: '《紫微斗數全書·殺破狼》及倪海廈《天紀》',
+    source: '《紫微斗數全書·殺破狼》及古典三合派要訣',
   });
 }
 
@@ -608,7 +608,7 @@ function detectZiWeiInMing(chart: ZiweiChart, ming: PalaceCell, patterns: ZiweiP
       '紫微星為帝座獨守命宮，自尊自立、具王者風範。倪師論命常言：「紫微最重左右，有臣下輔佐方能號令天下；若無左右同會，則為孤君自傲，需加倍培養包容心。」',
     palaces: ['命宮'],
     conditions: { required, bonus, breaking },
-    source: '《紫微斗數全書》及倪海廈《天紀》',
+    source: '《紫微斗數全書》及古典三合派要訣',
   });
 }
 
@@ -759,7 +759,7 @@ function detectHuaJiRuMingQian(chart: ZiweiChart, patterns: ZiweiPattern[]) {
         : `${jiStar.name}化忌坐守遷移宮，出外奔波與人際交往易有誤解阻滯，宜深耕在地、穩扎穩打。`,
       palaces: [p.name],
       conditions: { required: [`${jiStar.name}化忌坐${inMing ? '命宮' : '遷移宮'}`] },
-      source: '《紫微斗數全書》及倪海廈《天紀》',
+      source: '《紫微斗數全書》及古典三合派要訣',
     });
   }
 }
@@ -915,7 +915,7 @@ function detectLuCunShouShen(chart: ZiweiChart, patterns: ZiweiPattern[]) {
       : '祿存坐守身宮，倪師天紀云：「祿存入身，財氣近身」，象徵中年後事業資產穩定、晚運安享。',
     palaces: [inMing ? '命宮' : '身宮'],
     conditions: { required: [inMing ? '祿存坐守命宮' : '祿存坐守身宮'] },
-    source: '《紫微斗數全書·祿存星》及倪海廈《天紀》',
+    source: '《紫微斗數全書·祿存星》及古典三合派要訣',
   });
 }
 
@@ -953,7 +953,7 @@ function detectHuaLuRuCai(chart: ZiweiChart, patterns: ZiweiPattern[]) {
     description: `${luStar.name}化祿坐入財帛宮，象徵財路亨通、進財順暢。倪師指出化祿為正財，依託${luStar.name}之專業特質為立身致富之本。`,
     palaces: ['財帛宮'],
     conditions: { required: [`${luStar.name}化祿坐入財帛宮`] },
-    source: '《紫微斗數全書·四化論》及倪海廈《天紀》',
+    source: '《紫微斗數全書·四化論》及古典三合派要訣',
   });
 }
 
@@ -970,7 +970,7 @@ function detectHuaQuanRuGuan(chart: ZiweiChart, patterns: ZiweiPattern[]) {
     description: `${quanStar.name}化權入官祿宮，主事業掌權、執行力卓絕。倪師明言：「官祿宮最喜歡權星入進來」，主能獨當一面、掌握實權。`,
     palaces: ['官祿宮'],
     conditions: { required: [`${quanStar.name}化權坐入官祿宮`] },
-    source: '《紫微斗數全書·四化論》及倪海廈《天紀》',
+    source: '《紫微斗數全書·四化論》及古典三合派要訣',
   });
 }
 
@@ -993,7 +993,7 @@ function detectHuaKeRuMingShen(chart: ZiweiChart, patterns: ZiweiPattern[]) {
       description: `${keStar.name}化科入${isMing ? '命' : '身'}宮，主名聲清顯、考運亨通。倪師云：「化科是貴人星」，宜以專業知名度開創立業。`,
       palaces: [isMing ? '命宮' : '身宮'],
       conditions: { required: [`${keStar.name}化科入${isMing ? '命宮' : '身宮'}`] },
-      source: '《紫微斗數全書·四化論》及倪海廈《天紀》',
+      source: '《紫微斗數全書·四化論》及古典三合派要訣',
     });
     return;
   }

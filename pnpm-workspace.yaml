@@ -7,3 +7,5 @@ allowBuilds:
   esbuild: true
   prisma: true
   vue-demi: true
+overrides:
+  body-parser: '>=1.20.9'

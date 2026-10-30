@@ -11,10 +11,10 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0', // 允許所有 IP 訪問
-    port: 9999,
+    port: 5499,
     proxy: {
       '/api': {
-        target: 'http://localhost:9998',
+        target: 'http://localhost:5498',
         changeOrigin: true,
       },
     },

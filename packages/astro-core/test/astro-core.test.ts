@@ -22,6 +22,21 @@ import {
   calculateDailyAlmanac,
   calculateAnnualDestinyCalendar,
   evaluateHabitResonance,
+  generate100YearTimeline,
+  calculateInitialAttributes,
+  resolveTurnDecision,
+  evaluateMortalityCheck,
+  generateOfflineTurnContent,
+  generateOfflineFinalSummary,
+  getTaiwanEraContext,
+  getTaiwanEraHealthProfile,
+  getTaiwanEraRecord,
+  getYearMetaphysicalGuidance,
+  getLifeStageIllustration,
+  getInitialFemaleFriends,
+  getBlindRomanticEncounter,
+  applyRomanticDecision,
+  calculateOneInEightBillion,
 } from '../src/index.js';
 
 describe('🌟 萬象天儀 核心演算法庫 Intent-Based Tests', () => {
@@ -574,6 +589,379 @@ describe('🌟 萬象天儀 核心演算法庫 Intent-Based Tests', () => {
       expect(evaluation.dietAnalysis.avgWaterMl).toBeGreaterThanOrEqual(2000);
       expect(evaluation.actionPlans.length).toBeGreaterThanOrEqual(3);
       expect(evaluation.holisticSummary).toContain(String(calendar.targetYear));
+    });
+  });
+
+  describe('11. 百歲流年人生推演模擬器與台灣時代背景 (0-100 BaZi Life Odyssey Simulator & Taiwan Era Realism)', () => {
+    it('應推算完整的 0～100 歲流年時間軸、關鍵轉折、五維屬性與終局總結', () => {
+      const birthDate = new Date('1990-05-15T08:30:00Z');
+      const { baziChart, nodes } = generate100YearTimeline(birthDate, '男');
+
+      // 1. 驗證 0 到 100 歲完整性 (共 101 個節點)
+      expect(nodes.length).toBe(101);
+      expect(nodes[0].age).toBe(0);
+      expect(nodes[0].solarYear).toBe(1990);
+      expect(nodes[100].age).toBe(100);
+      expect(nodes[100].solarYear).toBe(2090);
+
+      // 2. 驗證流年干支與大運連續性
+      nodes.forEach((n, idx) => {
+        expect(n.age).toBe(idx);
+        expect(n.nominalAge).toBe(idx + 1);
+        expect(n.ganzhi.length).toBe(2);
+        expect(n.tenGod).toBeDefined();
+        expect(n.daYun.stem).toBeDefined();
+        expect(n.daYun.branch).toBeDefined();
+      });
+
+      // 3. 驗證關鍵人生里程碑標記 (如 18 歲成年升學、22 歲就業)
+      const node18 = nodes[18];
+      expect(node18.isKeyMilestone).toBe(true);
+      expect(node18.milestoneReason).toContain('成年之禮');
+
+      const node22 = nodes[22];
+      expect(node22.isKeyMilestone).toBe(true);
+      expect(node22.milestoneReason).toContain('學成啟航');
+
+      // 4. 驗證四大領域初始屬性計算 (健康, 知識, 財富, 情感)
+      const initialAttrs = calculateInitialAttributes(baziChart);
+      expect(initialAttrs.health).toBeGreaterThanOrEqual(40);
+      expect(initialAttrs.health).toBeLessThanOrEqual(100);
+      expect(initialAttrs.knowledge).toBeGreaterThanOrEqual(10);
+      expect(initialAttrs.knowledge).toBeLessThanOrEqual(35);
+      expect(initialAttrs.wealth).toBeGreaterThanOrEqual(20);
+      expect(initialAttrs.wealth).toBeLessThanOrEqual(50);
+      expect(initialAttrs.relationship).toBeGreaterThanOrEqual(50);
+      expect(initialAttrs.relationship).toBeLessThanOrEqual(90);
+
+      // 驗證 0~100 歲四大領域隨年紀與流年之合理演化
+      expect(nodes[18].snapshotAttributes.knowledge).toBeGreaterThan(initialAttrs.knowledge);
+      expect(nodes[40].snapshotAttributes.wealth).toBeGreaterThan(nodes[18].snapshotAttributes.wealth);
+      expect(nodes[90].snapshotAttributes.health).toBeLessThan(nodes[20].snapshotAttributes.health);
+
+      // 5. 驗證決策結算與屬性衰減邏輯
+      const turnContent = generateOfflineTurnContent(node18, initialAttrs);
+      expect(turnContent.options.length).toBe(3);
+
+      const chosen = turnContent.options[0];
+      const { newAttributes, deltas } = resolveTurnDecision(initialAttrs, 18, node18.fortuneLevel, chosen);
+      expect(newAttributes.career).toBeGreaterThanOrEqual(initialAttrs.career);
+      expect(deltas.career).toBeGreaterThan(0);
+
+      // 驗證高齡自然生理衰減 (85歲生理衰減 -3)
+      const elderAttrs = { ...initialAttrs, health: 60 };
+      const elderTurn = resolveTurnDecision(elderAttrs, 85, '平順');
+      expect(elderTurn.deltas.health).toBe(-3);
+
+      // 6. 驗證壽元與終局檢驗
+      const healthyCheck = evaluateMortalityCheck(50, { ...initialAttrs, health: 70 }, '大吉');
+      expect(healthyCheck.isTerminal).toBe(false);
+
+      const deadCheck = evaluateMortalityCheck(82, { ...initialAttrs, health: 0 }, '大凶');
+      expect(deadCheck.isTerminal).toBe(true);
+      expect(deadCheck.reason).toContain('82歲');
+
+      // 7. 驗證終局一生總結報告
+      const mockSession = {
+        sessionId: 'test_session',
+        profileName: '王大同',
+        gender: '男' as const,
+        birthDate: '1990-05-15T08:30:00Z',
+        currentAge: 85,
+        status: 'COMPLETED' as const,
+        attributes: { health: 50, wealth: 78, career: 82, relationship: 75, wisdom: 88 },
+        history: nodes.slice(0, 86),
+        milestoneFootprints: ['18歲考入頂尖大學', '30歲創立設計工作室'],
+      };
+      const summary = generateOfflineFinalSummary(mockSession);
+      expect(summary.endingTitle).toBeDefined();
+      expect(summary.finalAge).toBe(85);
+      expect(summary.biographyRichText).toContain('王大同');
+      expect(summary.keyTriumphs.length).toBeGreaterThan(0);
+      expect(summary.destinyAlignmentScore).toBeGreaterThanOrEqual(60);
+
+      // 驗證多重視角風格生成 (方案 C: 倪師心法、正史太史公列傳、時代回憶錄)
+      expect(summary.perspectiveBiographies?.TIANJI).toContain('天紀蓋棺論');
+      expect(summary.perspectiveBiographies?.SHIJI).toContain('太史公曰');
+      expect(summary.perspectiveBiographies?.MEMOIR).toContain('回憶錄');
+
+      const shijiSummary = generateOfflineFinalSummary(mockSession, 'SHIJI');
+      expect(shijiSummary.activePerspective).toBe('SHIJI');
+      expect(shijiSummary.biographyRichText).toContain('太史公曰');
+
+      const memoirSummary = generateOfflineFinalSummary(mockSession, 'MEMOIR');
+      expect(memoirSummary.activePerspective).toBe('MEMOIR');
+      expect(memoirSummary.biographyRichText).toContain('回憶錄');
+    });
+
+    it('應依據西曆年份深刻融入台灣時代風貌與歷史社會重大事件', () => {
+      const birthDate = new Date('1990-05-15T08:30:00Z');
+      const { nodes } = generate100YearTimeline(birthDate, '男');
+
+      // 1. 驗證 101 個節點皆注入台灣時代背景
+      nodes.forEach((n) => {
+        expect(n.taiwanEraContext).toBeTruthy();
+        expect(typeof n.taiwanEraContext).toBe('string');
+      });
+
+      // 2. 驗證特定年份重大歷史節點之精準對應
+      // 1999 年 (9 歲)：逢 921 大地震與社會動員
+      const node1999 = nodes.find((n) => n.solarYear === 1999);
+      expect(node1999?.taiwanEraContext).toContain('921');
+
+      // 2003 年 (13 歲)：逢 SARS 與台北 101 上樑
+      const node2003 = nodes.find((n) => n.solarYear === 2003);
+      expect(node2003?.taiwanEraContext).toContain('SARS');
+
+      // 2021 年 (31 歲)：逢新冠疫情三級警戒與口罩國家隊/遠距工作
+      const node2021 = nodes.find((n) => n.solarYear === 2021);
+      expect(node2021?.taiwanEraContext).toContain('三級警戒');
+
+      // 3. 驗證年代歷史里程碑推導與回退推導函式 getTaiwanEraContext
+      expect(getTaiwanEraContext(1949)).toContain('四萬塊換一塊');
+      expect(getTaiwanEraContext(1971)).toContain('退出聯合國');
+      expect(getTaiwanEraContext(1979)).toContain('美麗島');
+      expect(getTaiwanEraContext(1987)).toContain('解嚴');
+      expect(getTaiwanEraContext(2000)).toContain('首次政黨輪替');
+      expect(getTaiwanEraContext(2007)).toContain('高鐵');
+      expect(getTaiwanEraContext(2024)).toContain('AI');
+      expect(getTaiwanEraContext(2025)).toContain('超高齡');
+      expect(getTaiwanEraContext(2038)).toContain('超高齡');
+
+      // 4. 驗證線下事件情境描寫包含台灣時代年輪標籤
+      const sampleNode = nodes[18];
+      const initialAttrs = { health: 80, wealth: 50, career: 50, relationship: 50, wisdom: 50 };
+      const turnContent = generateOfflineTurnContent(sampleNode, initialAttrs);
+      expect(turnContent.eventNarrative).toContain('台灣時代年輪');
+    });
+
+    it('應支援自1845年清代起之歷史映射、各時代人類平均壽命與傳染病公衛機制', () => {
+      // 1. 驗證 1845 年 (清道光二十五年) 出生之命主推演
+      const birth1845 = new Date('1845-06-15T12:00:00Z');
+      const { nodes, baziChart } = generate100YearTimeline(birth1845, '男');
+      expect(nodes.length).toBe(101);
+      expect(nodes[0].solarYear).toBe(1845);
+      expect(nodes[100].solarYear).toBe(1945);
+      expect(baziChart.pillars.year.stem).toBe('乙');
+      expect(baziChart.pillars.year.branch).toBe('巳');
+
+      // 1845 年節點應反映清代金湖大水災時疫背景與時代平均壽命 (~31歲)
+      const node0 = nodes[0];
+      expect(node0.taiwanEraContext).toContain('金湖');
+      expect(node0.eraAvgLifeExpectancy).toBe(31);
+      expect(node0.isEpidemicYear).toBe(true);
+      expect(node0.eraEpidemics?.some((e) => e.includes('霍亂'))).toBe(true);
+
+      // 1895 年 (50 歲)：甲午割台，應被標註為重大轉折
+      const node1895 = nodes.find((n) => n.solarYear === 1895);
+      expect(node1895).toBeDefined();
+      expect(node1895?.isKeyMilestone).toBe(true);
+      expect(node1895?.taiwanEraContext).toContain('乙未割台');
+      expect(node1895?.eraEpidemics?.some((e) => e.includes('霍亂') || e.includes('瘧疾'))).toBe(true);
+
+      // 1896 年 (51 歲)：鼠疫黑死病爆發
+      const node1896 = nodes.find((n) => n.solarYear === 1896);
+      expect(node1896?.isEpidemicYear).toBe(true);
+      expect(node1896?.eraEpidemics?.some((e) => e.includes('鼠疫'))).toBe(true);
+
+      // 1918 年 (73 歲)：西班牙流感大流行
+      const node1918 = nodes.find((n) => n.solarYear === 1918);
+      expect(node1918?.isEpidemicYear).toBe(true);
+      expect(node1918?.eraEpidemics?.some((e) => e.includes('西班牙流感'))).toBe(true);
+
+      // 2. 驗證各歷史時代之健康輪廓推算 (getTaiwanEraHealthProfile)
+      const profile1845 = getTaiwanEraHealthProfile(1845);
+      expect(profile1845.avgLifeExpectancy).toBe(31);
+      expect(profile1845.isEpidemicOutbreak).toBe(true);
+      expect(profile1845.prevailingEpidemics.length).toBeGreaterThan(0);
+
+      const profile1920 = getTaiwanEraHealthProfile(1920);
+      expect(profile1920.avgLifeExpectancy).toBe(40);
+
+      const profile1965 = getTaiwanEraHealthProfile(1965);
+      expect(profile1965.avgLifeExpectancy).toBe(66);
+      expect(profile1965.eraName).toContain('瘧疾');
+
+      const profile2026 = getTaiwanEraHealthProfile(2026);
+      expect(profile2026.avgLifeExpectancy).toBeGreaterThanOrEqual(81);
+
+      // 3. 驗證傳染病爆發年份的線下決策選項生成 (generateOfflineTurnContent)
+      const epidemicNode = nodes[0]; // 1845 is epidemic
+      const testAttrs = { health: 70, wealth: 50, career: 50, relationship: 50, wisdom: 50 };
+      const epidemicTurn = generateOfflineTurnContent(epidemicNode, testAttrs);
+      expect(epidemicTurn.options.some((o) => o.text.includes('防疫') || o.text.includes('避疫') || o.text.includes('求醫') || o.text.includes('草藥'))).toBe(true);
+
+      // 4. 驗證動態時代壽命衰減與傳染病衝擊決策規則 (resolveTurnDecision)
+      // 1896 年 (鼠疫大流行 outbreak, avgLifeExpectancy=33)，51歲超過平均壽命 1.25倍 (41歲)，衰減為 -3
+      // 加上 AGGRESSIVE 在疫病大流行年份額外增加染疫風險健康扣減 (-2)，合計 health delta <= -5
+      const decisionResult1845 = resolveTurnDecision(
+        testAttrs,
+        51,
+        '平順',
+        { id: 'opt_agg', text: '鋌而走險冒疫外出經商', potentialImpact: { career: 5 }, attitude: 'AGGRESSIVE' },
+        undefined,
+        1896,
+      );
+      expect(decisionResult1845.deltas.health).toBeLessThanOrEqual(-5);
+
+      // 5. 驗證動態時代壽元與死亡評估 (evaluateMortalityCheck)
+      // 在 1880 年 (清代)，若 65 歲 (超過平均壽命 33 歲且達到高齡門檻 60 歲) 且健康低於 15，大凶即觸發終局
+      const mortality1880Elder = evaluateMortalityCheck(65, { ...testAttrs, health: 10 }, '大凶', 1880);
+      expect(mortality1880Elder.isTerminal).toBe(true);
+
+      // 若健康歸零，生平死因敘事深刻反映清末淡水偕醫館與流行病時代特徵
+      const mortality1880Zero = evaluateMortalityCheck(35, { ...testAttrs, health: 0 }, '大凶', 1880);
+      expect(mortality1880Zero.isTerminal).toBe(true);
+      expect(mortality1880Zero.reason).toContain('滬尾偕醫館');
+      expect(mortality1880Zero.reason).toContain('肺結核');
+    });
+
+    it('應在轉折年、大凶年與大吉年產出精準之命理決策錦囊與行動指引 (Metaphysical Decision Guidance)', () => {
+      const birth = new Date('1990-05-15T08:30:00Z');
+      const { nodes } = generate100YearTimeline(birth, '男');
+
+      // 1. 驗證大凶年錦囊 (提供避凶化煞、穩健守成指引)
+      const mockDaXiongNode = {
+        ...nodes[25],
+        fortuneLevel: '大凶' as const,
+        isKeyMilestone: false,
+      };
+      const guidanceDaXiong = getYearMetaphysicalGuidance(mockDaXiongNode);
+      expect(guidanceDaXiong).toBeDefined();
+      expect(guidanceDaXiong?.isApplicable).toBe(true);
+      expect(guidanceDaXiong?.category).toBe('DA_XIONG');
+      expect(guidanceDaXiong?.title).toContain('大凶');
+      expect(guidanceDaXiong?.recommendedAction).toContain('CONSERVATIVE');
+      expect(guidanceDaXiong?.decisionTips.length).toBeGreaterThanOrEqual(3);
+
+      // 2. 驗證大吉年錦囊 (提供乘風破浪、積極開拓指引)
+      const mockDaJiNode = {
+        ...nodes[28],
+        fortuneLevel: '大吉' as const,
+        isKeyMilestone: false,
+      };
+      const guidanceDaJi = getYearMetaphysicalGuidance(mockDaJiNode);
+      expect(guidanceDaJi).toBeDefined();
+      expect(guidanceDaJi?.isApplicable).toBe(true);
+      expect(guidanceDaJi?.category).toBe('DA_JI');
+      expect(guidanceDaJi?.title).toContain('大吉');
+      expect(guidanceDaJi?.recommendedAction).toContain('AGGRESSIVE');
+      expect(guidanceDaJi?.decisionTips.some((t) => t.label.includes('開拓'))).toBe(true);
+
+      // 3. 驗證純重大轉折年錦囊 (平順運勢但為大運/里程碑關口)
+      const mockMilestoneNode = {
+        ...nodes[18],
+        fortuneLevel: '平順' as const,
+        isKeyMilestone: true,
+        milestoneReason: '大運交接關口與升學試煉',
+      };
+      const guidanceMilestone = getYearMetaphysicalGuidance(mockMilestoneNode);
+      expect(guidanceMilestone).toBeDefined();
+      expect(guidanceMilestone?.category).toBe('MILESTONE');
+      expect(guidanceMilestone?.title).toContain('轉折');
+      expect(guidanceMilestone?.summary).toContain('大運交接關口');
+
+      // 4. 驗證轉折年逢大凶之複合嚴峻考驗
+      const mockDualNode = {
+        ...nodes[40],
+        fortuneLevel: '大凶' as const,
+        isKeyMilestone: true,
+        milestoneReason: '中年大限交接天剋地沖',
+      };
+      const guidanceDual = getYearMetaphysicalGuidance(mockDualNode);
+      expect(guidanceDual?.category).toBe('DA_XIONG');
+      expect(guidanceDual?.title).toContain('關鍵轉折');
+      expect(guidanceDual?.title).toContain('大凶');
+
+      // 5. 驗證非轉折平順年不觸發特殊指引 (保持介面簡潔)
+      const mockOrdinaryNode = {
+        ...nodes[7],
+        fortuneLevel: '平順' as const,
+        isKeyMilestone: false,
+      };
+      expect(getYearMetaphysicalGuidance(mockOrdinaryNode)).toBeNull();
+    });
+
+    it('應在每一年生成對應人生階段之深度年輪敘事文字 (每年一段) 並支援男性視角紅顏盲盒邂逅與80億分之一的遊戲結算', () => {
+      const birthDate = new Date('1995-10-24T14:30:00Z');
+      const { nodes, baziChart } = generate100YearTimeline(birthDate, '男');
+
+      // 1. 驗證 0~100 歲共 101 個節點，每一年皆具備深度人生階段年輪文字 (每年一段)
+      expect(nodes.length).toBe(101);
+      nodes.forEach((n) => {
+        expect(n.lifeStageTitle).toBeTruthy();
+        expect(n.annualStory).toBeTruthy();
+        expect(n.annualStory!.length).toBeGreaterThan(40);
+        expect(n.annualStory).toContain(`${n.age}歲`);
+      });
+
+      // 驗證幼年、青年、中年、老年人生階段名稱與日式寫實插畫路徑映射
+      expect(nodes[0].lifeStageTitle).toContain('襁褓');
+      expect(nodes[18].lifeStageTitle).toContain('志學');
+      expect(nodes[35].lifeStageTitle).toContain('而立');
+      expect(nodes[60].lifeStageTitle).toContain('花甲');
+      expect(nodes[100].lifeStageTitle).toContain('期頤');
+      expect(getLifeStageIllustration(0)).toContain('stage_01_infancy');
+      expect(getLifeStageIllustration(18)).toContain('stage_04_capping');
+      expect(getLifeStageIllustration(35)).toContain('stage_06_prime');
+      expect(getLifeStageIllustration(100)).toContain('stage_09_centenarian');
+
+      // 2. 驗證男性視角紅顏盲盒知己名冊初始化 (支援 KEYIN 生日、年歲對齊與對方好感度)
+      const femaleFriends = getInitialFemaleFriends('1990-05-15', [
+        { id: 'friend_1', birthDate: '1989-09-12' }, // 自訂 KEYIN
+      ]);
+      expect(femaleFriends.length).toBe(5);
+      expect(femaleFriends.map((f) => f.name)).toContain('沈婉晴');
+      expect(femaleFriends.map((f) => f.name)).toContain('林若曦');
+      expect(femaleFriends.map((f) => f.name)).toContain('宋雨薇');
+      expect(femaleFriends[0].birthDate).toBe('1989-09-12');
+      expect(femaleFriends[0].herAffinity).toBeGreaterThan(0); // 媒合對方好感度
+
+      // 3. 驗證盲盒相遇與年歲搭配 (選擇當下不會揭露真實姓名，只出現神秘化身、情境與雙方年歲對齊)
+      const encounter18 = getBlindRomanticEncounter(18, femaleFriends, '台北', 2008);
+      expect(encounter18.isRomanticTurn).toBe(true);
+      expect(encounter18.mysteryAlias).toBe('【素雅白裙的知性女子】');
+      expect(encounter18.eventNarrative).not.toContain('沈婉晴'); // 嚴格不暴雷真實姓名
+      expect(encounter18.eventNarrative).toContain('18 歲'); // 男主年齡
+      expect(encounter18.eventNarrative).toContain('19 歲'); // 女方年齡 (2008 - 1989)
+      expect(encounter18.eventNarrative).toContain('好感度'); // 對方好感度提示
+      expect(encounter18.options?.length).toBe(3);
+
+      // 4. 驗證盲盒抉擇與雙向好感度結算 (對方好感度 herAffinity 動態增長)
+      const updatedFriends = applyRomanticDecision(femaleFriends, 'opt_romantic_deep_friend_1', 18);
+      const friend1 = updatedFriends.find((f) => f.id === 'friend_1');
+      expect(friend1?.affinity).toBeGreaterThanOrEqual(30);
+      expect(friend1?.herAffinity).toBeGreaterThan(65);
+      expect(friend1?.status).toBe('BONDED');
+
+      // 5. 驗證 80 億分之一的遊戲 (One in Eight Billion) 終局機率與紅顏揭曉
+      const mockSession = {
+        sessionId: 'session_8b_test',
+        profileName: '張道遠',
+        gender: '男' as const,
+        birthDate: '1995-10-24T14:30:00Z',
+        currentAge: 85,
+        status: 'COMPLETED' as const,
+        attributes: { health: 75, wealth: 80, career: 88, relationship: 82, wisdom: 90 },
+        history: nodes.slice(0, 86),
+        milestoneFootprints: ['18歲邂逅素雅白裙女子', '30歲創立軟體科技公司'],
+        femaleFriends: updatedFriends,
+      };
+
+      const oneIn8B = calculateOneInEightBillion(mockSession);
+      expect(oneIn8B.destinyCode).toContain('DESTINY-TW-8B');
+      expect(oneIn8B.rarityScoreText).toContain('80');
+      expect(oneIn8B.revealedFriends.length).toBe(5);
+      const revealedFriend1 = oneIn8B.revealedFriends.find((f) => f.id === 'friend_1');
+      expect(revealedFriend1?.name).toBe('沈婉晴');
+      expect(revealedFriend1?.statusText).toContain('知己');
+
+      // 驗證 generateOfflineFinalSummary 支援 ONE_IN_8_BILLION 視角
+      const summary8B = generateOfflineFinalSummary(mockSession, 'ONE_IN_8_BILLION');
+      expect(summary8B.activePerspective).toBe('ONE_IN_8_BILLION');
+      expect(summary8B.biographyRichText).toContain('80億分之一');
+      expect(summary8B.biographyRichText).toContain('沈婉晴');
+      expect(summary8B.oneInEightBillion).toBeDefined();
     });
   });
 });

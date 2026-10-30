@@ -112,6 +112,21 @@
           </div>
         </router-link>
 
+        <!-- 4.1 模擬一生 (百歲流年推演) -->
+        <router-link to="/simulator" class="group glass-panel rounded-2xl p-6 border-dark-gold/40 hover:border-dark-gold transition-all duration-300 hover:shadow-cosmic relative overflow-hidden flex flex-col justify-between bg-gradient-to-b from-dark-gold/10 to-transparent">
+          <div>
+            <div class="text-xs font-serif text-dark-gold tracking-widest uppercase mb-2">0-100 LIFE ODYSSEY</div>
+            <h3 class="font-serif text-xl font-bold mb-2 group-hover:text-dark-gold transition-colors">百歲流年 · 模擬一生</h3>
+            <p class="text-xs text-dark-muted leading-relaxed mb-4">
+              0～100 歲流年大運、十神行運與重大轉折互動推演；以自由意志抉擇重塑命運，終局生成《一生行誼·蓋棺錄》。
+            </p>
+          </div>
+          <div class="flex items-center text-xs font-serif text-dark-gold pt-2 border-t border-dark-gold/15">
+            <span>開始模擬一生</span>
+            <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+          </div>
+        </router-link>
+
         <!-- 5. 八字合婚與家人群組 (新增) -->
         <router-link to="/synastry" class="group glass-panel rounded-2xl p-6 hover:border-dark-gold transition-all duration-300 hover:shadow-cosmic relative overflow-hidden flex flex-col justify-between">
           <div>

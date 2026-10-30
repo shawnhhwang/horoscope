@@ -16,6 +16,7 @@
    - 3.4 [東方玄學：姓名學與命名系統 (Name Analysis & Recommendation)](#34-東方玄學姓名學與命名系統-name-analysis--recommendation)
    - 3.5 [西方星象：西洋本命星盤與月亮星座 (Western Astrology & Moon Sign)](#35-西方星象西洋本命星盤與月亮星座-western-astrology--moon-sign)
    - 3.6 [西方神秘學：塔羅牌占卜系統 (Tarot Divination)](#36-西方神秘學塔羅牌占卜系統-tarot-divination)
+   - 3.7 [命運演繹：百歲流年·模擬一生系統 (0-100 BaZi Life Odyssey)](#37-命運演繹百歲流年模擬一生系統-0-100-bazi-life-odyssey)
 4. [Awwwards/FWA 等級視覺與 UX 規範 (Elite Design System)](#4-awwwardsfwa-等級視覺與-ux-規範-elite-design-system)
    - 4.1 [色彩哲學與雙主題系統 (Dual Cosmic Theme)](#41-色彩哲學與雙主題系統-dual-cosmic-theme)
    - 4.2 [排版字體與幾何美學 (Typography & Sacred Geometry)](#42-排版字體與幾何美學-typography--sacred-geometry)
@@ -68,9 +69,9 @@
                                   │
 ┌─────────────────────────────────┼──────────────────────────────────────┐
 │  資料持久層 (Data Layer)        │  外部服務與微核心 (Micro-Engines)     │
-│  - PostgreSQL (主關聯資料庫)     │  - 自研 Jean Meeus 天體力學 (無 AGPL 感染風險) │
+│  - SQLite / PostgreSQL          │  - 自研 Jean Meeus 天體力學 (無 AGPL 感染風險) │
 │  - Prisma ORM (型別安全 ORM)    │  - 康熙字典字庫與五行筆劃數據庫        │
-│  - Redis (排盤快取、Rate Limit) │  - 經緯度真太陽時 (True Solar Time)   │
+│  - 內存速率限制 (Rate Limiting) │  - 經緯度真太陽時 (True Solar Time)   │
 └─────────────────────────────────┴──────────────────────────────────────┘
 ```
 
@@ -88,13 +89,14 @@
 
 ### 2.2 後端技術棧
 - **執行環境**：Node.js 20+ LTS (TypeScript)
-- **API 框架**：Express.js 或 Fastify (具備高度穩定性與高效能中介軟體機制)
-- **資料庫與 ORM**：PostgreSQL 16 + Prisma ORM (強型別 Schema 與遷移管理)
-- **快取機制**：Redis 7+ (星盤計算結果快取、驗證碼、Session 與請求防刷)
+- **API 框架**：Express.js (具備高度穩定性與中介軟體機制)
+- **資料庫與 ORM**：SQLite (開發與單機快速部署) / PostgreSQL (企業級商轉) + Prisma ORM
+- **速率限制與安全**：express-rate-limit (記憶體端點防刷、登入限流、LLM 與起局保護), DOMPurify (XSS 防護), Helmet, SSRF 防護, IDOR 權限檢核
 - **天文演算法套件**：
   - 自研 Jean Meeus 高精度天體力學純函數庫（`packages/astro-core/src/western/calculator.ts`，誤差 < 0.01°，徹底取代並排除瑞士星曆表 `swisseph` 之 GNU AGPL 傳染性授權風險）
   - `lunar-typescript` (MIT 授權高精度農曆、節氣、干支換算庫)
-- **驗證與安全**：JWT (JSON Web Token), Helmet, CORS, Argon2, Rate-limiter
+- **驗證與安全**：JWT (JSON Web Token), Helmet, CORS, Bcryptjs, Rate-limiter
+
 
 ---
 
@@ -221,8 +223,8 @@
 ### 3.6 西方神秘學：塔羅牌占卜系統 (Tarot Divination)
 
 #### 1. 牌庫規格
-- 完整 **78 張萊德·韋特塔羅牌 (Rider-Waite Tarot)**：
-  - 22 張大阿爾克那 (Major Arcana)：從愚者 0 到世界 21，象徵靈魂愚人之旅。
+- 完整 **78 張經典偉特塔羅牌 (Waite-Smith 1909 Tarot)**：
+  - 22 張大阿爾克那 (Major Arcana)：從愚者 0 到世界 21，象徵靈魂愚人之旅（採用 1909 年公有領域牌面）。
   - 56 張小阿爾克那 (Minor Arcana)：四種元素花色（權杖-火、聖杯-水、寶劍-風、星幣/錢幣-土），包含宮廷牌 (侍從、騎士、王后、國王)。
 - 支援 **正位 (Upright)** 與 **逆位 (Reversed)** 雙向牌義庫與關鍵詞。
 
@@ -239,6 +241,86 @@
 - 使用 Three.js 實作 3D 牌桌場景。
 - **洗牌動畫**：平鋪展開、螺旋流暢推牌與切牌音效。
 - **抽牌與翻牌**：支持滑鼠拖曳抽牌進入牌陣卡槽，雙擊或劃動以 PBR 金屬金箔反射材質翻牌，正逆位真實旋轉。
+
+---
+
+### 3.7 命運演繹：百歲流年·模擬一生系統 (0-100 BaZi Life Odyssey)
+
+#### 1. 系統架構與定位
+- 融合子平八字年月日時四柱、日元十神、大運（10年一運）與 0～100 歲流年曆。
+- 遵循任務拆分原則 (Rule 5)：由確定性命理引擎推演天干地支、刑沖剋害合、基礎五維數值與壽元衰退；由 LLM 靈犀引擎動態生成年齡對應的人生轉折、決策選項與自傳式一生蓋棺錄。
+
+#### 2. 生命五維屬性面板 (Life Attributes)
+- **體魄健康 (Health)**：先天取決於日主強弱與五行中和，隨 60 歲後生理自然遞減，受疾厄運勢與抉擇調養影響。
+- **財富資產 (Wealth)**：受正偏財、食傷與財庫引動，影響投資開拓與晚年醫療保障。
+- **事業聲望 (Career)**：受正官、七殺、印星生旺影響，主導職涯晉升、社會地位與名譽。
+- **情感眷屬 (Relationship)**：受夫妻宮、配偶星、桃花星與比劫合和影響，反映婚戀和美、家庭責任與手足子嗣。
+- **心性智慧 (Wisdom)**：受印星、水木氣場與歷年重大歷練累積，隨年齡增長逐步提升，為晚年看破生死、善終悟道之根基。
+
+#### 3. 推進模式與互動迴圈
+- **雙軌推進機制**：
+  - **關鍵轉折模式 (Key Milestones Mode)**：引擎自動標記換大運關口、歲運並臨、天剋地沖、天合地合以及關鍵社會年齡（18歲升學、22歲就職、28歲成家、35歲晉升、60歲花甲等），觸發深度 LLM 互動決策。
+  - **快進模式 (Fast Forward)**：平穩過渡年由確定性引擎快速運算屬性起伏，支援一鍵快進至下一關鍵年。
+- **終局落幕儀式**：壽元耗盡或滿百歲時，觸發《一生行誼·蓋棺錄》長文自傳、榮譽稱號、五維雷達與三大榮光/遺憾評級。
+
+#### 4. 台灣時代年輪、人口平均壽命與流行病公衛機制 (1845 ~ 2060+)
+- **預設生活場景在台灣（1845 清代起）**：推演舞台扎根於台灣土地，內建 1845 年（清道光二十五年）至 2060+ 年之「台灣歷史社會大事紀、各年代人口平均壽命與公衛傳染病演變資料庫 (`taiwan-history.ts`)」。
+- **西曆年代精準映射與公衛歷史**：
+  - 1840~1870年代（清代開港通商時期）：雲林口湖金湖大水災時疫、頂下郊拚、淡水開港傳教行醫（馬偕與馬雅各）、牡丹社事件日軍染黑尿熱惡性瘧疾。平均壽命約 31~33 歲，霍亂、瘴癘、天花橫行，常民問卜禳災。
+  - 1870~1894年代（劉銘傳建省現代化）：增設台北府、基隆鐵路通車、台北城竣工。平均壽命約 33~35 歲。
+  - 1895~1945年代（日治時期公衛現代化與大流行抗擊）：乙未割台、1896~1917 鼠疫（黑死病）爆發二十年與避病院強制隔離、公醫制度確立、巴爾頓與濱野彌四郎規劃全台水道與下水道、1918 西班牙流感席捲全台奪四萬命、嘉南大圳、戰時體制與肺結核。平均壽命由 34 歲漸升至 45 歲。
+  - 1945~1970年代（戰後重建與美援公衛奇蹟）：四萬換一塊幣改、美援麵粉袋、八二三砲戰、1952 小兒麻痺大流行與沙賓疫苗、1962 副霍亂整頓飲食衛生、1965 WHO 認證台灣為全球首個「瘧疾根除」地區、九年國教紅葉少棒。平均壽命由 45 歲躍升至 66 歲。
+  - 1970~1994年代（經濟起飛與慢性病轉型）：十大建設、加工出口區女工潮、美麗島事件、竹科半導體啟航、台灣錢淹腳目股市萬點、解嚴開放黨禁報禁、野百合學運、1984 全球首創新生兒全面施打 B 肝疫苗。平均壽命由 69 歲上升至 74.5 歲。
+  - 1995~2026年代（全民健保與高科技數位島）：全民健保開辦、921 大地震、2003 SARS 和平醫院封院抗疫、北高一日高鐵通車、金融海嘯、2020~2022 口罩國家隊與三級警戒遠距辦公、台積電護國神山矽盾、生成式 AI 重塑產業。平均壽命突破 81.5 歲。
+  - 2027年代及未來（超高齡智慧永續社會）：邁入超高齡社會（長照 3.0）、智慧全島低碳微電網、百歲長者健康老化。平均壽命預期超過 86 歲。
+- **動態平均壽命老化模型與傳染病衝擊**：
+  - 生理衰減門檻動態錨定於當代平均壽命（`avgLifeExpectancy`），清代 40 歲即進入衰退期，現代則為 75 歲以上。
+  - 傳染病爆發年份（`isEpidemicYear`）自適應生成防疫決策，冒進外出承擔染疫風險，落實衛生防護獲得健康避險，施藥濟民收穫善緣。
+- **身臨其境之情境與抉擇**：LLM 提示詞與確定性情境描寫深度結合該西曆年份的台灣重大事件與時代氛圍，讓求學、當兵、就業、置產與退休決策充滿濃郁台灣在地記憶與臨場共鳴感。
+
+#### 5. 命理決策錦囊與一生回顧極速響應機制 (Metaphysical Guidance & Zero-Latency Finale)
+- **轉折年與大凶大吉年命理錦囊 (`getYearMetaphysicalGuidance`)**：
+  - **大凶年 (`DA_XIONG`)**：遭遇歲運並臨、天剋地沖或凶煞，啟動緋紅警示錦囊（「避凶守成」、「護衛體魄」、「修心行善」），提點防守避險。
+  - **大吉年 (`DA_JI`)**：逢天乙貴人、天合地合或喜用齊聚，啟動鎏金吉慶錦囊（「果斷開拓」、「確立盟約」、「廣修福緣」），指引乘勢而上。
+  - **關鍵轉折年 (`MILESTONE`)**：逢換大運、人生大十字路口，亮起紫曜星芒錦囊（「立足長遠」、「內外兼修」、「知機而動」）。
+  - **智慧選項引導徽章**：選項卡動態標記 `[✓ 避煞首選]`、`[⚠️ 險中求勝]`、`[✓ 乘風破浪]`、`[✓ 積德延福]`、`[⭐ 轉折關鍵]`。
+- **一生回顧極速響應與方案 C 多重視角架構 (Multi-Perspective Life Review & LLM)**：
+  - 前端優先讀取內存或資料庫快取之 `finalSummary`，按鈕點擊後 **0 毫秒即時彈窗**。
+  - **三大自傳視角切換 (`BiographyPerspective`)**：
+    1. **🔮 三合天機心法 (`TIANJI`)**：以天機「人事努力大於先天命盤」為宗，剖析行善積德化解煞氣、自強不息改寫天命。
+    2. **📜 正史太史公列傳 (`SHIJI`)**：司馬遷《史記》春秋筆法，微言大義、古雅典贍，附「太史公曰」史家贊辭。
+    3. **☕ 現代時代回憶錄 (`MEMOIR`)**：溫潤感性、記述在台灣時代浪潮中的奮鬥打拼、悲歡離合與給子孫的深情獨白。
+  - **即時切換與按需 LLM 深度撰寫**：彈窗支援三大視角即時切換（快取秒開），並提供「✨ 召喚靈犀 AI 深度撰寫」按鈕；使用者主動觸發時配置 75 秒超時防護，並呈現場景化呼吸動態進度。
+  - 終局落幕（滿百歲或因病善終）於主舞台直接展示「👑 查看《一生行誼·蓋棺錄》回顧」醒目卡片，引導圓滿結算。
+
+#### 6. 百歲年輪全景故事、男性視角紅顏盲盒與 80 億分之一的遊戲 (Annual Stories, Blind Romance & 8 Billion Odyssey)
+- **0~100 歲 101 個節點全年敘事 (`annualStory` & `lifeStageTitle`)**：
+  - 劃分 22 個人生階段（襁褓撫育、幼學啟蒙、總角之年、舞勺束髮、志學青春、弱冠之年、初涉商海、立志成家、而立奮發、不惑蓄勢、中流砥柱、沉穩掌舵、知命豁達、花甲耳順、榮退交棒、從心所欲、古稀康寧、懸車告老、杖朝之壽、耄耋至境、頤樂長春、期頤百歲）。
+  - 由 `@celestial/astro-core` 確定性純函數於 0ms 內將「人生階段」、「流年十神星象意涵」、「吉凶運勢」與「台灣歷史時代年輪」融合生成每一年 100~150 字的生動年輪說明文字，確保 101 歲年輪節點處處有故事。
+- **男性視角專屬：紅顏盲盒相遇機制 (Anonymous Romantic Encounters)**：
+  - 內建 5 位性格與命理八字各異之女性友人原型：沈婉晴（青梅竹馬 · 溫婉如水）、林若曦（熱血同窗 · 意氣風發）、宋雨薇（藝術靈動 · 浪漫深情）、蘇珮儀（職場菁英 · 理性冷靜）、趙敏芝（世家千金 · 雍容高雅）。
+  - 在青年黃金年齡（18, 22, 26, 30, 34 歲）自動觸發「紅顏盲盒相逢事件」：登場時以神秘化身（如「【素雅白裙的知性女子】」）與外貌情境線索呈現，**抉擇當下使用者絕不會得知其真實姓名與身分**。
+  - 抉擇後台自動記錄好感度 (`affinity`) 與因緣走向（`DATING`、`MARRIED`、`SOULMATE`、`CONFIDANTE`、`MISSED`、`STRANGER`），並持久化至資料庫 `femaleFriendsJson`。
+- **一生回顧第 4 視角：80 億分之一的遊戲 (`ONE_IN_8_BILLION`)**：
+  - 在《一生行誼·蓋棺錄》拓展第 4 視角「🌌 80億分之一的遊戲」，計算個人八字原局乘以後天抉擇路徑在地球 80 億人口中的宇宙唯一性稀有度評分（如 99.999987%）與命運代碼（如 `#DESTINY-TW-8B-39182`）。
+  - 終局蓋棺之際，正式揭曉當年相逢女子的真實身分、好感度、因緣歸宿與專屬紅顏批註。
+  - 附以浩瀚的宇宙存在主義哲學贊詩，回顧 80 億人汪洋中絕無僅有的唯一生命軌跡。
+
+#### 7. 女性友人自訂生辰、年歲動態對齊、相手好感度、四大領域生命數值與日式寫實插畫 (Friend Birthdays, Age Alignment, Her Affinity, 4 Life Domains & Realistic Anime Illustrations)
+- **女性友人生辰自訂 KEYIN 與年歲動態對齊**：
+  - 前端支援 5 位女性友人個別 KEYIN 生日，動態計算與主角之年齡差徽章（同齡、小 X 歲、大 X 歲）。
+  - 遭遇事件觸發時，以西曆年份精確扣減女性出生年份計算遭遇當下實歲（`herEncounterAge = solarYear - femaleBirthYear`），情境描述自然融入年歲搭配（如：「此時她約莫十九歲，比你小一歲」）。
+- **相手好感度 (`herAffinity`) 媒合追蹤**：
+  - 建立雙向情感模型：除玩家對其好感外，獨立計算對向角色對主角的好感度 (`herAffinity`) 與宿命契合度 (`compatibilityScore`)。
+  - 互動決策動態回饋：深情回應 (+30)、溫和互助 (+18)、冷淡迴避 (-15)。
+- **八字流年人生四大領域數值動態演化模型 (四大領域生命週期演算法)**：
+  - 確立 **健康 (`health`)**、**知識才識 (`knowledge`)**、**財富 (`wealth`)**、**情感 (`relationship`)** 四大核心領域指標。
+  - 依據生命週期演進：0~6歲童稚期知識由 20 啟蒙成長；7~18歲學齡期文昌考運爆發至 70~80；青壯年財富與事業累積；晚年體魄健康依時代平均壽命模型自然遞減，知識沉澱為通達心性。
+- **全套日式寫實風格插畫資產庫 (Makoto Shinkai Realism Style)**：
+  - 位於 `apps/web/public/images/life-simulator/`，14 幅高解析度插畫：
+    1. 9 大人生階段插畫：`stage_01_infancy.jpg`（襁褓）、`stage_02_childhood.jpg`（童稚）、`stage_03_youth.jpg`（青蔥）、`stage_04_capping.jpg`（弱冠）、`stage_05_early_career.jpg`（職場）、`stage_06_prime.jpg`（中流砥柱）、`stage_07_mature.jpg`（知命）、`stage_08_elder.jpg`（古稀）、`stage_09_centenarian.jpg`（百歲）。
+    2. 5 位紅顏女性專屬立繪：`romance_wanqing.jpg`、`romance_ruoxi.jpg`、`romance_yuwei.jpg`、`romance_peiyi.jpg`、`romance_minzhi.jpg`。
+  - 時間軸切換、年度事件卡、盲盒相遇與終局 80 億分之一大揭曉全面無縫嵌入插畫渲染。
 
 ---
 
@@ -460,7 +542,7 @@ COPY --from=builder /app/packages/database/prisma ./prisma
 COPY --from=builder /prod/server/package.json ./
 
 USER appuser
-EXPOSE 9998
+EXPOSE 5498
 CMD ["node", "dist/main.js"]
 ```
 
@@ -499,25 +581,7 @@ services:
     networks:
       - celestial-network
 
-  # 2. Redis 高速快取
-  redis:
-    image: redis:7-alpine
-    container_name: celestial-redis
-    restart: always
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_secret_2026}
-    volumes:
-      - redis_data:/data
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_secret_2026}", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    networks:
-      - celestial-network
-
-  # 3. Node.js 後端 API
+  # 2. Node.js 後端 API (Port 5498)
   server:
     build:
       context: .
@@ -525,23 +589,21 @@ services:
     container_name: celestial-api-server
     restart: always
     environment:
-      PORT: 9998
+      PORT: 5498
       NODE_ENV: production
       DATABASE_URL: postgresql://${POSTGRES_USER:-celestial_admin}:${POSTGRES_PASSWORD:-celestial_secret_2026}@postgres:5432/${POSTGRES_DB:-celestial_horoscope}?schema=public
-      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_secret_2026}@redis:6379
-      JWT_SECRET: ${JWT_SECRET:-celestial_jwt_super_secret_key_change_me}
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:9999,http://localhost:3001}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5499}
+      DEMO_MODE: ${DEMO_MODE:-false}
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_healthy
     ports:
-      - "9998:9998"
+      - "5498:5498"
     networks:
       - celestial-network
 
-  # 4. 前端展示網站 (Vue 3 + Three.js + Nginx)
+  # 3. 前端展示網站與管理後台 (Vue 3 + Three.js + Nginx Port 5499)
   web:
     build:
       context: .
@@ -549,21 +611,7 @@ services:
     container_name: celestial-web-client
     restart: always
     ports:
-      - "9999:80"
-    depends_on:
-      - server
-    networks:
-      - celestial-network
-
-  # 5. 後台管理系統 (Vue 3 Admin + Nginx)
-  admin:
-    build:
-      context: .
-      dockerfile: deploy/docker/Dockerfile.admin
-    container_name: celestial-admin-portal
-    restart: always
-    ports:
-      - "3001:80"
+      - "5499:80"
     depends_on:
       - server
     networks:
@@ -571,7 +619,6 @@ services:
 
 volumes:
   postgres_data:
-  redis_data:
 
 networks:
   celestial-network:
@@ -588,7 +635,7 @@ networks:
 # 1. 複製環境設定範本
 cp .env.example .env
 
-# 2. 一鍵構建與後台運行所有容器服務 (Postgres, Redis, Server, Web, Admin)
+# 2. 一鍵構建與後台運行所有容器服務 (Postgres, Server, Web)
 docker compose up --build -d
 
 # 3. 執行資料庫遷移與詞庫初始種子注入 (Database Seed)

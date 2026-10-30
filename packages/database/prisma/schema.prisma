@@ -20,6 +20,7 @@ model User {
   profiles      BirthProfile[]
   readings      ReadingRecord[]
   habitLogs     DailyHabitLog[]
+  lifeSimulations LifeSimulationRecord[]
 }
 
 model BirthProfile {
@@ -100,4 +101,23 @@ model SystemConfig {
   description String?
   updatedAt   DateTime @updatedAt
 }
+
+model LifeSimulationRecord {
+  id               String   @id @default(uuid())
+  userId           String?
+  user             User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profileName      String
+  gender           String
+  birthDatetime    DateTime
+  currentAge       Int      @default(0)
+  status           String   @default("IN_PROGRESS") // IN_PROGRESS, COMPLETED, TERMINATED
+  attributesJson   String   // JSON string of LifeAttributes
+  historyJson      String   // JSON string of YearlyLifeNode[]
+  footprintsJson   String   // JSON string of string[]
+  femaleFriendsJson String? // JSON string of FemaleFriendProfile[] (男性視角紅顏盲盒)
+  finalSummaryJson String?  // JSON string of LifeFinalSummary
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
 

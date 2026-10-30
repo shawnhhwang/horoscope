@@ -9,14 +9,15 @@ services:
     container_name: celestial-api-server
     restart: always
     environment:
-      PORT: 9998
+      PORT: 5498
       HOST: 0.0.0.0
       NODE_ENV: production
       DATABASE_URL: ${DATABASE_URL:-file:/app/packages/database/prisma/dev.db}
       JWT_SECRET: ${JWT_SECRET:-celestial_jwt_super_secret_key_change_me_2026}
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
+      DEMO_MODE: ${DEMO_MODE:-false}
     ports:
-      - "9998:9998"
+      - "5498:5498"
     volumes:
       - celestial_data:/app/packages/database/prisma
     networks:
@@ -30,27 +31,14 @@ services:
     container_name: celestial-web-client
     restart: always
     ports:
-      - "9999:80"
+      - "5499:80"
     depends_on:
       - server
     networks:
       - celestial-network
 
-  # 3. Redis 高速快取服務
-  redis:
-    image: redis:7-alpine
-    container_name: celestial-redis
-    restart: always
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - celestial-network
-
 volumes:
   celestial_data:
-  redis_data:
 
 networks:
   celestial-network:

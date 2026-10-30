@@ -58,7 +58,7 @@
             </div>
             <div>
               <h1 class="font-serif font-bold text-sm text-admin-gold tracking-wider">萬象天儀 CMS</h1>
-              <span class="text-[9px] text-admin-muted uppercase tracking-widest block">ADMIN PORTAL (PORT 9999)</span>
+              <span class="text-[9px] text-admin-muted uppercase tracking-widest block">ADMIN PORTAL (PORT 5499)</span>
             </div>
           </div>
           <!-- 手機端關閉按鈕 -->

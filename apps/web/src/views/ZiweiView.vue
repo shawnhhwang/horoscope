@@ -50,12 +50,12 @@
       </div>
     </div>
 
-    <!-- 命盤格局與倪師心法徽章專區 -->
+    <!-- 命盤格局與三合心法徽章專區 -->
     <div v-if="chart" class="glass-panel rounded-2xl p-4 sm:p-6 mb-8 border border-dark-gold/30">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-dark-gold/20 pb-3 mb-4">
         <div class="flex items-center space-x-2">
           <span class="text-xl">✨</span>
-          <h3 class="font-serif text-lg font-bold text-gold-gradient">命盤正統三合格局與倪師命相心法</h3>
+          <h3 class="font-serif text-lg font-bold text-gold-gradient">命盤正統三合格局與天機命相心法</h3>
         </div>
         <span class="text-xs text-dark-muted dark:text-dark-muted light:text-stone-700 font-serif">
           共識別出 {{ chart.patterns?.length || 0 }} 組格局 · 點擊標籤檢視古籍出處與成立條件
@@ -119,7 +119,7 @@
         </div>
       </div>
 
-      <!-- 倪師天紀大師心法核心摘要 -->
+      <!-- 三合天機正統心法核心摘要 -->
       <div class="mt-4 pt-3 border-t border-dark-gold/15 light:border-amber-300/40 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] dark:text-dark-muted light:text-stone-700 font-serif">
         <div class="p-2.5 rounded-lg bg-dark-gold/5 dark:bg-dark-gold/5 light:bg-amber-100/60 border border-dark-gold/10 light:border-amber-300/50">
           <span class="text-dark-gold dark:text-dark-gold light:text-amber-900 font-bold block mb-0.5">📌 大道至簡</span>
@@ -468,7 +468,7 @@
 
           <!-- 三方四正說明 -->
           <div class="p-3 rounded-lg bg-dark-gold/5 border border-dark-gold/20 text-xs text-dark-muted leading-relaxed">
-            <strong class="text-dark-gold block mb-1">倪師三方四正會照法門：</strong>
+            <strong class="text-dark-gold block mb-1">三合三方四正會照法門：</strong>
             命宮為本，三方（財帛、官祿、遷移）為用。與對宮及三合宮形成穩固金三角，吉星互拱則格局清貴，煞星交聚則需心性修持、謀定而後動。
           </div>
         </div>
@@ -527,7 +527,7 @@ const aiPrompt = computed(() => {
   if (!chart.value) return '';
   const patternsStr = patternNames.value ? `，命盤已識別正統格局為：${patternNames.value}` : '';
   const summaryStr = chart.value.mingGongSummary?.nature ? `，命宮星性為「${chart.value.mingGongSummary.nature}」` : '';
-  return `請以資深紫微斗數命理諮詢師身份，融匯倪海廈天紀三合心法（大道至簡、命宮為本三方為用、人事努力與地理調整大於先天命運 2/3 > 1/3），為我深度解析此紫微命盤：命宮在「${chart.value.lifePalaceBranch}」宮，主星為「${mingStars.value}」${summaryStr}${patternsStr}，身宮在「${chart.value.bodyPalaceBranch}」，五行局為「${chart.value.fiveElementBureau || chart.value.elementBureau}」。請以客觀嚴謹、條理分明且富有人文關懷的專業視角，詳析命身特質、命中格局成破與吉凶指引、三方四正星系連動、生年四化時機，並給出具體可落地的陽宅空間與生涯決策指引。`;
+  return `請以資深紫微斗數命理諮詢師身份，融匯古典三合天機心法（大道至簡、命宮為本三方為用、人事努力與空間調整大於先天命運 2/3 > 1/3），為我深度解析此紫微命盤：命宮在「${chart.value.lifePalaceBranch}」宮，主星為「${mingStars.value}」${summaryStr}${patternsStr}，身宮在「${chart.value.bodyPalaceBranch}」，五行局為「${chart.value.fiveElementBureau || chart.value.elementBureau}」。請以客觀嚴謹、條理分明且富有人文關懷的專業視角，詳析命身特質、命中格局成破與吉凶指引、三方四正星系連動、生年四化時機，並給出具體可落地的陽宅空間與生涯決策指引。`;
 });
 
 function handleCalculate() {

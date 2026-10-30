@@ -40,4 +40,11 @@ export * from './almanac/calculator.js';
 export * from './annual-planner/types.js';
 export * from './annual-planner/calculator.js';
 
+// 百歲流年人生推演模擬器
+export * from './life-simulator/types.js';
+export * from './life-simulator/timeline.js';
+export * from './life-simulator/rules-engine.js';
+export * from './life-simulator/taiwan-history.js';
+export * from './life-simulator/female-friends.js';
+
 

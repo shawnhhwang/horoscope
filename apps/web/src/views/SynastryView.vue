@@ -340,7 +340,7 @@
           </table>
         </div>
 
-        <!-- ☯ 紫微斗數 × 倪海廈《天紀》雙宮聯參與五步合盤分析 (ziwei-doushu-main 架構) -->
+        <!-- ☯ 紫微斗數 × 三合天機雙宮聯參與五步合盤分析 -->
         <div
           v-if="synastryResult.ziweiHeming"
           class="glass-panel rounded-2xl p-6 sm:p-8 border border-dark-gold/35 shadow-cosmic max-w-4xl mx-auto space-y-6"
@@ -348,7 +348,7 @@
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-dark-gold/20">
             <div>
               <span class="text-[10px] uppercase tracking-widest text-dark-gold font-serif">
-                TIANJI ZIWEI SYNASTRY · 倪海廈《天紀》合盤體系
+                TIANJI ZIWEI SYNASTRY · 三合天機合盤體系
               </span>
               <h3 class="text-lg font-bold text-gold-gradient mt-0.5">
                 ☯ 紫微雙宮聯參（夫妻宮 + 福德宮）與五步合盤診斷
@@ -356,7 +356,7 @@
             </div>
             <div class="flex items-center space-x-2">
               <span class="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/50 text-amber-200 text-xs font-bold">
-                🌟 天紀評級：{{ synastryResult.ziweiHeming.starRating }}
+                🌟 天機評級：{{ synastryResult.ziweiHeming.starRating }}
               </span>
               <span class="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/50 text-emerald-200 text-xs font-bold">
                 {{ synastryResult.ziweiHeming.destinyType }}
@@ -364,9 +364,9 @@
             </div>
           </div>
 
-          <!-- 倪師雙宮聯參核心鐵律橫幅 -->
+          <!-- 雙宮聯參核心鐵律橫幅 -->
           <div class="p-4 rounded-xl bg-black/40 border border-dark-gold/25 text-xs leading-relaxed">
-            <span class="font-bold text-dark-gold block mb-1">📌 倪師《天紀》雙宮聯參鐵律：</span>
+            <span class="font-bold text-dark-gold block mb-1">📌 三合正統雙宮聯參鐵律：</span>
             <p class="text-dark-text">{{ synastryResult.ziweiHeming.dualPalacePrinciple }}</p>
           </div>
 
@@ -408,9 +408,9 @@
             </div>
           </div>
 
-          <!-- 天紀合盤五步法詳解 -->
+          <!-- 三合合盤五步法詳解 -->
           <div class="space-y-2.5 text-xs">
-            <h4 class="font-bold text-dark-gold text-xs uppercase tracking-wider">✦ 天紀合盤五步法逐層拆解：</h4>
+            <h4 class="font-bold text-dark-gold text-xs uppercase tracking-wider">✦ 三合合盤五步法逐層拆解：</h4>
             <div class="p-3.5 rounded-xl bg-black/30 border border-dark-gold/15">
               <span class="font-bold text-amber-300 block mb-0.5">第一步 · 雙方命格基礎與動靜互補：</span>
               <p class="text-dark-muted leading-relaxed">{{ synastryResult.ziweiHeming.fiveSteps.step1BaseCompatibility }}</p>
@@ -722,12 +722,12 @@
           </div>
         </div>
 
-        <!-- ⊞ 倪海廈《天紀·地脈道》陽宅化命：後天八卦名位相等配置 -->
+        <!-- ⊞ 《周易》後天八卦空間名位相等配置 -->
         <div class="glass-panel rounded-2xl p-6 sm:p-8 border border-dark-gold/35 shadow-cosmic max-w-4xl mx-auto space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-dark-gold/20">
             <div>
               <span class="text-[10px] uppercase tracking-wider text-dark-gold">TIANJI BAGUA HOUSEHOLD POSITIONING</span>
-              <h3 class="text-base font-bold text-gold-gradient">⊞ 倪海廈《天紀·地脈道》陽宅化命：後天八卦名位相等配置</h3>
+              <h3 class="text-base font-bold text-gold-gradient">⊞ 《周易》後天八卦空間名位相等配置</h3>
             </div>
             <span class="text-xs px-3 py-1 rounded-full bg-dark-gold/15 border border-dark-gold/35 text-dark-gold font-bold self-start sm:self-auto">
               「名位相等則大吉 · 命同人不同在於位置」
@@ -735,7 +735,7 @@
           </div>
 
           <p class="text-xs text-dark-muted leading-relaxed">
-            倪師《天紀》傳世心法：「算命知天命，陽宅可改命。」家庭成員除八字五行互補外，居家臥室方位必須合乎後天八卦之長幼倫序（乾父西北、坤母西南、震長子正東、巽長女東南、坎次子正北、離次女正南、艮三子東北、兌三女正西），使天地人三才定位合一。
+            易理傳世心法：「算命知天命，空間調適可趨吉。」家庭成員除八字五行互補外，居家臥室方位宜合乎《周易·說卦傳》後天八卦之長幼倫序（乾父西北、坤母西南、震長子正東、巽長女東南、坎次子正北、離次女正南、艮三子東北、兌三女正西），使天地人三才定位合一。
           </p>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
@@ -885,7 +885,7 @@ const synastryAiPrompt = computed(() => {
   const r = synastryResult.value;
   const zh = r.ziweiHeming;
   const ziweiInfo = zh
-    ? `；紫微《天紀》合盤星級為「${zh.starRating} (${zh.destinyType})」，雙宮聯參為「${zh.dualPalacePrinciple}」`
+    ? `；紫微三合合盤星級為「${zh.starRating} (${zh.destinyType})」，雙宮聯參為「${zh.dualPalacePrinciple}」`
     : '';
   return `請以八字子平與倪海廈《天紀》紫微合盤雙軌專家身份，融匯《滴天髓》、《子平真詮》與《天紀》雙宮聯參（看婚姻必同時看夫妻宮與福德宮）及合盤五步法，為我深度批註【${r.person1.name}】與【${r.person2.name}】之合婚盤：綜合契合度為「${r.score}分 (${r.level})」，通關五行為「${r.bridgingElement.element}」${ziweiInfo}。請深入剖析雙方四柱五維合沖、夫妻宮與福德宮星曜互參、生年四化飛化與陽宅地天泰/水火既濟化解之道。`;
 });

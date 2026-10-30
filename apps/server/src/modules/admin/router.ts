@@ -325,10 +325,56 @@ adminRouter.put('/llm-config', async (req: AuthRequest, res: Response) => {
     const updateData: any = {};
     if (typeof enabled === 'boolean') updateData.enabled = enabled;
     if (provider) updateData.provider = provider;
-    if (typeof endpoint === 'string') updateData.endpoint = endpoint.trim();
     if (typeof model === 'string') updateData.model = model.trim();
     if (typeof temperature === 'number') updateData.temperature = temperature;
     if (systemPrompt) updateData.systemPrompt = systemPrompt;
+
+    // SSRF 防護與端點校驗
+    if (typeof endpoint === 'string' && endpoint.trim().length > 0) {
+      const cleanEndpoint = endpoint.trim();
+      let parsedUrl: URL;
+      try {
+        parsedUrl = new URL(cleanEndpoint);
+      } catch {
+        return res.status(400).json({ success: false, message: 'LLM 端點 URL 格式無效，必須包含 http:// 或 https://' });
+      }
+
+      if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+        return res.status(400).json({ success: false, message: '端點通訊協議僅支援 HTTP 或 HTTPS' });
+      }
+
+      // 生產環境防禦 SSRF (阻擋內網與雲端元數據 IP)
+      if (process.env.NODE_ENV === 'production') {
+        const host = parsedUrl.hostname.toLowerCase();
+        if (
+          host === '169.254.169.254' ||
+          host === 'metadata.google.internal' ||
+          host === 'localhost' ||
+          host === '127.0.0.1' ||
+          host === '0.0.0.0' ||
+          host.startsWith('10.') ||
+          host.startsWith('192.168.') ||
+          /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)
+        ) {
+          return res.status(400).json({ success: false, message: '生產環境禁止設定內部網路或元數據 IP 作為對外 LLM 端點 (SSRF 防禦)' });
+        }
+      }
+
+      const currentConfig = await getLlmConfig();
+      // 若變更了端點主機且未傳入新的 API Key，為避免原金鑰意外洩漏至新主機，主動清除舊金鑰
+      if (currentConfig.endpoint && currentConfig.endpoint !== cleanEndpoint) {
+        try {
+          const oldHost = new URL(currentConfig.endpoint).hostname;
+          if (oldHost !== parsedUrl.hostname && (typeof apiKey !== 'string' || apiKey.includes('••••'))) {
+            updateData.apiKey = '';
+          }
+        } catch {
+          // ignore
+        }
+      }
+
+      updateData.endpoint = cleanEndpoint;
+    }
 
     // 若傳入 key（包含留空字串以清空金鑰），且非遮罩符號，則更新
     if (typeof apiKey === 'string' && !apiKey.includes('••••')) {
@@ -563,6 +609,14 @@ adminRouter.get('/database/tables/:table', async (req: AuthRequest, res: Respons
       }),
     ]);
 
+    // 資安強化：User 資料表絕不外洩 passwordHash
+    const safeRows = table === 'User'
+      ? rows.map((r: any) => {
+          const { passwordHash, ...safeUser } = r;
+          return safeUser;
+        })
+      : rows;
+
     return res.json({
       success: true,
       data: {
@@ -571,7 +625,7 @@ adminRouter.get('/database/tables/:table', async (req: AuthRequest, res: Respons
         page,
         pageSize,
         totalPages: Math.ceil(total / pageSize),
-        rows,
+        rows: safeRows,
       },
     });
   } catch (err: any) {
@@ -593,12 +647,18 @@ adminRouter.post('/database/tables/:table', async (req: AuthRequest, res: Respon
     delete data.createdAt;
     delete data.updatedAt;
 
-    if (table === 'User' && data.password) {
-      data.passwordHash = await bcrypt.hash(data.password, 10);
-      delete data.password;
+    if (table === 'User') {
+      delete data.role; // 禁止透過通用表格 API 直接提權，需使用專屬 PATCH /users/:id/role
+      if (data.password) {
+        data.passwordHash = await bcrypt.hash(data.password, 10);
+        delete data.password;
+      }
     }
 
     const created = await model.create({ data });
+    if (table === 'User' && created) {
+      delete created.passwordHash;
+    }
     return res.status(201).json({ success: true, data: created });
   } catch (err: any) {
     return res.status(500).json({ success: false, message: err.message || '新增記錄失敗' });
@@ -620,6 +680,7 @@ adminRouter.put('/database/tables/:table/:id', async (req: AuthRequest, res: Res
     delete data.updatedAt;
 
     if (table === 'User') {
+      delete data.role; // 禁止透過通用表格 API 竄改權限角色
       if (data.password) {
         data.passwordHash = await bcrypt.hash(data.password, 10);
         delete data.password;
@@ -630,6 +691,9 @@ adminRouter.put('/database/tables/:table/:id', async (req: AuthRequest, res: Res
       where: { id },
       data,
     });
+    if (table === 'User' && updated) {
+      delete updated.passwordHash;
+    }
     return res.json({ success: true, data: updated });
   } catch (err: any) {
     return res.status(500).json({ success: false, message: err.message || '更新記錄失敗' });
