@@ -14,6 +14,7 @@ import {
   LifeOption,
   BiographyPerspective,
   getInitialFemaleFriends,
+  getInitialRomanceFriends,
   getBlindRomanticEncounter,
   applyRomanticDecision,
   calculateOneInEightBillion,
@@ -79,10 +80,37 @@ simulatorRouter.post('/start', async (req: Request, res: Response) => {
     const footprints: string[] = [`0歲：降臨世間，稟【${baziChart.dayMaster.stem}】日主之氣`];
     const userId = extractUserId(req);
 
-    // 若為男性視角，初始化五位紅顏知己盲盒名冊 (支援自訂 KEYIN 生日與年齡對齊)
-    const femaleFriends = validGender === '男'
-      ? getInitialFemaleFriends(birth, req.body.femaleFriends)
-      : undefined;
+    // 初始化知己盲盒名冊 (男女雙重視角皆完整支援自訂 KEYIN 生日與年齡對齊)
+    const romanceFriends = getInitialRomanceFriends(
+      validGender,
+      birth,
+      req.body.romanceFriends || req.body.femaleFriends
+    );
+
+    // ⭐ 核心保證：在起局時，將 5 位知己相遇事件直接預先寫入 nodes[18, 22, 26, 30, 34]，保證一定出現，絕不被覆蓋或跳過！
+    for (const friend of romanceFriends) {
+      const encAge = friend.encounterAge;
+      if (typeof encAge === 'number' && nodes[encAge]) {
+        const encNode = nodes[encAge];
+        const encounter = getBlindRomanticEncounter(
+          encAge,
+          romanceFriends,
+          encNode.taiwanEraContext,
+          encNode.solarYear,
+          validGender
+        );
+        if (encounter.isRomanticTurn) {
+          encNode.isKeyMilestone = true;
+          encNode.milestoneReason = validGender === '男'
+            ? '因緣際會 · 命中注定的紅顏盲盒相逢'
+            : '因緣際會 · 命中注定的藍顏盲盒相逢';
+          encNode.eventTitle = encounter.eventTitle;
+          encNode.eventNarrative = encounter.eventNarrative;
+          encNode.options = encounter.options;
+          encNode.romanceIllustration = friend.illustration;
+        }
+      }
+    }
 
     // 持久化儲存至資料庫
     const record = await prisma.lifeSimulationRecord.create({
@@ -96,7 +124,7 @@ simulatorRouter.post('/start', async (req: Request, res: Response) => {
         attributesJson: JSON.stringify(initialAttributes),
         historyJson: JSON.stringify(nodes),
         footprintsJson: JSON.stringify(footprints),
-        femaleFriendsJson: femaleFriends ? JSON.stringify(femaleFriends) : null,
+        femaleFriendsJson: JSON.stringify(romanceFriends),
       },
     });
 
@@ -111,7 +139,7 @@ simulatorRouter.post('/start', async (req: Request, res: Response) => {
       attributes: initialAttributes,
       history: nodes,
       milestoneFootprints: footprints,
-      femaleFriends,
+      femaleFriends: romanceFriends,
     };
 
     return res.json({
@@ -159,7 +187,7 @@ simulatorRouter.get('/session/:id', async (req: Request, res: Response) => {
       milestoneFootprints: JSON.parse(record.footprintsJson || '[]'),
       femaleFriends: record.femaleFriendsJson
         ? JSON.parse(record.femaleFriendsJson)
-        : (record.gender === '男' ? getInitialFemaleFriends() : undefined),
+        : getInitialRomanceFriends(record.gender as '男' | '女', record.birthDatetime),
       finalSummary: record.finalSummaryJson ? JSON.parse(record.finalSummaryJson) : undefined,
     };
 
@@ -221,22 +249,29 @@ simulatorRouter.post('/turn/prompt', async (req: Request, res: Response) => {
     let eventNarrative = '';
     let options: LifeOption[] = [];
 
-    // 檢查男性視角紅顏知己盲盒相遇事件 (18, 22, 26, 30, 34 歲)
-    if (record.gender === '男') {
-      const femaleFriends: FemaleFriendProfile[] = record.femaleFriendsJson
-        ? JSON.parse(record.femaleFriendsJson)
-        : getInitialFemaleFriends(record.birthDatetime);
-      const romanticTurn = getBlindRomanticEncounter(age, femaleFriends, node.taiwanEraContext, node.solarYear);
-      if (romanticTurn.isRomanticTurn && romanticTurn.options) {
-        eventTitle = romanticTurn.eventTitle!;
-        eventNarrative = romanticTurn.eventNarrative!;
-        options = romanticTurn.options;
-      }
+    // 檢查男女雙重視角之知己盲盒相遇事件 (18, 22, 26, 30, 34 歲)
+    const romanceFriends: FemaleFriendProfile[] = record.femaleFriendsJson
+      ? JSON.parse(record.femaleFriendsJson)
+      : getInitialRomanceFriends(record.gender as '男' | '女', record.birthDatetime);
+    const romanticTurn = getBlindRomanticEncounter(
+      age,
+      romanceFriends,
+      node.taiwanEraContext,
+      node.solarYear,
+      record.gender as '男' | '女'
+    );
+    if (romanticTurn.isRomanticTurn && romanticTurn.options) {
+      eventTitle = romanticTurn.eventTitle!;
+      eventNarrative = romanticTurn.eventNarrative!;
+      options = romanticTurn.options;
+      node.romanceIllustration = romanceFriends.find((f) => f.encounterAge === age)?.illustration;
     }
 
-    const llmConfig = await getLlmConfig();
-    if (llmConfig.enabled && llmConfig.endpoint) {
-      try {
+    // 僅在非知己盲盒相遇年才調用 LLM，防止 LLM 覆蓋知己相逢與相伴一生事件！
+    if (!eventTitle) {
+      const llmConfig = await getLlmConfig();
+      if (llmConfig.enabled && llmConfig.endpoint) {
+        try {
         const promptText = `你正在主持一場嚴肅且深邃的「百歲流年人生推演」。
 求測者姓名：${record.profileName} (${record.gender})
 當前年齡：${age} 歲 (虛歲 ${node.nominalAge} 歲)
@@ -308,6 +343,7 @@ ${node.isKeyMilestone ? `【重大轉折提示】：本年逢 ${node.milestoneRe
         // Fallback 到確定性引擎
       }
     }
+  }
 
     // 若 LLM 未生成成功，使用確定性引擎生成
     if (!eventTitle || options.length === 0) {
@@ -404,14 +440,30 @@ simulatorRouter.post('/turn/choose', async (req: Request, res: Response) => {
       node.solarYear
     );
 
-    // 若為紅顏知己盲盒選項，更新羈絆值與因緣狀態
+    // 若為知己盲盒選項，更新羈絆值與因緣狀態 (包含相伴一生抉擇)
     let femaleFriends: FemaleFriendProfile[] | undefined = undefined;
-    if (record.femaleFriendsJson || record.gender === '男') {
-      femaleFriends = record.femaleFriendsJson
-        ? JSON.parse(record.femaleFriendsJson)
-        : (record.gender === '男' ? getInitialFemaleFriends() : []);
-      if (chosenOption && (chosenOption.id.startsWith('opt_romantic_') || chosenOption.id.includes('friend_'))) {
-        femaleFriends = applyRomanticDecision(femaleFriends, chosenOption.id, age);
+    if (record.femaleFriendsJson) {
+      femaleFriends = JSON.parse(record.femaleFriendsJson);
+    } else {
+      femaleFriends = getInitialRomanceFriends(record.gender as '男' | '女', record.birthDatetime);
+    }
+
+    if (
+      chosenOption &&
+      (chosenOption.id.startsWith('opt_romantic_') || chosenOption.id.includes('friend_'))
+    ) {
+      femaleFriends = applyRomanticDecision(
+        femaleFriends,
+        chosenOption.id,
+        age,
+        record.gender as '男' | '女'
+      );
+      const chosenFriend = femaleFriends.find((f) => chosenOption.id.includes(f.id));
+      if (chosenFriend && chosenOption.id.includes('spouse')) {
+        footprints.push(
+          `${age}歲：因緣際會，選擇與【${chosenFriend.mysteryAlias}】定下白首誓約，相伴一生`
+        );
+        node.resolutionNarrative = `你在 ${age} 歲的命運十字路口，做出了此生最重要的決定：與【${chosenFriend.mysteryAlias}】許下白首誓盟，約定攜手相伴一生。這份堅定的誓言，成為你未來歲月中最溫暖深厚的港灣。`;
       }
     }
 
@@ -536,8 +588,12 @@ simulatorRouter.post('/fast-forward', async (req: Request, res: Response) => {
       const node = history[currentAge];
       if (!node) break;
 
-      // 若當前歲數已經是關鍵轉折年，且尚未完成決策，則停止快進交由使用者決策
-      if (node.isKeyMilestone && currentAge > record.currentAge) {
+      // 若當前歲數已經是關鍵轉折年或知己盲盒相遇年，且尚未完成決策，則立即停止快進交由使用者親自抉擇
+      const isRomanticTurn =
+        [18, 22, 26, 30, 34].includes(currentAge) ||
+        node.eventTitle?.includes('邂逅') ||
+        node.options?.some((o) => o.id?.includes('romantic'));
+      if ((node.isKeyMilestone || isRomanticTurn) && !node.chosenOptionId) {
         break;
       }
 
@@ -673,7 +729,7 @@ simulatorRouter.post('/finalize', async (req: Request, res: Response) => {
     const footprints: string[] = JSON.parse(record.footprintsJson || '[]');
     const femaleFriends: FemaleFriendProfile[] | undefined = record.femaleFriendsJson
       ? JSON.parse(record.femaleFriendsJson)
-      : (record.gender === '男' ? getInitialFemaleFriends() : undefined);
+      : getInitialRomanceFriends(record.gender as '男' | '女', record.birthDatetime);
 
     const mockSession: LifeSimulationSession = {
       sessionId: record.id,

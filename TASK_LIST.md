@@ -638,6 +638,22 @@
       - 頁尾增設「📖 使用手冊指南」直達連結。
   - **驗證方式**：astro-core 30/30 單元測試全數通過，server 66/66 整合測試全數通過，web 與 admin 生產構建 0 錯誤。
 
+- [x] **Task 24.16: 女性視角專屬「80億分之一藍顏名冊」、生辰對齊、相遇節點強制注入與白首之約「相伴一生」抉擇 (Female Perspective Blue Romance Roster, Guaranteed Encounters & Lifetime Partner Choice)**
+  - **範圍**：
+    - **1. 女性視角專屬 80 億分之一藍顏名冊原型與日式寫實立繪**：
+      - 塑造成型五大藍顏知己原型：陸子軒（清朗白襯衫學長）、傅宇霖（才情志同青年）、霍柏翰（沉穩菁英律己雅士）、江承澤（藝術隨性旅人）、顧睿安（世家儒雅守護者）。
+      - 產出 5 幅日式寫實美學高解析度立繪保存於 `apps/web/public/images/life-simulator/`（`romance_male_*.jpg`）。
+      - 支援起盤時自訂生日 KEYIN、歲數差動態對齊與肖像預覽。
+    - **2. 浪漫知己相遇節點 100% 強制顯現與快進保護機制 (Guaranteed Encounter Nodes)**：
+      - 修復女性起局時知己名冊遺失問題；`POST /start` 為男/女角色預先將 18、22、26、30、34 歲標記為 `isKeyMilestone: true` 並預填相遇事件標題與選項。
+      - `POST /turn/prompt` 增加防覆蓋守衛 (`if (!eventTitle)`)，杜絕 LLM 覆寫預置相遇事件。
+      - `POST /fast-forward` 遇未抉擇之相遇節點或轉折年立即平穩停駐，保證 100% 觸發。
+    - **3. 「選擇要不要相伴一生」盟約選項與白首終局**：
+      - 在 18、22、26、30、34 歲相遇節點增設 `💍【定下白首誓約 · 選擇相伴一生】`（`opt_romantic_spouse_${id}`）選項。
+      - 抉擇時更新伴侶狀態為 `status: 'SPOUSE'`、好感度鎖定為 100%、寫入終生足跡、更新結算敘事。
+      - 在終局「80億分之一的遊戲」大揭曉中標記為白首眷侶，男女視角對稱適配。
+  - **驗證方式**：astro-core 30/30 單元測試全數通過，server 67/67 整合測試全數通過，web 生產構建 0 錯誤。
+
 ---
 
 ## 多步驟檢核點規範 (Rule 10 Checkpoint Protocol)

@@ -888,3 +888,37 @@
   - 前端與後台生產構建：`pnpm --filter @celestial/web build` 與 `pnpm --filter @celestial/admin build` 狀態碼 0，成功構建。
 - **剩餘事項 (Remaining)**：
   - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
+### 檢核點回報: Phase 30 (女性視角「80億分之一藍顏名冊」、相遇節點強制注入與白首之約「相伴一生」決策)
+- **當前任務**：Task 24.16 (1. 女性視角專屬「80億分之一藍顏名冊」自訂生日與年歲對齊；2. 徹底修復角色未出現問題；3. 相遇節點提供選擇要不要相伴一生)
+- **已完成事項 (Completed)**：
+  - **1. 女性視角專屬藍顏名冊原型與日式寫實立繪 (`packages/astro-core/src/life-simulator/female-friends.ts` & `apps/web/public/images/life-simulator/`)**：
+    - 建立 5 位藍顏知己原型：陸子軒（清朗白襯衫學長）、傅宇霖（才情同僚志同青年）、霍柏翰（沉穩菁英律己雅士）、江承澤（藝術隨性自由旅人）、顧睿安（世家儒雅溫潤守護者），各自具備生辰偏移、五行喜忌、盲盒神秘外貌與相手好感。
+    - 生成 5 幅 1024x1024 高品質日式寫實動畫風格肖像立繪（`romance_male_zixuan.jpg`、`romance_male_yulin.jpg`、`romance_male_bohan.jpg`、`romance_male_chengze.jpg`、`romance_male_ruian.jpg`）。
+    - 實作通用函式 `getInitialRomanceFriends(gender, birth, customFriends)` 與 `calculateOneInEightBillion` 雙性別適配（男性紅顏、女性藍顏）。
+  - **2. 相遇節點 100% 出現保證機制 (Guaranteed Encounter Injection)**：
+    - 深度診斷排查先前未出現之根本原因：
+      1. 原起局時僅針對男性儲存知己名冊，女性未初始化。
+      2. 26、30、34 歲相遇節點未被標記為 `isKeyMilestone`，導致快進時略過。
+      3. `/turn/prompt` 後續 LLM 流程覆蓋了已生成的相遇事件標題與選項。
+    - 徹底修正：
+      - `POST /start` 在起局時，將 18、22、26、30、34 歲五大相遇年歲預先標記為 `isKeyMilestone: true` 並直接預填知己相遇事件情境與選項。
+      - `POST /turn/prompt` 增加防覆蓋守衛 (`if (!eventTitle)`)，確保相遇節點不受 LLM 一般隨機事件覆蓋。
+      - `POST /fast-forward` 遇未完成抉擇之相遇歲數時立即平穩停駐等待玩家抉擇。
+  - **3. 「💍【定下白首誓約 · 選擇相伴一生】」白首盟約機制**：
+    - 在 18、22、26、30、34 歲的抉擇選項中，全面增設「白首盟約」專屬選項：`💍【定下白首誓約 · 選擇相伴一生】`。
+    - 玩家選擇相伴一生時，相手因緣狀態鎖定為 `status: 'SPOUSE'`、好感度飆升至 100%、寫入終生相守足跡，並產出相依相守之專屬結算敘事。
+    - 終局《一生行誼·蓋棺錄》之「80億分之一的遊戲」大揭曉中，醒目標註為「💍 白首眷侶（相伴一生）」。
+  - **4. 前端起盤與推演適配 (`apps/web/src/views/LifeSimulatorView.vue`)**：
+    - 起盤面板依主角性別自動切換「🌹 80億分之一紅顏名冊」與「💎 80億分之一藍顏名冊」，支援各知己自訂生辰（KEYIN）、實時年齡差徽章與立繪肖像即時預覽。
+    - 主舞台相遇卡牌根據性別動態渲染男女知己立繪與相伴一生選項。
+    - 終局 80 億分之一彈窗自適應顯示紅顏/藍顏終生羈絆。
+- **已驗證事項 (Verified)**：
+  - 核心演算法庫單元測試：`pnpm --filter @celestial/astro-core test` ➔ 30/30 測試全數通過 (100% Pass)。
+  - 後端 API 與整合測試：`pnpm --filter @celestial/server test` ➔ 67/67 測試全數通過 (100% Pass，新增女性視角起局、藍顏名冊注入、相伴一生選項與快進平穩停駐驗證)。
+  - 全專案 97 項測試 100% 綠燈通過。
+  - 前端生產構建：`pnpm --filter @celestial/web build` ➔ 0 錯誤構建成功（耗時 7.58s）。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。

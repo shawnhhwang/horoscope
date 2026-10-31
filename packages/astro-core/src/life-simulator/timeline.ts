@@ -51,8 +51,9 @@ const BRANCH_COMBINES: Record<string, string> = {
   午: '未', 未: '午',
 };
 
-// 人生關鍵社會與生理年齡里程碑
-const SOCIAL_MILESTONE_AGES = new Set([6, 12, 18, 22, 28, 35, 45, 55, 60, 70, 80, 90]);
+// 人生關鍵社會與生理年齡里程碑 (含 80 億分之一 5 大知己相逢年 18, 22, 26, 30, 34 歲)
+const SOCIAL_MILESTONE_AGES = new Set([6, 12, 18, 22, 26, 28, 30, 34, 35, 45, 55, 60, 70, 80, 90]);
+const ROMANTIC_ENCOUNTER_AGES = new Set([18, 22, 26, 30, 34]);
 
 /**
  * 依據八字命盤與年齡推算當前生效之大運
@@ -353,7 +354,10 @@ export function generate100YearTimeline(birthDate: Date, gender: '男' | '女'):
       else if (age === 12) reasons.push('青蔥少年·初中青春期心性建立');
       else if (age === 18) reasons.push('成年之禮·大學升學與志向分水嶺');
       else if (age === 22) reasons.push('學成啟航·踏入社會就業面試');
+      else if (age === 26) reasons.push('黃金韶華·事業拓荒與知己相逢');
       else if (age === 28) reasons.push('立業適婚·人生黃金打拼與婚姻轉折');
+      else if (age === 30) reasons.push('三十而立·立身成家關鍵節點');
+      else if (age === 34) reasons.push('三十有四·心智圓熟深耕期');
       else if (age === 35) reasons.push('中年骨幹·職涯晉升或創業轉型期');
       else if (age === 45) reasons.push('不惑之年·健康與家庭責任重大轉折');
       else if (age === 55) reasons.push('知命前奏·資產佈局與第二人生籌劃');
@@ -361,6 +365,11 @@ export function generate100YearTimeline(birthDate: Date, gender: '男' | '女'):
       else if (age === 70) reasons.push('古稀之年·身心頤養與家族天倫');
       else if (age === 80) reasons.push('傘壽大關·看化生死與養生延年');
       else if (age === 90) reasons.push('白壽至境·長壽天年與福德善終');
+    }
+
+    if (ROMANTIC_ENCOUNTER_AGES.has(age)) {
+      isKeyMilestone = true;
+      reasons.push(gender === '女' ? '因緣際會·命中注定的良人盲盒相逢' : '因緣際會·命中注定的紅顏盲盒相逢');
     }
 
     const eraRecord = getTaiwanEraRecord(solarYear);

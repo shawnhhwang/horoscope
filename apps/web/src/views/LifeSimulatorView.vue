@@ -73,37 +73,54 @@
         </div>
       </div>
 
-      <!-- 男性視角：紅顏知己盲盒相遇模式設定 (80億分之一的遊戲 · 支援生日 KEYIN 與年歲對齊) -->
-      <div v-if="form.gender === '男'" class="mt-4 p-4 rounded-2xl bg-rose-950/20 border border-rose-500/30 text-xs">
+      <!-- 80億分之一知己盲盒相遇模式設定 (支援男女雙重視角、生日 KEYIN 與年歲對齊) -->
+      <div
+        class="mt-4 p-4 rounded-2xl text-xs border"
+        :class="form.gender === '女' ? 'bg-indigo-950/20 border-indigo-500/30' : 'bg-rose-950/20 border-rose-500/30'"
+      >
         <div class="flex items-center justify-between mb-2">
-          <span class="font-bold text-rose-300 flex items-center space-x-1.5">
-            <span>🌹</span>
-            <span>男性視角專屬 · 80億分之一紅顏名冊 (支援自訂生日與年歲對齊)</span>
+          <span
+            class="font-bold flex items-center space-x-1.5"
+            :class="form.gender === '女' ? 'text-indigo-300' : 'text-rose-300'"
+          >
+            <span>{{ form.gender === '女' ? '💎' : '🌹' }}</span>
+            <span>{{ form.gender === '女' ? '女性視角專屬 · 80億分之一藍顏名冊 (支援自訂生日與年歲對齊)' : '男性視角專屬 · 80億分之一紅顏名冊 (支援自訂生日與年歲對齊)' }}</span>
           </span>
           <span class="text-[11px] text-dark-gold font-mono">5位命中注定的相遇 (盲盒相逢)</span>
         </div>
         <p class="text-dark-muted text-[11px] leading-relaxed mb-2">
-          人生旅程中將與 5 位命中注定的女性友人相逢。您可自由為她們輸入 (KEYIN) 生日，系統將精準計算相遇時彼此的年歲差距與對方好感度。在推演抉擇當下不會揭曉真實姓名，唯有在終局《一生回顧》方能大白天下！
+          人生旅程中將與 5 位命中注定的{{ form.gender === '女' ? '知己良人（藍顏知己）' : '女性友人（紅顏知己）' }}相逢。您可自由為{{ form.gender === '女' ? '他們' : '她們' }}輸入 (KEYIN) 生日，系統將精準計算相遇時彼此的年歲差距與對方好感度。在推演抉擇當下不會揭曉真實姓名，唯有在終局《一生回顧》方能大白天下！
         </p>
-        <div class="text-amber-300/90 text-[10px] bg-amber-950/40 border border-amber-500/30 rounded-lg p-2.5 mb-3 flex items-start space-x-2">
+        <div
+          class="text-[10px] rounded-lg p-2.5 mb-3 flex items-start space-x-2 border"
+          :class="form.gender === '女' ? 'text-cyan-300/90 bg-cyan-950/30 border-cyan-500/30' : 'text-amber-300/90 bg-amber-950/40 border-amber-500/30'"
+        >
           <span class="text-xs">🔒</span>
           <span><strong>隱私與虛構提醒</strong>：本模擬中所有角色、事件與因緣走向均為文創演繹之虛構代號，請勿輸入真實第三方之機敏個資。本推演僅供文化哲學探索用途，不構成任何實體醫療診斷或財務投資依據。</span>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 text-[11px]">
           <div
-            v-for="friend in femaleFriendsSetup"
+            v-for="friend in romanceFriendsSetup"
             :key="friend.id"
-            class="p-2.5 rounded-xl bg-black/50 border border-rose-500/30 flex flex-col justify-between space-y-2 hover:border-rose-400 transition-colors"
+            class="p-2.5 rounded-xl bg-black/50 border flex flex-col justify-between space-y-2 transition-colors"
+            :class="form.gender === '女' ? 'border-indigo-500/30 hover:border-indigo-400' : 'border-rose-500/30 hover:border-rose-400'"
           >
             <!-- 日式寫實角色頭像 / 插畫預覽 -->
-            <div v-if="friend.illustration" class="w-full h-20 rounded-lg overflow-hidden border border-rose-500/20 relative group">
+            <div
+              v-if="friend.illustration"
+              class="w-full h-20 rounded-lg overflow-hidden border relative group"
+              :class="form.gender === '女' ? 'border-indigo-500/20' : 'border-rose-500/20'"
+            >
               <img
                 :src="friend.illustration"
                 :alt="friend.name"
                 class="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
               />
               <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-1.5">
-                <span class="text-[9px] text-rose-200 font-sans font-bold bg-black/60 px-1 rounded backdrop-blur-sm">
+                <span
+                  class="text-[9px] font-sans font-bold bg-black/60 px-1 rounded backdrop-blur-sm"
+                  :class="form.gender === '女' ? 'text-indigo-200' : 'text-rose-200'"
+                >
                   🎨 日式寫實相逢
                 </span>
               </div>
@@ -111,7 +128,12 @@
 
             <div>
               <div class="flex items-center justify-between mb-1">
-                <span class="font-bold text-rose-200">{{ friend.name }}</span>
+                <span
+                  class="font-bold"
+                  :class="form.gender === '女' ? 'text-indigo-200' : 'text-rose-200'"
+                >
+                  {{ friend.name }}
+                </span>
                 <span
                   class="px-1.5 py-0.5 rounded text-[10px] font-mono"
                   :class="friend.ageOffset === 0 ? 'bg-amber-500/20 text-amber-300' : friend.ageOffset && friend.ageOffset < 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-purple-500/20 text-purple-300'"
@@ -124,17 +146,31 @@
 
             <!-- KEYIN 生日輸入框 -->
             <div>
-              <label class="block text-[10px] text-rose-300/80 mb-0.5 font-bold">🎂 自訂生辰 (KEYIN)</label>
+              <label
+                class="block text-[10px] mb-0.5 font-bold"
+                :class="form.gender === '女' ? 'text-indigo-300/80' : 'text-rose-300/80'"
+              >
+                🎂 自訂生辰 (KEYIN)
+              </label>
               <input
                 v-model="friend.birthDate"
                 type="date"
                 @change="onFriendBirthChange(friend)"
-                class="w-full bg-black/60 border border-rose-500/30 rounded px-1.5 py-1 text-[11px] text-rose-100 outline-none focus:border-rose-400 font-mono"
+                class="w-full bg-black/60 border rounded px-1.5 py-1 text-[11px] outline-none font-mono"
+                :class="form.gender === '女' ? 'border-indigo-500/30 text-indigo-100 focus:border-indigo-400' : 'border-rose-500/30 text-rose-100 focus:border-rose-400'"
               />
             </div>
 
-            <div class="pt-1 border-t border-rose-500/15 flex items-center justify-between text-[10px] font-mono">
-              <span class="text-rose-300/90" title="相遇初始對方好感度">💖 好感 {{ friend.herAffinity }}%</span>
+            <div
+              class="pt-1 border-t flex items-center justify-between text-[10px] font-mono"
+              :class="form.gender === '女' ? 'border-indigo-500/15' : 'border-rose-500/15'"
+            >
+              <span
+                :class="form.gender === '女' ? 'text-indigo-300/90' : 'text-rose-300/90'"
+                title="相遇初始對方好感度"
+              >
+                💖 好感 {{ friend.herAffinity }}%
+              </span>
               <span class="text-amber-300/90" title="先天八字默契度">🌟 默契 {{ friend.compatibilityScore }}%</span>
             </div>
           </div>
@@ -435,23 +471,27 @@
             <div class="mb-6 p-4 rounded-xl bg-black/30 border border-dark-gold/20 text-xs sm:text-sm text-dark-text leading-relaxed font-serif">
               <div
                 v-if="activeDisplayNode?.eventTitle?.includes('邂逅') || activeDisplayNode?.options?.some(o => o.id?.includes('romantic'))"
-                class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 text-[11px] font-bold font-sans mb-3"
+                class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold font-sans mb-3"
+                :class="session?.gender === '女' ? 'bg-indigo-500/20 border border-indigo-500/40 text-indigo-300' : 'bg-rose-500/20 border border-rose-500/40 text-rose-300'"
               >
-                <span>🌹</span>
-                <span>80億分之一 · 紅顏盲盒相逢 (真身將於一生回顧揭曉)</span>
+                <span>{{ session?.gender === '女' ? '💎' : '🌹' }}</span>
+                <span>80億分之一 · {{ session?.gender === '女' ? '藍顏盲盒相逢' : '紅顏盲盒相逢' }} (真身將於一生回顧揭曉)</span>
               </div>
 
-              <!-- 紅顏盲盒相逢日式寫實專屬插畫 -->
-              <div v-if="activeRomanticIllustration" class="mb-3.5 rounded-xl overflow-hidden border border-rose-500/40 shadow-cosmic relative group max-h-60">
+              <!-- 知己盲盒相逢日式寫實專屬插畫 -->
+              <div v-if="activeRomanticIllustration" class="mb-3.5 rounded-xl overflow-hidden border shadow-cosmic relative group max-h-60" :class="session?.gender === '女' ? 'border-indigo-500/40' : 'border-rose-500/40'">
                 <img
                   :src="activeRomanticIllustration"
-                  alt="紅顏盲盒相逢日式寫實插畫"
+                  alt="知己盲盒相逢日式寫實插畫"
                   class="w-full h-44 sm:h-56 object-cover object-center group-hover:scale-105 transition-transform duration-700"
                 />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent flex items-end justify-between p-3">
-                  <span class="text-[11px] font-sans font-bold text-rose-200 tracking-wide bg-black/60 px-2.5 py-0.5 rounded backdrop-blur-sm border border-rose-500/40 flex items-center space-x-1">
-                    <span>🌹</span>
-                    <span>命運交會 · {{ activeDisplayNode?.eventTitle?.split('邂逅')?.[1] || '知性女子' }}</span>
+                  <span
+                    class="text-[11px] font-sans font-bold tracking-wide bg-black/60 px-2.5 py-0.5 rounded backdrop-blur-sm border flex items-center space-x-1"
+                    :class="session?.gender === '女' ? 'text-indigo-200 border-indigo-500/40' : 'text-rose-200 border-rose-500/40'"
+                  >
+                    <span>{{ session?.gender === '女' ? '💎' : '🌹' }}</span>
+                    <span>命運交會 · {{ activeDisplayNode?.eventTitle?.split('邂逅')?.[1] || (session?.gender === '女' ? '知己良人' : '知性女子') }}</span>
                   </span>
                 </div>
               </div>
@@ -841,35 +881,53 @@
                 </div>
               </div>
 
-              <!-- 5位紅顏知己盲盒真面目揭曉列表 -->
-              <div class="p-3.5 rounded-xl bg-rose-950/25 border border-rose-500/30 text-left">
-                <div class="font-bold text-rose-300 text-xs mb-2.5 flex items-center justify-between">
-                  <span>🌹 80億人中的紅顏因緣 · 真身大揭曉</span>
+              <!-- 5位知己盲盒真面目揭曉列表 -->
+              <div
+                class="p-3.5 rounded-xl border text-left"
+                :class="session?.gender === '女' ? 'bg-indigo-950/25 border-indigo-500/30' : 'bg-rose-950/25 border-rose-500/30'"
+              >
+                <div
+                  class="font-bold text-xs mb-2.5 flex items-center justify-between"
+                  :class="session?.gender === '女' ? 'text-indigo-300' : 'text-rose-300'"
+                >
+                  <span>{{ session?.gender === '女' ? '💎 80億人中的藍顏因緣 · 真身大揭曉' : '🌹 80億人中的紅顏因緣 · 真身大揭曉' }}</span>
                   <span class="text-[10px] text-dark-muted font-mono">盲盒真相揭秘</span>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                   <div
                     v-for="friend in finalSummary.oneInEightBillion.revealedFriends"
                     :key="friend.id"
-                    class="p-3 rounded-xl bg-black/50 border border-rose-500/20 flex flex-col justify-between"
+                    class="p-3 rounded-xl bg-black/50 border flex flex-col justify-between"
+                    :class="session?.gender === '女' ? 'border-indigo-500/20' : 'border-rose-500/20'"
                   >
                     <div>
                       <!-- 日式寫實相逢角色插畫 -->
-                      <div class="w-full h-32 sm:h-36 rounded-lg overflow-hidden border border-rose-500/25 mb-2 relative group">
+                      <div
+                        class="w-full h-32 sm:h-36 rounded-lg overflow-hidden border mb-2 relative group"
+                        :class="session?.gender === '女' ? 'border-indigo-500/25' : 'border-rose-500/25'"
+                      >
                         <img
-                          :src="friend.illustration || '/images/life-simulator/romance_wanqing.jpg'"
+                          :src="friend.illustration || (session?.gender === '女' ? '/images/life-simulator/romance_male_zixuan.jpg' : '/images/life-simulator/romance_wanqing.jpg')"
                           :alt="friend.name"
                           class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                         />
                         <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent flex items-end p-2">
-                          <span class="text-[10px] text-rose-200 font-sans font-bold bg-black/60 px-1.5 py-0.5 rounded backdrop-blur-sm border border-rose-500/30">
+                          <span
+                            class="text-[10px] font-sans font-bold bg-black/60 px-1.5 py-0.5 rounded backdrop-blur-sm border"
+                            :class="session?.gender === '女' ? 'text-indigo-200 border-indigo-500/30' : 'text-rose-200 border-rose-500/30'"
+                          >
                             🎨 日式寫實 · {{ friend.name }} 真容
                           </span>
                         </div>
                       </div>
 
                       <div class="flex items-center justify-between mb-1">
-                        <span class="font-bold text-rose-200 text-sm">{{ friend.name }}</span>
+                        <span
+                          class="font-bold text-sm"
+                          :class="session?.gender === '女' ? 'text-indigo-200' : 'text-rose-200'"
+                        >
+                          {{ friend.name }}
+                        </span>
                         <span
                           class="px-2 py-0.5 rounded text-[10px] font-bold"
                           :class="[
@@ -951,7 +1009,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick, watch } from 'vue';
-import { getYearMetaphysicalGuidance, getInitialFemaleFriends, getLifeStageIllustration, FemaleFriendProfile } from '@celestial/astro-core';
+import {
+  getYearMetaphysicalGuidance,
+  getInitialFemaleFriends,
+  getInitialRomanceFriends,
+  getLifeStageIllustration,
+  FemaleFriendProfile,
+} from '@celestial/astro-core';
 
 interface SavedProfile {
   id: string;
@@ -966,23 +1030,25 @@ const form = ref({
   gender: '男',
 });
 
-// 男性視角專屬：紅顏知己 5 位盲盒名冊 (支援自訂 KEYIN 生日)
-const femaleFriendsSetup = ref<FemaleFriendProfile[]>(getInitialFemaleFriends('1995-10-24T14:30'));
+// 視角專屬知己 5 位盲盒名冊 (男女皆完整支援自訂 KEYIN 生日)
+const romanceFriendsSetup = ref<FemaleFriendProfile[]>(
+  getInitialRomanceFriends(form.value.gender as '男' | '女', form.value.birthDate)
+);
 
-// 監聽男主角生日變動，自適應更新女性友人預設生日
-watch(() => form.value.birthDate, (newDate) => {
+// 監聽主角生日與性別變動，自適應更新知己名冊與預設生日
+watch([() => form.value.birthDate, () => form.value.gender], ([newDate, newGender]) => {
   if (newDate) {
-    femaleFriendsSetup.value = getInitialFemaleFriends(newDate, femaleFriendsSetup.value);
+    romanceFriendsSetup.value = getInitialRomanceFriends(newGender as '男' | '女', newDate);
   }
 });
 
 function onFriendBirthChange(friend: FemaleFriendProfile) {
   if (!friend.birthDate || !form.value.birthDate) return;
-  const maleYear = parseInt(form.value.birthDate.slice(0, 4));
-  const femaleYear = parseInt(friend.birthDate.slice(0, 4));
-  if (!isNaN(maleYear) && !isNaN(femaleYear)) {
-    // ageOffset: 女方歲數 - 男方歲數 = maleYear - femaleYear
-    friend.ageOffset = maleYear - femaleYear;
+  const protagonistYear = parseInt(form.value.birthDate.slice(0, 4));
+  const partnerYear = parseInt(friend.birthDate.slice(0, 4));
+  if (!isNaN(protagonistYear) && !isNaN(partnerYear)) {
+    // ageOffset: 相手歲數 - 主角歲數 = protagonistYear - partnerYear
+    friend.ageOffset = protagonistYear - partnerYear;
   }
 }
 
@@ -1045,19 +1111,29 @@ const activeStageIllustration = computed(() => {
   return activeDisplayNode.value.stageIllustration || getLifeStageIllustration(activeDisplayNode.value.age);
 });
 
-// 80億分之一紅顏盲盒相逢專屬插畫
+// 80億分之一知己盲盒相逢專屬插畫 (支援男女雙重視角)
 const activeRomanticIllustration = computed(() => {
   if (!activeDisplayNode.value) return null;
   const node = activeDisplayNode.value;
   const isRomantic = node.eventTitle?.includes('邂逅') || node.options?.some(o => o.id?.includes('romantic'));
   if (!isRomantic) return null;
   if (node.romanceIllustration) return node.romanceIllustration;
-  if (node.age === 18) return '/images/life-simulator/romance_wanqing.jpg';
-  if (node.age === 22) return '/images/life-simulator/romance_ruoxi.jpg';
-  if (node.age === 26) return '/images/life-simulator/romance_yuwei.jpg';
-  if (node.age === 30) return '/images/life-simulator/romance_peiyi.jpg';
-  if (node.age === 34) return '/images/life-simulator/romance_minzhi.jpg';
-  return '/images/life-simulator/romance_wanqing.jpg';
+  const isFemale = session.value?.gender === '女';
+  if (isFemale) {
+    if (node.age === 18) return '/images/life-simulator/romance_male_zixuan.jpg';
+    if (node.age === 22) return '/images/life-simulator/romance_male_yulin.jpg';
+    if (node.age === 26) return '/images/life-simulator/romance_male_bohan.jpg';
+    if (node.age === 30) return '/images/life-simulator/romance_male_chengze.jpg';
+    if (node.age === 34) return '/images/life-simulator/romance_male_ruian.jpg';
+    return '/images/life-simulator/romance_male_zixuan.jpg';
+  } else {
+    if (node.age === 18) return '/images/life-simulator/romance_wanqing.jpg';
+    if (node.age === 22) return '/images/life-simulator/romance_ruoxi.jpg';
+    if (node.age === 26) return '/images/life-simulator/romance_yuwei.jpg';
+    if (node.age === 30) return '/images/life-simulator/romance_peiyi.jpg';
+    if (node.age === 34) return '/images/life-simulator/romance_minzhi.jpg';
+    return '/images/life-simulator/romance_wanqing.jpg';
+  }
 });
 
 const attributes = computed(() => {
@@ -1090,7 +1166,7 @@ function loadSavedProfile(id: string) {
   form.value.gender = p.gender === '女' ? '女' : '男';
   if (p.birthDatetime) {
     form.value.birthDate = p.birthDatetime.slice(0, 16);
-    femaleFriendsSetup.value = getInitialFemaleFriends(p.birthDatetime);
+    romanceFriendsSetup.value = getInitialRomanceFriends(form.value.gender as '男' | '女', p.birthDatetime);
   }
 }
 
@@ -1104,7 +1180,8 @@ async function startSimulation() {
         profileName: form.value.profileName,
         birthDate: form.value.birthDate,
         gender: form.value.gender,
-        femaleFriends: form.value.gender === '男' ? femaleFriendsSetup.value : undefined,
+        romanceFriends: romanceFriendsSetup.value,
+        femaleFriends: romanceFriendsSetup.value,
       }),
     });
     const data = await res.json();

@@ -534,9 +534,37 @@ describe('🚀 萬象天儀 後端 API 服務整合測試', () => {
       expect(res.body.data.session.attributes.knowledge).toBeDefined();
       expect(res.body.data.session.femaleFriends[0].birthDate).toBe('1991-09-12');
       expect(res.body.data.session.femaleFriends[0].herAffinity).toBeGreaterThan(0);
+      // 驗證 18 歲紅顏相逢事件已精確預先注入節點
+      expect(res.body.data.session.history[18].eventTitle).toContain('邂逅');
+      expect(res.body.data.session.history[18].options.some((o: any) => o.text.includes('相伴一生'))).toBe(true);
       expect(res.body.data.baziChart.dayMaster.stem).toBeDefined();
 
       simulatorSessionId = res.body.data.session.sessionId;
+    });
+
+    it('POST /api/v1/simulator/start 應支援女性視角起局並自動注入五位藍顏知己與相伴一生選項', async () => {
+      const res = await request(app)
+        .post('/api/v1/simulator/start')
+        .set('Authorization', `Bearer ${memberToken}`)
+        .send({
+          profileName: '林曉晴',
+          gender: '女',
+          birthDate: '1996-04-12T09:00:00Z',
+          romanceFriends: [
+            { id: 'friend_m1', birthDate: '1995-09-15' },
+          ],
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.session.gender).toBe('女');
+      expect(res.body.data.session.femaleFriends.length).toBe(5);
+      expect(res.body.data.session.femaleFriends[0].name).toBe('陸子軒');
+      expect(res.body.data.session.femaleFriends[0].illustration).toContain('romance_male_zixuan');
+      // 18歲藍顏相遇事件已精確預先注入
+      const node18 = res.body.data.session.history[18];
+      expect(node18.isKeyMilestone).toBe(true);
+      expect(node18.eventTitle).toContain('邂逅【溫暖清朗的白襯衫學長】');
+      expect(node18.options.some((o: any) => o.text.includes('相伴一生'))).toBe(true);
     });
 
     it('GET /api/v1/simulator/session/:id 應能讀取既有推演 Session 存檔', async () => {
@@ -560,8 +588,9 @@ describe('🚀 萬象天儀 後端 API 服務整合測試', () => {
       expect(res.body.data.node.age).toBe(18);
       expect(res.body.data.node.taiwanEraContext).toBeDefined();
       expect(typeof res.body.data.node.taiwanEraContext).toBe('string');
-      expect(res.body.data.node.eventTitle).toBeDefined();
-      expect(res.body.data.node.options.length).toBeGreaterThanOrEqual(2);
+      expect(res.body.data.node.eventTitle).toContain('邂逅');
+      expect(res.body.data.node.options.some((o: any) => o.text.includes('相伴一生'))).toBe(true);
+      expect(res.body.data.node.options.length).toBeGreaterThanOrEqual(4);
     });
 
     it('POST /api/v1/simulator/turn/choose 應正確結算選項、結算屬性差值並推進歲月', async () => {

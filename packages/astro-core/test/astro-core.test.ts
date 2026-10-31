@@ -34,6 +34,8 @@ import {
   getYearMetaphysicalGuidance,
   getLifeStageIllustration,
   getInitialFemaleFriends,
+  getInitialMaleFriends,
+  getInitialRomanceFriends,
   getBlindRomanticEncounter,
   applyRomanticDecision,
   calculateOneInEightBillion,
@@ -917,24 +919,50 @@ describe('🌟 萬象天儀 核心演算法庫 Intent-Based Tests', () => {
       expect(femaleFriends[0].birthDate).toBe('1989-09-12');
       expect(femaleFriends[0].herAffinity).toBeGreaterThan(0); // 媒合對方好感度
 
-      // 3. 驗證盲盒相遇與年歲搭配 (選擇當下不會揭露真實姓名，只出現神秘化身、情境與雙方年歲對齊)
-      const encounter18 = getBlindRomanticEncounter(18, femaleFriends, '台北', 2008);
+      // 3. 驗證盲盒相遇與年歲搭配 (選擇當下不會揭露真實姓名，只出現神秘化身、情境、相伴一生選項與雙方年歲對齊)
+      const encounter18 = getBlindRomanticEncounter(18, femaleFriends, '台北', 2008, '男');
       expect(encounter18.isRomanticTurn).toBe(true);
       expect(encounter18.mysteryAlias).toBe('【素雅白裙的知性女子】');
       expect(encounter18.eventNarrative).not.toContain('沈婉晴'); // 嚴格不暴雷真實姓名
       expect(encounter18.eventNarrative).toContain('18 歲'); // 男主年齡
       expect(encounter18.eventNarrative).toContain('19 歲'); // 女方年齡 (2008 - 1989)
       expect(encounter18.eventNarrative).toContain('好感度'); // 對方好感度提示
-      expect(encounter18.options?.length).toBe(3);
+      expect(encounter18.options?.length).toBe(4);
+      expect(encounter18.options?.some((o) => o.text.includes('相伴一生'))).toBe(true);
 
-      // 4. 驗證盲盒抉擇與雙向好感度結算 (對方好感度 herAffinity 動態增長)
-      const updatedFriends = applyRomanticDecision(femaleFriends, 'opt_romantic_deep_friend_1', 18);
+      // 4. 驗證盲盒抉擇與相伴一生結算 (選擇相伴一生 status 轉為 SPOUSE，好感度升至 100)
+      const updatedFriends = applyRomanticDecision(femaleFriends, 'opt_romantic_spouse_friend_1', 18, '男');
       const friend1 = updatedFriends.find((f) => f.id === 'friend_1');
-      expect(friend1?.affinity).toBeGreaterThanOrEqual(30);
-      expect(friend1?.herAffinity).toBeGreaterThan(65);
-      expect(friend1?.status).toBe('BONDED');
+      expect(friend1?.affinity).toBe(100);
+      expect(friend1?.herAffinity).toBe(100);
+      expect(friend1?.status).toBe('SPOUSE');
+      expect(friend1?.encounterStory).toContain('相伴一生');
 
-      // 5. 驗證 80 億分之一的遊戲 (One in Eight Billion) 終局機率與紅顏揭曉
+      // 5. 驗證女性視角專屬 · 80億分之一藍顏名冊 (支援自訂生日與年歲對齊)
+      const maleFriends = getInitialMaleFriends('1992-03-10', [
+        { id: 'friend_m1', birthDate: '1991-09-15' }, // 自訂 KEYIN
+      ]);
+      expect(maleFriends.length).toBe(5);
+      expect(maleFriends.map((f) => f.name)).toContain('陸子軒');
+      expect(maleFriends.map((f) => f.name)).toContain('傅宇霖');
+      expect(maleFriends.map((f) => f.name)).toContain('霍柏翰');
+      expect(maleFriends.map((f) => f.name)).toContain('江承澤');
+      expect(maleFriends.map((f) => f.name)).toContain('顧睿安');
+      expect(maleFriends[0].birthDate).toBe('1991-09-15');
+      expect(maleFriends[0].illustration).toContain('romance_male_zixuan');
+
+      const femaleEncounter18 = getBlindRomanticEncounter(18, maleFriends, '台北', 2010, '女');
+      expect(femaleEncounter18.isRomanticTurn).toBe(true);
+      expect(femaleEncounter18.mysteryAlias).toBe('【溫暖清朗的白襯衫學長】');
+      expect(femaleEncounter18.eventNarrative).not.toContain('陸子軒');
+      expect(femaleEncounter18.options?.some((o) => o.text.includes('相伴一生'))).toBe(true);
+
+      const updatedMaleFriends = applyRomanticDecision(maleFriends, 'opt_romantic_spouse_friend_m1', 18, '女');
+      const maleFriend1 = updatedMaleFriends.find((f) => f.id === 'friend_m1');
+      expect(maleFriend1?.status).toBe('SPOUSE');
+      expect(maleFriend1?.encounterStory).toContain('相伴一生');
+
+      // 6. 驗證 80 億分之一的遊戲 (One in Eight Billion) 終局機率與紅顏/藍顏揭曉
       const mockSession = {
         sessionId: 'session_8b_test',
         profileName: '張道遠',
@@ -954,7 +982,7 @@ describe('🌟 萬象天儀 核心演算法庫 Intent-Based Tests', () => {
       expect(oneIn8B.revealedFriends.length).toBe(5);
       const revealedFriend1 = oneIn8B.revealedFriends.find((f) => f.id === 'friend_1');
       expect(revealedFriend1?.name).toBe('沈婉晴');
-      expect(revealedFriend1?.statusText).toContain('知己');
+      expect(revealedFriend1?.statusText).toContain('相伴一生');
 
       // 驗證 generateOfflineFinalSummary 支援 ONE_IN_8_BILLION 視角
       const summary8B = generateOfflineFinalSummary(mockSession, 'ONE_IN_8_BILLION');
