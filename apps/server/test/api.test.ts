@@ -29,6 +29,24 @@ describe('🚀 萬象天儀 後端 API 服務整合測試', () => {
     expect(res.body.status).toBe('healthy');
   });
 
+  it('GET / 應返回前端 SPA index.html (一體化部署支援)', async () => {
+    const res = await request(app).get('/');
+    expect(res.status).toBe(200);
+    expect(res.text).toContain('<!DOCTYPE html>');
+  });
+
+  it('GET /bazi 應正確回退至前端 SPA index.html', async () => {
+    const res = await request(app).get('/bazi');
+    expect(res.status).toBe(200);
+    expect(res.text).toContain('<!DOCTYPE html>');
+  });
+
+  it('GET 未知 API /api/v1/unknown-endpoint 應返回 404 JSON 而非 HTML', async () => {
+    const res = await request(app).get('/api/v1/unknown-endpoint');
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
+  });
+
   describe('1. 認證模組 (Auth Module)', () => {
     it('會員註冊成功並返回 JWT Token', async () => {
       const email = `test_${Date.now()}@celestial.dao`;

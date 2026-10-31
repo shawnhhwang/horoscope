@@ -891,6 +891,36 @@
 
 ---
 
+### 檢核點回報: Phase 32 (Docker 全端一體化單一服務與單一對外連接埠 5499 重構)
+- **當前任務**：Task 24.18 (支援 Docker 僅暴露單一 5499 端點，打包後僅需啟動單一服務)
+- **架構優勢與決策 (Architecture & Simplicity - Rule 1 & Rule 2)**：
+  - **單一對外連接埠 (Port 5499)**：不再額外開啟 5498，使用者只需訪問 `http://localhost:5499` 即可同時獲得 Vue 3 前端 SPA、管理後台與後端 API。
+  - **單一服務容器 (Single All-In-One Container)**：省去 Nginx 反向代理容器與跨容器網路依賴，由 Node.js Express 原生高效託管前端靜態檔案並提供 SPA 歷史路由回退，同源請求徹底免除 CORS 跨域開銷。
+- **已完成事項 (Completed)**：
+  - **1. Express 前端 SPA 託管與路由回退 (`apps/server/src/app.ts`)**：
+    - 引入 `fs` 與 `express.static`，動態偵測前端編譯目錄候選路徑（`WEB_DIST_PATH`、`/app/public`、`apps/web/dist`）。
+    - 實作 SPA HTML5 歷史路由回退：非 `/api/` 且非靜態副檔名之請求一律安全回傳 `index.html`，既有 API 404 保持 JSON 隔離。
+  - **2. 全端一體化 Docker 映像檔 (`deploy/docker/Dockerfile.server` & `Dockerfile`)**：
+    - 在 Builder 階段同步編譯 `astro-core`、`database`、`apps/web` 與 `apps/server`。
+    - 將 `apps/web/dist` 打包拷貝至 Runner 階段之 `/app/public`。
+    - 預設環境變數配置 `ENV PORT=5499`，`EXPOSE 5499`。
+    - 新增根目錄 [`Dockerfile`](file:///home/coder/Codebase/Horoscope/Dockerfile)，支援標準 `docker build -t celestial-app .` 單指令打包。
+  - **3. 精簡 `docker-compose.yml`**：
+    - 移除原 `web` (Nginx) 服務與獨立 bridge 網路，簡化為單一 `celestial-app` 服務，對外映射僅 `"5499:5499"`，保留 `celestial_data` 資料庫磁碟卷。
+  - **4. 意圖測試覆蓋 (`apps/server/test/api.test.ts`)**：
+    - 新增 `GET /` 首頁回傳 SPA HTML 驗證。
+    - 新增 `GET /bazi` SPA 路由回退驗證。
+    - 新增 `GET /api/v1/unknown-endpoint` API 404 JSON 邊界隔離驗證。
+  - **5. 文檔與後台同步**：
+    - 更新 [`README.md`](file:///home/coder/Codebase/Horoscope/README.md)、[`USER_MANUAL.md`](file:///home/coder/Codebase/Horoscope/USER_MANUAL.md)、[`DashboardView.vue`](file:///home/coder/Codebase/Horoscope/apps/web/src/views/admin/DashboardView.vue)。
+- **已驗證事項 (Verified)**：
+  - 全專案單元與整合測試：`pnpm -r test` ➔ **100/100 項測試 100% 綠燈全數通過**（30 astro-core + 70 server）。
+  - 全專案生產構建編譯：`pnpm -r build` ➔ 全模組 0 錯誤構建成功。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
 ### 檢核點回報: Phase 31 (修復 Docker 建置階段 astro-core tsup 模組找不到錯誤與 Monorepo 鎖定檔同步)
 - **當前任務**：Fix Docker build error: `Cannot find module .../tsup/dist/cli-default.js`
 - **問題根因分析 (Root Cause Analysis)**：
@@ -910,6 +940,36 @@
   - 獨立環境模擬驗證：在純淨目錄以 `pnpm-lock.yaml` + `--frozen-lockfile` 進行建置，`packages/astro-core` 的 `tsup src/index.ts --format cjs,esm --dts` 於 1.88 秒內 100% 成功產出 CJS/ESM/DTS。
   - 全專案單元與整合測試：`pnpm -r test` ➔ 97/97 測試 100% 綠燈通過。
   - 全專案生產編譯構建：`pnpm -r build` ➔ 全模組（astro-core, database, server, web, admin）0 錯誤通過。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
+### 檢核點回報: Phase 32 (Docker 全端一體化單一服務與單一對外連接埠 5499 重構)
+- **當前任務**：Task 24.18 (支援 Docker 僅暴露單一 5499 端點，打包後僅需啟動單一服務)
+- **架構優勢與決策 (Architecture & Simplicity - Rule 1 & Rule 2)**：
+  - **單一對外連接埠 (Port 5499)**：不再額外開啟 5498，使用者只需訪問 `http://localhost:5499` 即可同時獲得 Vue 3 前端 SPA、管理後台與後端 API。
+  - **單一服務容器 (Single All-In-One Container)**：省去 Nginx 反向代理容器與跨容器網路依賴，由 Node.js Express 原生高效託管前端靜態檔案並提供 SPA 歷史路由回退，同源請求徹底免除 CORS 跨域開銷。
+- **已完成事項 (Completed)**：
+  - **1. Express 前端 SPA 託管與路由回退 (`apps/server/src/app.ts`)**：
+    - 引入 `fs` 與 `express.static`，動態偵測前端編譯目錄候選路徑（`WEB_DIST_PATH`、`/app/public`、`apps/web/dist`）。
+    - 實作 SPA HTML5 歷史路由回退：非 `/api/` 且非靜態副檔名之請求一律安全回傳 `index.html`，既有 API 404 保持 JSON 隔離。
+  - **2. 全端一體化 Docker 映像檔 (`deploy/docker/Dockerfile.server` & `Dockerfile`)**：
+    - 在 Builder 階段同步編譯 `astro-core`、`database`、`apps/web` 與 `apps/server`。
+    - 將 `apps/web/dist` 打包拷貝至 Runner 階段之 `/app/public`。
+    - 預設環境變數配置 `ENV PORT=5499`，`EXPOSE 5499`。
+    - 新增根目錄 [`Dockerfile`](file:///home/coder/Codebase/Horoscope/Dockerfile)，支援標準 `docker build -t celestial-app .` 單指令打包。
+  - **3. 精簡 `docker-compose.yml`**：
+    - 移除原 `web` (Nginx) 服務與獨立 bridge 網路，簡化為單一 `celestial-app` 服務，對外映射僅 `"5499:5499"`，保留 `celestial_data` 資料庫磁碟卷。
+  - **4. 意圖測試覆蓋 (`apps/server/test/api.test.ts`)**：
+    - 新增 `GET /` 首頁回傳 SPA HTML 驗證。
+    - 新增 `GET /bazi` SPA 路由回退驗證。
+    - 新增 `GET /api/v1/unknown-endpoint` API 404 JSON 邊界隔離驗證。
+  - **5. 文檔與後台同步**：
+    - 更新 [`README.md`](file:///home/coder/Codebase/Horoscope/README.md)、[`USER_MANUAL.md`](file:///home/coder/Codebase/Horoscope/USER_MANUAL.md)、[`DashboardView.vue`](file:///home/coder/Codebase/Horoscope/apps/web/src/views/admin/DashboardView.vue)。
+- **已驗證事項 (Verified)**：
+  - 全專案單元與整合測試：`pnpm -r test` ➔ **100/100 項測試 100% 綠燈全數通過**（30 astro-core + 70 server）。
+  - 全專案生產構建編譯：`pnpm -r build` ➔ 全模組 0 錯誤構建成功。
 - **剩餘事項 (Remaining)**：
   - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
 
@@ -949,6 +1009,36 @@
 
 ---
 
+### 檢核點回報: Phase 32 (Docker 全端一體化單一服務與單一對外連接埠 5499 重構)
+- **當前任務**：Task 24.18 (支援 Docker 僅暴露單一 5499 端點，打包後僅需啟動單一服務)
+- **架構優勢與決策 (Architecture & Simplicity - Rule 1 & Rule 2)**：
+  - **單一對外連接埠 (Port 5499)**：不再額外開啟 5498，使用者只需訪問 `http://localhost:5499` 即可同時獲得 Vue 3 前端 SPA、管理後台與後端 API。
+  - **單一服務容器 (Single All-In-One Container)**：省去 Nginx 反向代理容器與跨容器網路依賴，由 Node.js Express 原生高效託管前端靜態檔案並提供 SPA 歷史路由回退，同源請求徹底免除 CORS 跨域開銷。
+- **已完成事項 (Completed)**：
+  - **1. Express 前端 SPA 託管與路由回退 (`apps/server/src/app.ts`)**：
+    - 引入 `fs` 與 `express.static`，動態偵測前端編譯目錄候選路徑（`WEB_DIST_PATH`、`/app/public`、`apps/web/dist`）。
+    - 實作 SPA HTML5 歷史路由回退：非 `/api/` 且非靜態副檔名之請求一律安全回傳 `index.html`，既有 API 404 保持 JSON 隔離。
+  - **2. 全端一體化 Docker 映像檔 (`deploy/docker/Dockerfile.server` & `Dockerfile`)**：
+    - 在 Builder 階段同步編譯 `astro-core`、`database`、`apps/web` 與 `apps/server`。
+    - 將 `apps/web/dist` 打包拷貝至 Runner 階段之 `/app/public`。
+    - 預設環境變數配置 `ENV PORT=5499`，`EXPOSE 5499`。
+    - 新增根目錄 [`Dockerfile`](file:///home/coder/Codebase/Horoscope/Dockerfile)，支援標準 `docker build -t celestial-app .` 單指令打包。
+  - **3. 精簡 `docker-compose.yml`**：
+    - 移除原 `web` (Nginx) 服務與獨立 bridge 網路，簡化為單一 `celestial-app` 服務，對外映射僅 `"5499:5499"`，保留 `celestial_data` 資料庫磁碟卷。
+  - **4. 意圖測試覆蓋 (`apps/server/test/api.test.ts`)**：
+    - 新增 `GET /` 首頁回傳 SPA HTML 驗證。
+    - 新增 `GET /bazi` SPA 路由回退驗證。
+    - 新增 `GET /api/v1/unknown-endpoint` API 404 JSON 邊界隔離驗證。
+  - **5. 文檔與後台同步**：
+    - 更新 [`README.md`](file:///home/coder/Codebase/Horoscope/README.md)、[`USER_MANUAL.md`](file:///home/coder/Codebase/Horoscope/USER_MANUAL.md)、[`DashboardView.vue`](file:///home/coder/Codebase/Horoscope/apps/web/src/views/admin/DashboardView.vue)。
+- **已驗證事項 (Verified)**：
+  - 全專案單元與整合測試：`pnpm -r test` ➔ **100/100 項測試 100% 綠燈全數通過**（30 astro-core + 70 server）。
+  - 全專案生產構建編譯：`pnpm -r build` ➔ 全模組 0 錯誤構建成功。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
 ### 檢核點回報: Phase 31 (修復 Docker 建置階段 astro-core tsup 模組找不到錯誤與 Monorepo 鎖定檔同步)
 - **當前任務**：Fix Docker build error: `Cannot find module .../tsup/dist/cli-default.js`
 - **問題根因分析 (Root Cause Analysis)**：
@@ -968,5 +1058,35 @@
   - 獨立環境模擬驗證：在純淨目錄以 `pnpm-lock.yaml` + `--frozen-lockfile` 進行建置，`packages/astro-core` 的 `tsup src/index.ts --format cjs,esm --dts` 於 1.88 秒內 100% 成功產出 CJS/ESM/DTS。
   - 全專案單元與整合測試：`pnpm -r test` ➔ 97/97 測試 100% 綠燈通過。
   - 全專案生產編譯構建：`pnpm -r build` ➔ 全模組（astro-core, database, server, web, admin）0 錯誤通過。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
+### 檢核點回報: Phase 32 (Docker 全端一體化單一服務與單一對外連接埠 5499 重構)
+- **當前任務**：Task 24.18 (支援 Docker 僅暴露單一 5499 端點，打包後僅需啟動單一服務)
+- **架構優勢與決策 (Architecture & Simplicity - Rule 1 & Rule 2)**：
+  - **單一對外連接埠 (Port 5499)**：不再額外開啟 5498，使用者只需訪問 `http://localhost:5499` 即可同時獲得 Vue 3 前端 SPA、管理後台與後端 API。
+  - **單一服務容器 (Single All-In-One Container)**：省去 Nginx 反向代理容器與跨容器網路依賴，由 Node.js Express 原生高效託管前端靜態檔案並提供 SPA 歷史路由回退，同源請求徹底免除 CORS 跨域開銷。
+- **已完成事項 (Completed)**：
+  - **1. Express 前端 SPA 託管與路由回退 (`apps/server/src/app.ts`)**：
+    - 引入 `fs` 與 `express.static`，動態偵測前端編譯目錄候選路徑（`WEB_DIST_PATH`、`/app/public`、`apps/web/dist`）。
+    - 實作 SPA HTML5 歷史路由回退：非 `/api/` 且非靜態副檔名之請求一律安全回傳 `index.html`，既有 API 404 保持 JSON 隔離。
+  - **2. 全端一體化 Docker 映像檔 (`deploy/docker/Dockerfile.server` & `Dockerfile`)**：
+    - 在 Builder 階段同步編譯 `astro-core`、`database`、`apps/web` 與 `apps/server`。
+    - 將 `apps/web/dist` 打包拷貝至 Runner 階段之 `/app/public`。
+    - 預設環境變數配置 `ENV PORT=5499`，`EXPOSE 5499`。
+    - 新增根目錄 [`Dockerfile`](file:///home/coder/Codebase/Horoscope/Dockerfile)，支援標準 `docker build -t celestial-app .` 單指令打包。
+  - **3. 精簡 `docker-compose.yml`**：
+    - 移除原 `web` (Nginx) 服務與獨立 bridge 網路，簡化為單一 `celestial-app` 服務，對外映射僅 `"5499:5499"`，保留 `celestial_data` 資料庫磁碟卷。
+  - **4. 意圖測試覆蓋 (`apps/server/test/api.test.ts`)**：
+    - 新增 `GET /` 首頁回傳 SPA HTML 驗證。
+    - 新增 `GET /bazi` SPA 路由回退驗證。
+    - 新增 `GET /api/v1/unknown-endpoint` API 404 JSON 邊界隔離驗證。
+  - **5. 文檔與後台同步**：
+    - 更新 [`README.md`](file:///home/coder/Codebase/Horoscope/README.md)、[`USER_MANUAL.md`](file:///home/coder/Codebase/Horoscope/USER_MANUAL.md)、[`DashboardView.vue`](file:///home/coder/Codebase/Horoscope/apps/web/src/views/admin/DashboardView.vue)。
+- **已驗證事項 (Verified)**：
+  - 全專案單元與整合測試：`pnpm -r test` ➔ **100/100 項測試 100% 綠燈全數通過**（30 astro-core + 70 server）。
+  - 全專案生產構建編譯：`pnpm -r build` ➔ 全模組 0 錯誤構建成功。
 - **剩餘事項 (Remaining)**：
   - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。

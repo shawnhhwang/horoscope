@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 
 dotenv.config();
 dotenv.config({ path: path.resolve(process.cwd(), '../../.env') });
@@ -91,6 +92,33 @@ export function createApp(): Express {
   app.use('/api/v1/almanac', almanacRouter);
   app.use('/api/v1/habits', habitsRouter);
   app.use('/api/v1/simulator', simulatorRouter);
+
+  // 託管前端 SPA 靜態檔案 (支援單一容器一體化部署 Port 5499)
+  const clientDistCandidates = [
+    process.env.WEB_DIST_PATH,
+    path.resolve(process.cwd(), 'public'),
+    path.resolve(process.cwd(), '../web/dist'),
+    path.resolve(process.cwd(), 'apps/web/dist'),
+    path.resolve(process.cwd(), '../../apps/web/dist'),
+  ].filter(Boolean) as string[];
+
+  const resolvedDist = clientDistCandidates.find(
+    (dir) => fs.existsSync(dir) && fs.existsSync(path.join(dir, 'index.html'))
+  );
+
+  if (resolvedDist) {
+    app.use(express.static(resolvedDist));
+    app.get('*', (req: Request, res: Response, next: NextFunction) => {
+      if (req.path.startsWith('/api') || req.path === '/health') {
+        return next();
+      }
+      // 若請求包含副檔名 (如 .js, .css, .png 等靜態資源) 且未被 express.static 命中，不回退 index.html
+      if (path.extname(req.path)) {
+        return next();
+      }
+      return res.sendFile(path.join(resolvedDist, 'index.html'));
+    });
+  }
 
   // 404 路由攔截
   app.use((_req: Request, res: Response) => {

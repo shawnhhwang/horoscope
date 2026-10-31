@@ -1,15 +1,16 @@
 version: '3.8'
 
 services:
-  # 1. Node.js 後端 API 服務
-  server:
+  # 萬象天儀 (CelestialDao) 全端一體化服務
+  # 單一服務啟動，單一對外連接埠 5499 (整合 Vue 3 前端 SPA、Node.js Express API 與 SQLite 持久層)
+  app:
     build:
       context: .
       dockerfile: deploy/docker/Dockerfile.server
-    container_name: celestial-api-server
+    container_name: celestial-app
     restart: always
     environment:
-      PORT: 5498
+      PORT: 5499
       HOST: 0.0.0.0
       NODE_ENV: production
       DATABASE_URL: ${DATABASE_URL:-file:/app/packages/database/prisma/dev.db}
@@ -17,29 +18,9 @@ services:
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
       DEMO_MODE: ${DEMO_MODE:-false}
     ports:
-      - "5498:5498"
+      - "5499:5499"
     volumes:
       - celestial_data:/app/packages/database/prisma
-    networks:
-      - celestial-network
-
-  # 2. 前端展示網站 (Vue 3 + Three.js + Nginx)
-  web:
-    build:
-      context: .
-      dockerfile: deploy/docker/Dockerfile.web
-    container_name: celestial-web-client
-    restart: always
-    ports:
-      - "5499:80"
-    depends_on:
-      - server
-    networks:
-      - celestial-network
 
 volumes:
   celestial_data:
-
-networks:
-  celestial-network:
-    driver: bridge

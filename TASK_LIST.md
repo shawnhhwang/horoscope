@@ -661,6 +661,14 @@
     - 修復 `apps/server/src/modules/simulator/router.ts` 中 `femaleFriends` 型別推導問題，確保 `pnpm -r build` (tsc) 0 報錯。
   - **驗證方式**：純淨隔離目錄驗證 `astro-core` 編譯成功，全專案 97 項測試全綠，`pnpm -r build` 0 錯誤。
 
+- [x] **Task 24.18: Docker 全端一體化單一服務與單一對外連接埠 5499 重構 (Single All-In-One Container on Port 5499)**
+  - **範圍**：
+    - 在 `apps/server/src/app.ts` 內嵌前端 SPA 靜態託管 (`express.static`) 與 Vue Router HTML5 歷史路由回退 (`get('*')`)，自動支援同源 API 與 SPA 頁面直達。
+    - 重新編排 `deploy/docker/Dockerfile.server` 與根目錄 `Dockerfile` 為全端一體化映像檔：在單一多階段構建中編譯 core、database、web、server，並將 `apps/web/dist` 打包進 `/app/public`。
+    - 精簡 `docker-compose.yml` 為單一服務 `celestial-app`，對外僅暴露單一連接埠 `5499:5499`，徹底省去獨立 Nginx 容器與多容器通訊負擔。
+    - 編寫 API 與 SPA 路由專項整合測試（涵蓋首頁 `/`、SPA 路由 `/bazi` 與 404 JSON 邊界隔離）。
+  - **驗證方式**：單元測試 30/30、後端整合測試 70/70，全專案 100 項測試 100% 綠燈，`pnpm -r build` 0 錯誤。
+
 ---
 
 ## 多步驟檢核點規範 (Rule 10 Checkpoint Protocol)

@@ -204,25 +204,29 @@ pnpm dev:web
 
 ---
 
-## 🐳 Docker 一鍵部署 (Docker Compose Deployment)
+## 🐳 Docker 一鍵部署 (Docker Deployment - 單一服務 5499 直達)
 
-本專案支援一鍵完整容器化部署，包含 Node API Server (Port 5498)、Web Nginx 前端與整合後台 (Port 5499)。已完全停用並移除獨立的 3001 連接埠服務與未授權的 Redis 服務。
+本專案支援一鍵全端一體化容器部署，僅需啟動 **單一容器服務**，對外僅需暴露 **單一連接埠 5499**（整合 Vue 3 前端、Admin 管理後台、Node.js Express API 與 SQLite 持久層）。
 
 ```bash
 # 1. 複製環境變數範本
 cp .env.example .env
 
-# 2. 一鍵構建並背景啟動所有容器
+# 2. 一鍵構建並啟動單一全端服務 (Port 5499)
 docker compose up --build -d
 
-# 3. 檢查容器健康狀態
+# 或直接使用標準 Docker 指令單容器運行：
+# docker build -t celestial-app .
+# docker run -d -p 5499:5499 -v celestial_data:/app/packages/database/prisma --name celestial-app celestial-app
+
+# 3. 檢查容器狀態
 docker compose ps
 ```
 
-服務端點預設對應：
-*   **前端展示與管理後台 (Web & Admin Portal)**: [http://localhost:5499](http://localhost:5499) （點擊右上角頭像或後台按鈕進入 `/admin`）
-*   **後端 API 服務 (API Server)**: [http://localhost:5498](http://localhost:5498)
-*   **健康檢查 (Health Check)**: [http://localhost:5498/health](http://localhost:5498/health)
+服務端點對應：
+*   **全站首頁與管理後台 (Web & Admin Portal)**: [http://localhost:5499](http://localhost:5499)
+*   **後端 API 與健康檢查 (API & Health Check)**: [http://localhost:5499/health](http://localhost:5499/health)
+*   所有前端頁面與 `/api/v1/*` 請求皆整合於 **Port 5499** 單一端點，同源無跨域延遲，亦無須配置額外 Nginx 反向代理。
 
 ---
 
