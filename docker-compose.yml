@@ -2,11 +2,11 @@ version: '3.8'
 
 services:
   # 萬象天儀 (CelestialDao) 全端一體化服務
-  # 單一服務啟動，單一對外連接埠 5499 (整合 Vue 3 前端 SPA、Node.js Express API 與 SQLite 持久層)
+  # 單一 Docker 容器，內部同時包含 WEB (Vue 3 前端) 與 API (Node.js Express 後端)
   app:
     build:
       context: .
-      dockerfile: deploy/docker/Dockerfile.server
+      dockerfile: Dockerfile
     container_name: celestial-app
     restart: always
     environment:
