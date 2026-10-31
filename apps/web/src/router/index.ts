@@ -12,9 +12,13 @@ import AlmanacView from '../views/AlmanacView.vue';
 import SynastryView from '../views/SynastryView.vue';
 import AnnualPlannerView from '../views/AnnualPlannerView.vue';
 import LifeSimulatorView from '../views/LifeSimulatorView.vue';
+import UserManualView from '../views/UserManualView.vue';
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
+  { path: '/guide', name: 'guide', component: UserManualView },
+  { path: '/manual', redirect: '/guide' },
+  { path: '/user-manual', redirect: '/guide' },
   { path: '/ziwei', name: 'ziwei', component: ZiweiView },
   { path: '/bazi', name: 'bazi', component: BaziView },
   { path: '/simulator', name: 'simulator', component: LifeSimulatorView },

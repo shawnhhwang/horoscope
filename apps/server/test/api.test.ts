@@ -670,13 +670,15 @@ describe('🚀 萬象天儀 後端 API 服務整合測試', () => {
     });
 
     it('攜帶其他會員 token 嘗試存取他人之推演 Session 應被阻擋 403 (IDOR 防護)', async () => {
-      // 註冊第二位會員
+      // 註冊第二位會員 (使用動態 email 避免唯一約束衝突)
+      const attackerEmail = `attacker_${Date.now()}_${Math.random().toString(36).substring(7)}@celestial.dao`;
       const user2Res = await request(app).post('/api/v1/auth/register').send({
-        email: 'user2_attacker@celestial.dao',
+        email: attackerEmail,
         password: 'Password123!',
         displayName: '未授權存取測試員',
       });
-      const user2Token = user2Res.body.data.token;
+      const user2Token = user2Res.body?.data?.token;
+      expect(user2Token).toBeDefined();
 
       // 嘗試跨帳號操作他人之 session
       const attackRes = await request(app)

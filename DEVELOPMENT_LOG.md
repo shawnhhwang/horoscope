@@ -856,3 +856,35 @@
   - 前端與後台生產構建：`pnpm --filter @celestial/web build` 與 `pnpm --filter @celestial/admin build` 狀態碼 0，編譯無錯誤。
 - **剩餘事項 (Remaining)**：
   - Git Commit 並 Push 至遠端 GitHub 儲存庫。
+
+---
+
+### 檢核點回報: Phase 29 (超詳細使用者說明手冊、網站連結指南與命理明師智能問診導航顧問)
+- **當前任務**：Task 24.15 (1. 建立超詳細使用者說明手冊並放入網站連結指南；AGENT 提供情境導航詢問功能；2. AGENT 問答符合一般人去詢問算命老師考量的情境)
+- **已完成事項 (Completed)**：
+  - **1. 根目錄超詳細全系統使用手冊 (`USER_MANUAL.md`)**：
+    - 編寫完整手冊，包含系統全景、14 條完整網站連結指南（支援預設 Port 5499 與相對路徑）、10 大一般人求測算命常見情境對策決策表、12 大占卜模組極詳細操作步驟（輸入、介面導覽、演算法核心與產出解讀）、天機靈犀問診 Agent 指南、命盤保險庫與 CMS 後台。
+  - **2. 前端線上使用手冊與情境指南頁面 (`apps/web/src/views/UserManualView.vue` & `/guide`)**：
+    - 打造包含三大頁籤之美學互動指南：
+      1. `情境問診指南`：8 大算命常見生活情境（轉職、合婚、二選一、起名、一生全景、今日擇吉、家宅風水、年度行運），附帶算命明師心法金句、推薦功能標籤、準備資料清單與一鍵直達按鈕。
+      2. `網站連結指南`：14 大功能路徑完整矩陣表格，含模組類別、路由、功能特色與快速前往按鈕。
+      3. `詳細功能手冊`：12 大功能模組摺疊式操作指引，清晰呈現輸入說明、視覺亮點與易理核心。
+    - 路由註冊 `/guide`、`/manual`、`/user-manual`。
+  - **3. 後端天機靈犀 LLM 智能問診與算命情境導航升級 (`apps/server/src/modules/llm/service.ts`)**：
+    - 升級未附帶特定盤面時之預設角色為「萬象天儀·天機靈犀 命理明師智能問診與需求導航顧問 (Grandmaster Scenario Navigator)」，具備深厚閱歷、客觀同理心、溫暖且條理清晰之現代算命名師口吻，絕不使用江湖術士嚇唬或神仙道士自稱，嚴守「人事與空間努力大於天命 (2/3 > 1/3)」與「知果修因」心法。
+    - 實作 `generateScenarioConsultationGuide` 智慧分析用戶現實困擾（事業轉職、婚姻情感、二選一抉擇、命名起名、百歲人生、每日黃曆擇吉、家庭空間、年度起居、心靈占星與全站導覽），精準診斷問題維度並推薦 1~2 項最佳功能模組，生成 Markdown 站內連結（如 `[四柱八字](/bazi)`），並明確提示排盤前需準備的資料。
+  - **4. 前端天機靈犀抽屜視窗體驗升級 (`apps/web/src/components/ai/LlmAssistantModal.vue` & `useLlmStore`)**：
+    - 導入 `renderSafeMarkdown` 與 DOMPurify 安全消毒，讓 Agent 產生的 Markdown 標題、粗體、清單與超連結完美渲染。
+    - 實作內部連結點擊攔截事件代理 (`handleChatClick`)，當使用者點擊 Agent 推薦之站內連結時，以 `router.push(path)` 立即平滑導航至目標功能頁面並自動關閉抽屜。
+    - 抽屜頂部標題列新增直達 `📖 使用指南` 之快捷按鈕。
+    - 升級快捷問句建議為 7 項現代人最常找算命老師諮詢的情境問題；更新迎賓訊息引導使用者表達現實困境。
+  - **5. 全局導航與頁尾整合 (`Navbar.vue` & `App.vue`)**：
+    - 頂部導航列快速按鈕區與橫向功能列皆新增「📖 使用指南」。
+    - 頁尾新增「📖 使用手冊指南」直達連結。
+- **已驗證事項 (Verified)**：
+  - 核心演算法庫意圖測試：`pnpm --filter @celestial/astro-core test` ➔ 30/30 測試全數通過 (100% Pass)。
+  - 後端 API 與整合測試：`pnpm --filter @celestial/server test` ➔ 66/66 測試全數通過 (100% Pass，含 IDOR 防護、Fail-Closed 與 LLM 智慧導航)。
+  - 全專案 96 項測試全部綠燈通過。
+  - 前端與後台生產構建：`pnpm --filter @celestial/web build` 與 `pnpm --filter @celestial/admin build` 狀態碼 0，成功構建。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。

@@ -18,6 +18,7 @@
 | **Phase 6** | **全端整合驗證與生產發布 (Production Readiness)** | E2E 測試、Lighthouse > 95、部署驗收 | 3 步驟 |
 | **Phase 23** | **流年生活行運曆、起居習慣日記與 AI 規劃** | 十二流月曆、起居 CRUD、五行諧振評分、年度生活規劃書 | 5 步驟 |
 | **Phase 24** | **百歲流年·人生推演模擬器 (0-100 BaZi Life Odyssey)** | 0~100歲流年骨幹、五維屬性規則、台灣時代大事紀擬真、雙軌推進、LLM 抉擇、一生蓋棺論定 | 7 步驟 |
+| **Phase 29** | **超詳細使用者說明手冊、網站連結指南與命理明師智能問診導航** | 完整使用手冊 (USER_MANUAL.md)、全站情境指南 View (/guide)、AI 明師情境問診、Markdown 站內跳轉 | 5 步驟 |
 
 ---
 
@@ -616,6 +617,26 @@
       - 配置 `proxy_connect_timeout 60s; proxy_send_timeout 200s; proxy_read_timeout 200s;`，杜絕 Docker 環境下 60 秒 504 Gateway Timeout。
       - 在 `gzip_types` 補上現代 `application/javascript`。
   - **驗證方式**：astro-core 30/30 單元測試全數通過，server 66/66 整合測試全數通過（含 IDOR 與 Fail-Closed 專項意圖測試），web 與 admin 生產構建 0 錯誤。
+
+- [x] **Task 24.15: 超詳細使用者手冊、全站連結指南與命理明師智能問診導航顧問 (User Manual, Links Directory & Grandmaster Fortune-Telling Scenario Navigator)**
+  - **範圍**：
+    - **1. 根目錄超詳細使用者說明手冊 (`USER_MANUAL.md`)**：
+      - 撰寫全系統 12 大命理功能詳細手冊，包含系統架構、完整網站路由與輸入輸出參數（Port 5499）、10 大算命常見情境對策決策矩陣、保險庫與 CMS 後台。
+    - **2. 前端線上使用手冊與情境指南頁面 (`apps/web/src/views/UserManualView.vue` & `/guide`)**：
+      - 實作三合一互動式指南：① 8 大現代算命情境卡片（明師金句、推薦功能、排盤準備清單與立即前往按鈕）；② 14 大路由完整網址目錄表格（含功能、路徑與特色）；③ 12 大功能模組摺疊式操作詳細指南。
+      - 註冊路由 `/guide`、`/manual`、`/user-manual`。
+    - **3. 後端天機靈犀 LLM 智能問診與算命情境導航升級 (`apps/server/src/modules/llm/service.ts`)**：
+      - 升級預設角色為「萬象天儀·天機靈犀 命理明師智能問診與需求導航顧問 (Grandmaster Scenario Navigator)」，以深具同理心、溫暖、客觀且條理分明的現代明師口吻問診。
+      - 實作 `generateScenarioConsultationGuide` 涵蓋 10 大人生情境（職場轉職、婚戀合婚、二選一決策、新生兒命名、流年回顧、每日擇吉、家庭空間、生活行運、心理原型、系統導航），並輸出結構化解答與可點擊之 Markdown 站內跳轉連結（如 `[四柱八字](/bazi)`）。
+    - **4. 前端天機靈犀抽屜視窗體驗升級 (`apps/web/src/components/ai/LlmAssistantModal.vue` & `useLlmStore`)**：
+      - 導入 `renderSafeMarkdown` 與 DOMPurify 安全消毒渲染 HTML。
+      - 實作內部連結點擊攔截事件代理 (`handleChatClick`)，點擊推薦功能連結時透過 `router.push(path)` 立即平滑切換路由並自動關閉抽屜。
+      - 快捷問句建議升級為常見算命問診諮詢情境；抽屜頂部標題列增設直通 `📖 使用指南` 按鈕。
+      - 升級迎賓訊息，引導使用者描述生活情境或查閱指南手冊。
+    - **5. 頂部導航列與頁尾連結整合 (`Navbar.vue` & `App.vue`)**：
+      - 頂部導航列快捷列與橫向占卜功能列同步新增「📖 使用指南」。
+      - 頁尾增設「📖 使用手冊指南」直達連結。
+  - **驗證方式**：astro-core 30/30 單元測試全數通過，server 66/66 整合測試全數通過，web 與 admin 生產構建 0 錯誤。
 
 ---
 

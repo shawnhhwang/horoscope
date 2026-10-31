@@ -36,13 +36,25 @@
             </div>
           </div>
 
-          <button
-            @click="llmStore.closeAssistant"
-            class="p-2 rounded-full border border-dark-gold/20 hover:border-dark-gold hover:bg-dark-gold/10 transition-colors text-dark-muted hover:text-dark-text"
-            title="關閉顧問視窗"
-          >
-            ✕
-          </button>
+          <div class="flex items-center space-x-2">
+            <router-link
+              to="/guide"
+              @click="llmStore.closeAssistant"
+              class="px-2.5 py-1 rounded-full border border-dark-gold/30 hover:border-dark-gold bg-dark-gold/10 text-dark-gold text-[11px] transition-colors flex items-center space-x-1"
+              title="開啟全站功能使用指南與情境目錄"
+            >
+              <span>📖</span>
+              <span class="hidden sm:inline">使用指南</span>
+            </router-link>
+
+            <button
+              @click="llmStore.closeAssistant"
+              class="p-2 rounded-full border border-dark-gold/20 hover:border-dark-gold hover:bg-dark-gold/10 transition-colors text-dark-muted hover:text-dark-text"
+              title="關閉顧問視窗"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
         <!-- 當前引用星盤情境 (Context Badge) -->
@@ -69,7 +81,7 @@
         </div>
 
         <!-- 對話記錄區 -->
-        <div ref="chatContainer" class="flex-1 overflow-y-auto p-5 space-y-4 text-xs leading-relaxed">
+        <div ref="chatContainer" @click="handleChatClick" class="flex-1 overflow-y-auto p-5 space-y-4 text-xs leading-relaxed">
           <div
             v-for="msg in llmStore.messages"
             :key="msg.id"
@@ -84,15 +96,16 @@
 
             <!-- 訊息本體 -->
             <div
-              :class="
-                msg.role === 'user'
-                  ? 'bg-dark-gold/20 text-dark-text border border-dark-gold/40 rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[85%]'
-                  : 'bg-black/30 dark:bg-black/30 light:bg-white/60 text-dark-text dark:text-dark-text light:text-light-text border border-dark-gold/15 dark:border-dark-gold/15 light:border-light-bronze/20 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[92%] shadow-sm'
-              "
-              class="whitespace-pre-wrap font-serif"
+              v-if="msg.role === 'user'"
+              class="bg-dark-gold/20 text-dark-text border border-dark-gold/40 rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[85%] whitespace-pre-wrap font-serif"
             >
               {{ msg.content }}
             </div>
+            <div
+              v-else
+              class="bg-black/30 dark:bg-black/30 light:bg-white/60 text-dark-text dark:text-dark-text light:text-light-text border border-dark-gold/15 dark:border-dark-gold/15 light:border-light-bronze/20 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[92%] shadow-sm font-serif markdown-content"
+              v-html="renderSafeMarkdown(msg.content)"
+            ></div>
           </div>
 
           <!-- 🔮 生成中即時思考動畫與秒數計時器 -->
@@ -157,8 +170,11 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useLlmStore } from '../../stores/llm.js';
+import { renderSafeMarkdown } from '../../utils/sanitize.js';
 
+const router = useRouter();
 const llmStore = useLlmStore();
 
 onMounted(() => {
@@ -179,6 +195,17 @@ function moduleName(type: string): string {
   return map[type] || type;
 }
 
+function handleChatClick(event: MouseEvent) {
+  const target = (event.target as HTMLElement).closest('a');
+  if (!target) return;
+  const href = target.getAttribute('href');
+  if (href && href.startsWith('/')) {
+    event.preventDefault();
+    router.push(href);
+    llmStore.closeAssistant();
+  }
+}
+
 const suggestedPrompts = computed(() => {
   if (llmStore.activeContext) {
     switch (llmStore.activeContext.moduleType) {
@@ -197,10 +224,13 @@ const suggestedPrompts = computed(() => {
     }
   }
   return [
-    '🌟 什麼是紫微斗數中的四化星？',
-    '☯️ 如何判斷八字身強身弱與喜用神？',
-    '🔮 周易六爻卜卦的動爻變卦代表什麼？',
-    '🌙 月亮星座與上升星座對性格有何不同影響？',
+    '💼 我目前面臨轉職與職場瓶頸，該用哪些功能測算？',
+    '💕 想知道跟另一半八字合不合、彼此適不適合結婚？',
+    '🧭 人生面臨重大二選一抉擇，該求測哪種占卜？',
+    '👶 剛迎接新生兒，想結合八字喜用神進行起名命名',
+    '⏳ 想回顧自己一生命運流年、健康、財富與感情起伏',
+    '📅 今天出門洽談簽約，想查看今日黃曆吉凶宜忌',
+    '📖 萬象天儀有哪些功能？請為我導覽全站使用指南',
   ];
 });
 
@@ -252,5 +282,81 @@ watch(
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* 訊息 Markdown 樣式排版 */
+:deep(.markdown-content h1),
+:deep(.markdown-content h2),
+:deep(.markdown-content h3),
+:deep(.markdown-content h4) {
+  color: #d4af37;
+  font-weight: 700;
+  margin-top: 0.75rem;
+  margin-bottom: 0.4rem;
+  line-height: 1.35;
+}
+:deep(.markdown-content h2) {
+  font-size: 1.05rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+  padding-bottom: 0.3rem;
+}
+:deep(.markdown-content h3) {
+  font-size: 0.95rem;
+}
+:deep(.markdown-content p) {
+  margin-bottom: 0.5rem;
+}
+:deep(.markdown-content p:last-child) {
+  margin-bottom: 0;
+}
+:deep(.markdown-content ul) {
+  list-style-type: disc;
+  margin-left: 1.25rem;
+  margin-top: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+:deep(.markdown-content ol) {
+  list-style-type: decimal;
+  margin-left: 1.25rem;
+  margin-top: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+:deep(.markdown-content li) {
+  margin-bottom: 0.25rem;
+}
+:deep(.markdown-content strong) {
+  color: #f6e05e;
+  font-weight: 600;
+}
+:deep(.markdown-content hr) {
+  border: 0;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  margin: 0.75rem 0;
+}
+:deep(.markdown-content blockquote) {
+  border-left: 3px solid #d4af37;
+  padding-left: 0.75rem;
+  font-style: italic;
+  margin: 0.5rem 0;
+  color: rgba(212, 175, 55, 0.9);
+  background: rgba(212, 175, 55, 0.08);
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+  border-radius: 0 4px 4px 0;
+}
+:deep(.markdown-content a) {
+  color: #d4af37;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 600;
+  transition: all 0.2s;
+  cursor: pointer;
+  display: inline-block;
+  padding: 0 2px;
+}
+:deep(.markdown-content a:hover) {
+  color: #fef08a;
+  background-color: rgba(212, 175, 55, 0.15);
+  border-radius: 4px;
 }
 </style>

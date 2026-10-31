@@ -26,9 +26,22 @@
             <span class="font-serif text-dark-gold font-bold">萬象天儀</span>
             <span>· Astraea CelestialDao</span>
           </div>
-          <p class="font-serif text-[11px]">
-            以 Awwwards / Webby Awards / FWA Site of the Day 得獎標準精雕細琢
-          </p>
+          <div class="flex flex-wrap items-center justify-center gap-3 text-xs font-serif text-dark-muted">
+            <router-link to="/guide" class="hover:text-dark-gold transition-colors flex items-center space-x-1">
+              <span>📖</span>
+              <span>使用手冊指南</span>
+            </router-link>
+            <span>·</span>
+            <router-link to="/vault" class="hover:text-dark-gold transition-colors flex items-center space-x-1">
+              <span>🏛️</span>
+              <span>命盤檔案庫</span>
+            </router-link>
+            <span>·</span>
+            <router-link to="/admin/dashboard" class="hover:text-dark-gold transition-colors flex items-center space-x-1">
+              <span>⚙️</span>
+              <span>後台管理</span>
+            </router-link>
+          </div>
           <p class="text-[11px]">© 2026 萬象天儀 版權所有 · 探究天地人三才至理</p>
         </div>
         <div class="text-[10px] text-dark-muted/80 leading-relaxed max-w-4xl text-center">

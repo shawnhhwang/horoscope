@@ -48,6 +48,16 @@
           </span>
         </button>
 
+        <!-- 📖 使用指南手冊快捷入口 -->
+        <router-link
+          to="/guide"
+          class="flex items-center space-x-1 px-2 sm:px-2.5 py-1.5 rounded-full text-[11px] font-serif tracking-wider glass-panel border border-dark-gold/40 hover:border-dark-gold text-dark-gold transition-all shadow-sm group"
+          title="開啟萬象天儀全系統使用手冊與情境指南"
+        >
+          <span class="text-xs group-hover:scale-110 transition-transform">📖</span>
+          <span class="font-bold hidden md:inline">使用指南</span>
+        </router-link>
+
         <!-- ✨ 天機靈犀 LLM 智能助手按鈕 -->
         <button
           @click="llmStore.toggleAssistant"
@@ -170,6 +180,7 @@ const divinationFeatures = [
   { path: '/western', title: '西洋星盤', icon: '♈' },
   { path: '/tarot', title: '塔羅占卜', icon: '🃏' },
   { path: '/vault', title: '命盤檔案庫', icon: '🏛️' },
+  { path: '/guide', title: '使用指南', icon: '📖' },
 ];
 </script>
 
