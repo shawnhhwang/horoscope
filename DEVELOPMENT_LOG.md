@@ -891,6 +891,30 @@
 
 ---
 
+### 檢核點回報: Phase 31 (修復 Docker 建置階段 astro-core tsup 模組找不到錯誤與 Monorepo 鎖定檔同步)
+- **當前任務**：Fix Docker build error: `Cannot find module .../tsup/dist/cli-default.js`
+- **問題根因分析 (Root Cause Analysis)**：
+  1. **`.dockerignore` 漏配子目錄萬用規則**：原 `.dockerignore` 僅撰寫 `node_modules` 與 `dist`，未能阻擋 `packages/astro-core/node_modules` 等子模組目錄。當 Docker 執行 `COPY packages/ ./packages/` 時，宿主機環境的 `node_modules/.bin/tsup` 軟連結（指向宿主機特定版本之路徑）被拷貝進容器，污染了容器內部環境。
+  2. **Dockerfile 缺少 `pnpm-lock.yaml`**：`Dockerfile.server`、`Dockerfile.web` 與 `Dockerfile.admin` 在依賴安裝階段僅複製 `package.json` 而未拷貝 `pnpm-lock.yaml`，導致容器內 `pnpm install` 浮動解析出不同依賴結構。
+  3. **後端 Router 型別邊界**：`apps/server/src/modules/simulator/router.ts` 中 `femaleFriends` 宣告型別包含 `undefined`，導致在 `pnpm -r build` (`tsc`) 時觸發 TS2345 編譯阻斷。
+- **已完成事項 (Completed)**：
+  - **1. 加固 `.dockerignore`**：
+    - 新增 `**/node_modules`、`**/dist`、`**/.turbo`、`**/.vite`、`*.tsbuildinfo`，徹底防止宿主機依賴與建置快取滲入 Docker 映像檔。
+  - **2. 修復 Dockerfile monorepo 鎖定檔複製與冰凍安裝**：
+    - [`deploy/docker/Dockerfile.server`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.server)：增加 `COPY package.json pnpm-lock.yaml ...`，安裝指令改為 `pnpm install --frozen-lockfile`。
+    - [`deploy/docker/Dockerfile.web`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.web)：增加 `pnpm-lock.yaml` 與 `--frozen-lockfile`。
+    - [`deploy/docker/Dockerfile.admin`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.admin)：增加 `pnpm-lock.yaml` 與 `--frozen-lockfile`。
+  - **3. 修復後端伺服器 TypeScript 編譯錯誤**：
+    - [`apps/server/src/modules/simulator/router.ts`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/simulator/router.ts)：將 `femaleFriends` 初始化收斂為非空陣列，消除 TS2345 報錯。
+- **已驗證事項 (Verified)**：
+  - 獨立環境模擬驗證：在純淨目錄以 `pnpm-lock.yaml` + `--frozen-lockfile` 進行建置，`packages/astro-core` 的 `tsup src/index.ts --format cjs,esm --dts` 於 1.88 秒內 100% 成功產出 CJS/ESM/DTS。
+  - 全專案單元與整合測試：`pnpm -r test` ➔ 97/97 測試 100% 綠燈通過。
+  - 全專案生產編譯構建：`pnpm -r build` ➔ 全模組（astro-core, database, server, web, admin）0 錯誤通過。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
 ### 檢核點回報: Phase 30 (女性視角「80億分之一藍顏名冊」、相遇節點強制注入與白首之約「相伴一生」決策)
 - **當前任務**：Task 24.16 (1. 女性視角專屬「80億分之一藍顏名冊」自訂生日與年歲對齊；2. 徹底修復角色未出現問題；3. 相遇節點提供選擇要不要相伴一生)
 - **已完成事項 (Completed)**：
@@ -920,5 +944,29 @@
   - 後端 API 與整合測試：`pnpm --filter @celestial/server test` ➔ 67/67 測試全數通過 (100% Pass，新增女性視角起局、藍顏名冊注入、相伴一生選項與快進平穩停駐驗證)。
   - 全專案 97 項測試 100% 綠燈通過。
   - 前端生產構建：`pnpm --filter @celestial/web build` ➔ 0 錯誤構建成功（耗時 7.58s）。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
+### 檢核點回報: Phase 31 (修復 Docker 建置階段 astro-core tsup 模組找不到錯誤與 Monorepo 鎖定檔同步)
+- **當前任務**：Fix Docker build error: `Cannot find module .../tsup/dist/cli-default.js`
+- **問題根因分析 (Root Cause Analysis)**：
+  1. **`.dockerignore` 漏配子目錄萬用規則**：原 `.dockerignore` 僅撰寫 `node_modules` 與 `dist`，未能阻擋 `packages/astro-core/node_modules` 等子模組目錄。當 Docker 執行 `COPY packages/ ./packages/` 時，宿主機環境的 `node_modules/.bin/tsup` 軟連結（指向宿主機特定版本之路徑）被拷貝進容器，污染了容器內部環境。
+  2. **Dockerfile 缺少 `pnpm-lock.yaml`**：`Dockerfile.server`、`Dockerfile.web` 與 `Dockerfile.admin` 在依賴安裝階段僅複製 `package.json` 而未拷貝 `pnpm-lock.yaml`，導致容器內 `pnpm install` 浮動解析出不同依賴結構。
+  3. **後端 Router 型別邊界**：`apps/server/src/modules/simulator/router.ts` 中 `femaleFriends` 宣告型別包含 `undefined`，導致在 `pnpm -r build` (`tsc`) 時觸發 TS2345 編譯阻斷。
+- **已完成事項 (Completed)**：
+  - **1. 加固 `.dockerignore`**：
+    - 新增 `**/node_modules`、`**/dist`、`**/.turbo`、`**/.vite`、`*.tsbuildinfo`，徹底防止宿主機依賴與建置快取滲入 Docker 映像檔。
+  - **2. 修復 Dockerfile monorepo 鎖定檔複製與冰凍安裝**：
+    - [`deploy/docker/Dockerfile.server`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.server)：增加 `COPY package.json pnpm-lock.yaml ...`，安裝指令改為 `pnpm install --frozen-lockfile`。
+    - [`deploy/docker/Dockerfile.web`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.web)：增加 `pnpm-lock.yaml` 與 `--frozen-lockfile`。
+    - [`deploy/docker/Dockerfile.admin`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.admin)：增加 `pnpm-lock.yaml` 與 `--frozen-lockfile`。
+  - **3. 修復後端伺服器 TypeScript 編譯錯誤**：
+    - [`apps/server/src/modules/simulator/router.ts`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/simulator/router.ts)：將 `femaleFriends` 初始化收斂為非空陣列，消除 TS2345 報錯。
+- **已驗證事項 (Verified)**：
+  - 獨立環境模擬驗證：在純淨目錄以 `pnpm-lock.yaml` + `--frozen-lockfile` 進行建置，`packages/astro-core` 的 `tsup src/index.ts --format cjs,esm --dts` 於 1.88 秒內 100% 成功產出 CJS/ESM/DTS。
+  - 全專案單元與整合測試：`pnpm -r test` ➔ 97/97 測試 100% 綠燈通過。
+  - 全專案生產編譯構建：`pnpm -r build` ➔ 全模組（astro-core, database, server, web, admin）0 錯誤通過。
 - **剩餘事項 (Remaining)**：
   - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。

@@ -441,12 +441,9 @@ simulatorRouter.post('/turn/choose', async (req: Request, res: Response) => {
     );
 
     // 若為知己盲盒選項，更新羈絆值與因緣狀態 (包含相伴一生抉擇)
-    let femaleFriends: FemaleFriendProfile[] | undefined = undefined;
-    if (record.femaleFriendsJson) {
-      femaleFriends = JSON.parse(record.femaleFriendsJson);
-    } else {
-      femaleFriends = getInitialRomanceFriends(record.gender as '男' | '女', record.birthDatetime);
-    }
+    let femaleFriends: FemaleFriendProfile[] = record.femaleFriendsJson
+      ? JSON.parse(record.femaleFriendsJson)
+      : getInitialRomanceFriends(record.gender as '男' | '女', record.birthDatetime);
 
     if (
       chosenOption &&

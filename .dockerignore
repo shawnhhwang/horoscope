@@ -1,8 +1,15 @@
 node_modules
+**/node_modules
 dist
+**/dist
 .git
 *.log
 .DS_Store
 coverage
 .npm
 dev.db-journal
+.turbo
+**/.turbo
+.vite
+**/.vite
+*.tsbuildinfo

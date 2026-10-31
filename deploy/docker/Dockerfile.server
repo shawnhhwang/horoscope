@@ -12,13 +12,13 @@ FROM base AS builder
 WORKDIR /app
 
 # 複製 monorepo 配置與各模組 package.json 以善用 Docker 快取
-COPY package.json pnpm-workspace.yaml tsconfig.json .npmrc ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json .npmrc ./
 COPY packages/astro-core/package.json ./packages/astro-core/
 COPY packages/database/package.json ./packages/database/
 COPY apps/server/package.json ./apps/server/
 
-# 安裝依賴 (允許原生腳本)
-RUN pnpm approve-builds --all && pnpm install
+# 安裝依賴 (允許原生腳本並嚴格遵照鎖定檔)
+RUN pnpm approve-builds --all && pnpm install --frozen-lockfile
 
 # 複製各模組源碼
 COPY packages/ ./packages/

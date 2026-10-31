@@ -3,11 +3,11 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 RUN npm install -g pnpm@12.14.0
 
-COPY package.json pnpm-workspace.yaml tsconfig.json .npmrc ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json .npmrc ./
 COPY packages/astro-core/package.json ./packages/astro-core/
 COPY apps/web/package.json ./apps/web/
 
-RUN pnpm approve-builds --all && pnpm install
+RUN pnpm approve-builds --all && pnpm install --frozen-lockfile
 
 COPY packages/astro-core ./packages/astro-core
 COPY apps/web ./apps/web

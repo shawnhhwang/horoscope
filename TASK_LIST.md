@@ -654,6 +654,13 @@
       - 在終局「80億分之一的遊戲」大揭曉中標記為白首眷侶，男女視角對稱適配。
   - **驗證方式**：astro-core 30/30 單元測試全數通過，server 67/67 整合測試全數通過，web 生產構建 0 錯誤。
 
+- [x] **Task 24.17: 修復 Docker 容器構建 phase 依賴丟失與 monorepo 鎖定檔同步 (Docker Build Lockfile & Ignore Hardening)**
+  - **範圍**：
+    - 修復 `.dockerignore` 漏擋 `**/node_modules` 與 `**/dist`，杜絕宿主機 binary/shim 滲入 Alpine 容器。
+    - 在 `Dockerfile.server`、`Dockerfile.web`、`Dockerfile.admin` 加入 `pnpm-lock.yaml` 複製並採用 `pnpm install --frozen-lockfile` 確保依賴確定性。
+    - 修復 `apps/server/src/modules/simulator/router.ts` 中 `femaleFriends` 型別推導問題，確保 `pnpm -r build` (tsc) 0 報錯。
+  - **驗證方式**：純淨隔離目錄驗證 `astro-core` 編譯成功，全專案 97 項測試全綠，`pnpm -r build` 0 錯誤。
+
 ---
 
 ## 多步驟檢核點規範 (Rule 10 Checkpoint Protocol)
