@@ -891,54 +891,38 @@
 
 ---
 
-### 檢核點回報: Phase 32 (Docker 全端一體化單一服務與單一對外連接埠 5499 重構)
-- **當前任務**：Task 24.18 (支援 Docker 僅暴露單一 5499 端點，打包後僅需啟動單一服務)
-- **架構優勢與決策 (Architecture & Simplicity - Rule 1 & Rule 2)**：
-  - **單一對外連接埠 (Port 5499)**：不再額外開啟 5498，使用者只需訪問 `http://localhost:5499` 即可同時獲得 Vue 3 前端 SPA、管理後台與後端 API。
-  - **單一服務容器 (Single All-In-One Container)**：省去 Nginx 反向代理容器與跨容器網路依賴，由 Node.js Express 原生高效託管前端靜態檔案並提供 SPA 歷史路由回退，同源請求徹底免除 CORS 跨域開銷。
+### 檢核點回報: Phase 33 (核心排盤與抽牌確定性防線：程式庫精密計算與隨機抽牌，嚴禁 AI 擅自推演)
+- **當前任務**：
+  1. 確保八字四柱和紫微十二宮都由程式庫邏輯排，不讓 AI 自己排。
+  2. 塔羅牌 78 張牌義、6 種牌陣，抽牌由程式隨機進行，不由 AI 進行。
+- **架構設計與核心原則 (Rule 5 任務拆分 & 確定性防線)**：
+  - **確定性決策 (程式碼處理)**：
+    - 八字四柱：年月日時柱干支、地支藏干、十神、納音、大運、五行定量分析由 `@celestial/astro-core` 嚴密計算。
+    - 紫微斗數：命身宮、五行局、十二宮干支、十四主星廟旺平陷、六吉六煞輔曜、生年四化動能由 `@celestial/astro-core` 嚴密安星排定。
+    - 塔羅占卜：78 張經典韋特牌義獨立完整定義、6 大經典牌陣（單張、時間之流、聖三角、二選一、六芒星、塞爾特十字）之抽牌與正逆位由底層程式 Fisher-Yates 隨機洗牌演算法客觀抽出。
+  - **人文詮釋與諮詢 (AI 處理)**：
+    - AI 是「解盤諮詢師與心理引導者」，絕非「排盤計算器或抽牌發牌機」。
+    - 嚴禁 AI 在回覆中自行起盤、推演干支、安星曜或憑空捏造抽出的牌卡。
+    - 求測者未附帶排盤上下文要求算命時，AI 主動拒絕自排並明確導引至程式庫專屬功能頁面（`/bazi`、`/ziwei`、`/tarot`）。
 - **已完成事項 (Completed)**：
-  - **1. Express 前端 SPA 託管與路由回退 (`apps/server/src/app.ts`)**：
-    - 引入 `fs` 與 `express.static`，動態偵測前端編譯目錄候選路徑（`WEB_DIST_PATH`、`/app/public`、`apps/web/dist`）。
-    - 實作 SPA HTML5 歷史路由回退：非 `/api/` 且非靜態副檔名之請求一律安全回傳 `index.html`，既有 API 404 保持 JSON 隔離。
-  - **2. 全端一體化 Docker 映像檔 (`deploy/docker/Dockerfile.server` & `Dockerfile`)**：
-    - 在 Builder 階段同步編譯 `astro-core`、`database`、`apps/web` 與 `apps/server`。
-    - 將 `apps/web/dist` 打包拷貝至 Runner 階段之 `/app/public`。
-    - 預設環境變數配置 `ENV PORT=5499`，`EXPOSE 5499`。
-    - 新增根目錄 [`Dockerfile`](file:///home/coder/Codebase/Horoscope/Dockerfile)，支援標準 `docker build -t celestial-app .` 單指令打包。
-  - **3. 精簡 `docker-compose.yml`**：
-    - 移除原 `web` (Nginx) 服務與獨立 bridge 網路，簡化為單一 `celestial-app` 服務，對外映射僅 `"5499:5499"`，保留 `celestial_data` 資料庫磁碟卷。
-  - **4. 意圖測試覆蓋 (`apps/server/test/api.test.ts`)**：
-    - 新增 `GET /` 首頁回傳 SPA HTML 驗證。
-    - 新增 `GET /bazi` SPA 路由回退驗證。
-    - 新增 `GET /api/v1/unknown-endpoint` API 404 JSON 邊界隔離驗證。
-  - **5. 文檔與後台同步**：
-    - 更新 [`README.md`](file:///home/coder/Codebase/Horoscope/README.md)、[`USER_MANUAL.md`](file:///home/coder/Codebase/Horoscope/USER_MANUAL.md)、[`DashboardView.vue`](file:///home/coder/Codebase/Horoscope/apps/web/src/views/admin/DashboardView.vue)。
+  - **1. 56 張小阿爾克那深度獨立牌義庫 (`packages/astro-core/src/tarot/minor-arcana.ts`)**：
+    - 完整收錄權杖 (14張)、聖杯 (14張)、寶劍 (14張)、星幣 (14張) 之正位與逆位牌意。
+    - 每張牌均具備獨立且深度的關鍵詞 (keywords)、整體概論 (overview)、愛情指引 (love) 與事業決策 (career)，徹底告別模板佔位符。
+  - **2. 擴充至 6 大經典牌陣與隨機抽牌演算法 (`packages/astro-core/src/tarot/deck.ts` & `TarotView.vue`)**：
+    - 支援 6 種牌陣：每日神諭單張 (1張)、時間之流三張牌 (3張)、身心靈聖三角 (3張)、二選一抉擇牌陣 (5張)、六芒星全方位吉凶牌陣 (7張)、經典塞爾特十字牌陣 (10張)。
+    - `drawTarotSpread` 嚴格由程式 Fisher-Yates 隨機洗牌演算抽卡並計算 35% 逆位機率，前端與後端保持完全確定性與隨機性。
+  - **3. 後端 LLM 服務排盤抽牌鐵律提示詞工程 (`apps/server/src/modules/llm/service.ts`)**：
+    - 更新 `DEFAULT_LLM_CONFIG.systemPrompt` 與各模組角色 Persona（ZIWEI, BAZI, TAROT），注入不可逾越的【排盤與抽牌確定性鐵律】。
+    - 實作 `formatDeterministicChartData(chartContext)`：格式化四柱干支十神藏干、紫微十二宮主吉煞星與四化、塔羅槽位抽牌結果，並附加確定性警示橫幅。
+    - 自動補全機制：若 API 接收之 `rawData` 僅含出生時間或牌陣類型，後端自動調用 `@celestial/astro-core` 運算補齊。
+    - 在 `generateScenarioConsultationGuide` 加入意圖攔截：未附排盤直接在對話中要求排八字、排紫微或抽塔羅時，AI 嚴格拒絕模糊估算，並引導至 `/bazi`, `/ziwei`, `/tarot`。
+  - **4. 意圖測試驗證覆蓋 (`astro-core.test.ts` & `api.test.ts`)**：
+    - `astro-core.test.ts` 新增：驗證 78 張牌庫全數獨立深度且非模板字串、驗證 6 種牌陣抽取數量與無重複抽牌。
+    - `api.test.ts` 新增：驗證 LLM 服務自動注入程式庫確定性數據與鐵律提示詞、驗證無排盤上下文時拒絕 AI 自行排盤/抽牌並導引至專屬頁面。
 - **已驗證事項 (Verified)**：
-  - 全專案單元與整合測試：`pnpm -r test` ➔ **100/100 項測試 100% 綠燈全數通過**（30 astro-core + 70 server）。
-  - 全專案生產構建編譯：`pnpm -r build` ➔ 全模組 0 錯誤構建成功。
-- **剩餘事項 (Remaining)**：
-  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
-
----
-
-### 檢核點回報: Phase 31 (修復 Docker 建置階段 astro-core tsup 模組找不到錯誤與 Monorepo 鎖定檔同步)
-- **當前任務**：Fix Docker build error: `Cannot find module .../tsup/dist/cli-default.js`
-- **問題根因分析 (Root Cause Analysis)**：
-  1. **`.dockerignore` 漏配子目錄萬用規則**：原 `.dockerignore` 僅撰寫 `node_modules` 與 `dist`，未能阻擋 `packages/astro-core/node_modules` 等子模組目錄。當 Docker 執行 `COPY packages/ ./packages/` 時，宿主機環境的 `node_modules/.bin/tsup` 軟連結（指向宿主機特定版本之路徑）被拷貝進容器，污染了容器內部環境。
-  2. **Dockerfile 缺少 `pnpm-lock.yaml`**：`Dockerfile.server`、`Dockerfile.web` 與 `Dockerfile.admin` 在依賴安裝階段僅複製 `package.json` 而未拷貝 `pnpm-lock.yaml`，導致容器內 `pnpm install` 浮動解析出不同依賴結構。
-  3. **後端 Router 型別邊界**：`apps/server/src/modules/simulator/router.ts` 中 `femaleFriends` 宣告型別包含 `undefined`，導致在 `pnpm -r build` (`tsc`) 時觸發 TS2345 編譯阻斷。
-- **已完成事項 (Completed)**：
-  - **1. 加固 `.dockerignore`**：
-    - 新增 `**/node_modules`、`**/dist`、`**/.turbo`、`**/.vite`、`*.tsbuildinfo`，徹底防止宿主機依賴與建置快取滲入 Docker 映像檔。
-  - **2. 修復 Dockerfile monorepo 鎖定檔複製與冰凍安裝**：
-    - [`deploy/docker/Dockerfile.server`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.server)：增加 `COPY package.json pnpm-lock.yaml ...`，安裝指令改為 `pnpm install --frozen-lockfile`。
-    - [`deploy/docker/Dockerfile.web`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.web)：增加 `pnpm-lock.yaml` 與 `--frozen-lockfile`。
-    - [`deploy/docker/Dockerfile.admin`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.admin)：增加 `pnpm-lock.yaml` 與 `--frozen-lockfile`。
-  - **3. 修復後端伺服器 TypeScript 編譯錯誤**：
-    - [`apps/server/src/modules/simulator/router.ts`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/simulator/router.ts)：將 `femaleFriends` 初始化收斂為非空陣列，消除 TS2345 報錯。
-- **已驗證事項 (Verified)**：
-  - 獨立環境模擬驗證：在純淨目錄以 `pnpm-lock.yaml` + `--frozen-lockfile` 進行建置，`packages/astro-core` 的 `tsup src/index.ts --format cjs,esm --dts` 於 1.88 秒內 100% 成功產出 CJS/ESM/DTS。
-  - 全專案單元與整合測試：`pnpm -r test` ➔ 97/97 測試 100% 綠燈通過。
+  - 單元測試：`packages/astro-core` ➔ **32/32 測試 100% 通過**。
+  - 整合測試：`apps/server` ➔ **72/72 測試 100% 通過**（40 API + 19 Role RAG + 13 Admin）。
+  - 全專案測試總計：**104/104 項測試全數通過**。
   - 全專案生產編譯構建：`pnpm -r build` ➔ 全模組（astro-core, database, server, web, admin）0 錯誤通過。
 - **剩餘事項 (Remaining)**：
   - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
@@ -970,6 +954,174 @@
 - **已驗證事項 (Verified)**：
   - 全專案單元與整合測試：`pnpm -r test` ➔ **100/100 項測試 100% 綠燈全數通過**（30 astro-core + 70 server）。
   - 全專案生產構建編譯：`pnpm -r build` ➔ 全模組 0 錯誤構建成功。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
+### 檢核點回報: Phase 33 (核心排盤與抽牌確定性防線：程式庫精密計算與隨機抽牌，嚴禁 AI 擅自推演)
+- **當前任務**：
+  1. 確保八字四柱和紫微十二宮都由程式庫邏輯排，不讓 AI 自己排。
+  2. 塔羅牌 78 張牌義、6 種牌陣，抽牌由程式隨機進行，不由 AI 進行。
+- **架構設計與核心原則 (Rule 5 任務拆分 & 確定性防線)**：
+  - **確定性決策 (程式碼處理)**：
+    - 八字四柱：年月日時柱干支、地支藏干、十神、納音、大運、五行定量分析由 `@celestial/astro-core` 嚴密計算。
+    - 紫微斗數：命身宮、五行局、十二宮干支、十四主星廟旺平陷、六吉六煞輔曜、生年四化動能由 `@celestial/astro-core` 嚴密安星排定。
+    - 塔羅占卜：78 張經典韋特牌義獨立完整定義、6 大經典牌陣（單張、時間之流、聖三角、二選一、六芒星、塞爾特十字）之抽牌與正逆位由底層程式 Fisher-Yates 隨機洗牌演算法客觀抽出。
+  - **人文詮釋與諮詢 (AI 處理)**：
+    - AI 是「解盤諮詢師與心理引導者」，絕非「排盤計算器或抽牌發牌機」。
+    - 嚴禁 AI 在回覆中自行起盤、推演干支、安星曜或憑空捏造抽出的牌卡。
+    - 求測者未附帶排盤上下文要求算命時，AI 主動拒絕自排並明確導引至程式庫專屬功能頁面（`/bazi`、`/ziwei`、`/tarot`）。
+- **已完成事項 (Completed)**：
+  - **1. 56 張小阿爾克那深度獨立牌義庫 (`packages/astro-core/src/tarot/minor-arcana.ts`)**：
+    - 完整收錄權杖 (14張)、聖杯 (14張)、寶劍 (14張)、星幣 (14張) 之正位與逆位牌意。
+    - 每張牌均具備獨立且深度的關鍵詞 (keywords)、整體概論 (overview)、愛情指引 (love) 與事業決策 (career)，徹底告別模板佔位符。
+  - **2. 擴充至 6 大經典牌陣與隨機抽牌演算法 (`packages/astro-core/src/tarot/deck.ts` & `TarotView.vue`)**：
+    - 支援 6 種牌陣：每日神諭單張 (1張)、時間之流三張牌 (3張)、身心靈聖三角 (3張)、二選一抉擇牌陣 (5張)、六芒星全方位吉凶牌陣 (7張)、經典塞爾特十字牌陣 (10張)。
+    - `drawTarotSpread` 嚴格由程式 Fisher-Yates 隨機洗牌演算抽卡並計算 35% 逆位機率，前端與後端保持完全確定性與隨機性。
+  - **3. 後端 LLM 服務排盤抽牌鐵律提示詞工程 (`apps/server/src/modules/llm/service.ts`)**：
+    - 更新 `DEFAULT_LLM_CONFIG.systemPrompt` 與各模組角色 Persona（ZIWEI, BAZI, TAROT），注入不可逾越的【排盤與抽牌確定性鐵律】。
+    - 實作 `formatDeterministicChartData(chartContext)`：格式化四柱干支十神藏干、紫微十二宮主吉煞星與四化、塔羅槽位抽牌結果，並附加確定性警示橫幅。
+    - 自動補全機制：若 API 接收之 `rawData` 僅含出生時間或牌陣類型，後端自動調用 `@celestial/astro-core` 運算補齊。
+    - 在 `generateScenarioConsultationGuide` 加入意圖攔截：未附排盤直接在對話中要求排八字、排紫微或抽塔羅時，AI 嚴格拒絕模糊估算，並引導至 `/bazi`, `/ziwei`, `/tarot`。
+  - **4. 意圖測試驗證覆蓋 (`astro-core.test.ts` & `api.test.ts`)**：
+    - `astro-core.test.ts` 新增：驗證 78 張牌庫全數獨立深度且非模板字串、驗證 6 種牌陣抽取數量與無重複抽牌。
+    - `api.test.ts` 新增：驗證 LLM 服務自動注入程式庫確定性數據與鐵律提示詞、驗證無排盤上下文時拒絕 AI 自行排盤/抽牌並導引至專屬頁面。
+- **已驗證事項 (Verified)**：
+  - 單元測試：`packages/astro-core` ➔ **32/32 測試 100% 通過**。
+  - 整合測試：`apps/server` ➔ **72/72 測試 100% 通過**（40 API + 19 Role RAG + 13 Admin）。
+  - 全專案測試總計：**104/104 項測試全數通過**。
+  - 全專案生產編譯構建：`pnpm -r build` ➔ 全模組（astro-core, database, server, web, admin）0 錯誤通過。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
+### 檢核點回報: Phase 31 (修復 Docker 建置階段 astro-core tsup 模組找不到錯誤與 Monorepo 鎖定檔同步)
+- **當前任務**：Fix Docker build error: `Cannot find module .../tsup/dist/cli-default.js`
+- **問題根因分析 (Root Cause Analysis)**：
+  1. **`.dockerignore` 漏配子目錄萬用規則**：原 `.dockerignore` 僅撰寫 `node_modules` 與 `dist`，未能阻擋 `packages/astro-core/node_modules` 等子模組目錄。當 Docker 執行 `COPY packages/ ./packages/` 時，宿主機環境的 `node_modules/.bin/tsup` 軟連結（指向宿主機特定版本之路徑）被拷貝進容器，污染了容器內部環境。
+  2. **Dockerfile 缺少 `pnpm-lock.yaml`**：`Dockerfile.server`、`Dockerfile.web` 與 `Dockerfile.admin` 在依賴安裝階段僅複製 `package.json` 而未拷貝 `pnpm-lock.yaml`，導致容器內 `pnpm install` 浮動解析出不同依賴結構。
+  3. **後端 Router 型別邊界**：`apps/server/src/modules/simulator/router.ts` 中 `femaleFriends` 宣告型別包含 `undefined`，導致在 `pnpm -r build` (`tsc`) 時觸發 TS2345 編譯阻斷。
+- **已完成事項 (Completed)**：
+  - **1. 加固 `.dockerignore`**：
+    - 新增 `**/node_modules`、`**/dist`、`**/.turbo`、`**/.vite`、`*.tsbuildinfo`，徹底防止宿主機依賴與建置快取滲入 Docker 映像檔。
+  - **2. 修復 Dockerfile monorepo 鎖定檔複製與冰凍安裝**：
+    - [`deploy/docker/Dockerfile.server`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.server)：增加 `COPY package.json pnpm-lock.yaml ...`，安裝指令改為 `pnpm install --frozen-lockfile`。
+    - [`deploy/docker/Dockerfile.web`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.web)：增加 `pnpm-lock.yaml` 與 `--frozen-lockfile`。
+    - [`deploy/docker/Dockerfile.admin`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.admin)：增加 `pnpm-lock.yaml` 與 `--frozen-lockfile`。
+  - **3. 修復後端伺服器 TypeScript 編譯錯誤**：
+    - [`apps/server/src/modules/simulator/router.ts`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/simulator/router.ts)：將 `femaleFriends` 初始化收斂為非空陣列，消除 TS2345 報錯。
+- **已驗證事項 (Verified)**：
+  - 獨立環境模擬驗證：在純淨目錄以 `pnpm-lock.yaml` + `--frozen-lockfile` 進行建置，`packages/astro-core` 的 `tsup src/index.ts --format cjs,esm --dts` 於 1.88 秒內 100% 成功產出 CJS/ESM/DTS。
+  - 全專案單元與整合測試：`pnpm -r test` ➔ 97/97 測試 100% 綠燈通過。
+  - 全專案生產編譯構建：`pnpm -r build` ➔ 全模組（astro-core, database, server, web, admin）0 錯誤通過。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
+### 檢核點回報: Phase 33 (核心排盤與抽牌確定性防線：程式庫精密計算與隨機抽牌，嚴禁 AI 擅自推演)
+- **當前任務**：
+  1. 確保八字四柱和紫微十二宮都由程式庫邏輯排，不讓 AI 自己排。
+  2. 塔羅牌 78 張牌義、6 種牌陣，抽牌由程式隨機進行，不由 AI 進行。
+- **架構設計與核心原則 (Rule 5 任務拆分 & 確定性防線)**：
+  - **確定性決策 (程式碼處理)**：
+    - 八字四柱：年月日時柱干支、地支藏干、十神、納音、大運、五行定量分析由 `@celestial/astro-core` 嚴密計算。
+    - 紫微斗數：命身宮、五行局、十二宮干支、十四主星廟旺平陷、六吉六煞輔曜、生年四化動能由 `@celestial/astro-core` 嚴密安星排定。
+    - 塔羅占卜：78 張經典韋特牌義獨立完整定義、6 大經典牌陣（單張、時間之流、聖三角、二選一、六芒星、塞爾特十字）之抽牌與正逆位由底層程式 Fisher-Yates 隨機洗牌演算法客觀抽出。
+  - **人文詮釋與諮詢 (AI 處理)**：
+    - AI 是「解盤諮詢師與心理引導者」，絕非「排盤計算器或抽牌發牌機」。
+    - 嚴禁 AI 在回覆中自行起盤、推演干支、安星曜或憑空捏造抽出的牌卡。
+    - 求測者未附帶排盤上下文要求算命時，AI 主動拒絕自排並明確導引至程式庫專屬功能頁面（`/bazi`、`/ziwei`、`/tarot`）。
+- **已完成事項 (Completed)**：
+  - **1. 56 張小阿爾克那深度獨立牌義庫 (`packages/astro-core/src/tarot/minor-arcana.ts`)**：
+    - 完整收錄權杖 (14張)、聖杯 (14張)、寶劍 (14張)、星幣 (14張) 之正位與逆位牌意。
+    - 每張牌均具備獨立且深度的關鍵詞 (keywords)、整體概論 (overview)、愛情指引 (love) 與事業決策 (career)，徹底告別模板佔位符。
+  - **2. 擴充至 6 大經典牌陣與隨機抽牌演算法 (`packages/astro-core/src/tarot/deck.ts` & `TarotView.vue`)**：
+    - 支援 6 種牌陣：每日神諭單張 (1張)、時間之流三張牌 (3張)、身心靈聖三角 (3張)、二選一抉擇牌陣 (5張)、六芒星全方位吉凶牌陣 (7張)、經典塞爾特十字牌陣 (10張)。
+    - `drawTarotSpread` 嚴格由程式 Fisher-Yates 隨機洗牌演算抽卡並計算 35% 逆位機率，前端與後端保持完全確定性與隨機性。
+  - **3. 後端 LLM 服務排盤抽牌鐵律提示詞工程 (`apps/server/src/modules/llm/service.ts`)**：
+    - 更新 `DEFAULT_LLM_CONFIG.systemPrompt` 與各模組角色 Persona（ZIWEI, BAZI, TAROT），注入不可逾越的【排盤與抽牌確定性鐵律】。
+    - 實作 `formatDeterministicChartData(chartContext)`：格式化四柱干支十神藏干、紫微十二宮主吉煞星與四化、塔羅槽位抽牌結果，並附加確定性警示橫幅。
+    - 自動補全機制：若 API 接收之 `rawData` 僅含出生時間或牌陣類型，後端自動調用 `@celestial/astro-core` 運算補齊。
+    - 在 `generateScenarioConsultationGuide` 加入意圖攔截：未附排盤直接在對話中要求排八字、排紫微或抽塔羅時，AI 嚴格拒絕模糊估算，並引導至 `/bazi`, `/ziwei`, `/tarot`。
+  - **4. 意圖測試驗證覆蓋 (`astro-core.test.ts` & `api.test.ts`)**：
+    - `astro-core.test.ts` 新增：驗證 78 張牌庫全數獨立深度且非模板字串、驗證 6 種牌陣抽取數量與無重複抽牌。
+    - `api.test.ts` 新增：驗證 LLM 服務自動注入程式庫確定性數據與鐵律提示詞、驗證無排盤上下文時拒絕 AI 自行排盤/抽牌並導引至專屬頁面。
+- **已驗證事項 (Verified)**：
+  - 單元測試：`packages/astro-core` ➔ **32/32 測試 100% 通過**。
+  - 整合測試：`apps/server` ➔ **72/72 測試 100% 通過**（40 API + 19 Role RAG + 13 Admin）。
+  - 全專案測試總計：**104/104 項測試全數通過**。
+  - 全專案生產編譯構建：`pnpm -r build` ➔ 全模組（astro-core, database, server, web, admin）0 錯誤通過。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
+### 檢核點回報: Phase 32 (Docker 全端一體化單一服務與單一對外連接埠 5499 重構)
+- **當前任務**：Task 24.18 (支援 Docker 僅暴露單一 5499 端點，打包後僅需啟動單一服務)
+- **架構優勢與決策 (Architecture & Simplicity - Rule 1 & Rule 2)**：
+  - **單一對外連接埠 (Port 5499)**：不再額外開啟 5498，使用者只需訪問 `http://localhost:5499` 即可同時獲得 Vue 3 前端 SPA、管理後台與後端 API。
+  - **單一服務容器 (Single All-In-One Container)**：省去 Nginx 反向代理容器與跨容器網路依賴，由 Node.js Express 原生高效託管前端靜態檔案並提供 SPA 歷史路由回退，同源請求徹底免除 CORS 跨域開銷。
+- **已完成事項 (Completed)**：
+  - **1. Express 前端 SPA 託管與路由回退 (`apps/server/src/app.ts`)**：
+    - 引入 `fs` 與 `express.static`，動態偵測前端編譯目錄候選路徑（`WEB_DIST_PATH`、`/app/public`、`apps/web/dist`）。
+    - 實作 SPA HTML5 歷史路由回退：非 `/api/` 且非靜態副檔名之請求一律安全回傳 `index.html`，既有 API 404 保持 JSON 隔離。
+  - **2. 全端一體化 Docker 映像檔 (`deploy/docker/Dockerfile.server` & `Dockerfile`)**：
+    - 在 Builder 階段同步編譯 `astro-core`、`database`、`apps/web` 與 `apps/server`。
+    - 將 `apps/web/dist` 打包拷貝至 Runner 階段之 `/app/public`。
+    - 預設環境變數配置 `ENV PORT=5499`，`EXPOSE 5499`。
+    - 新增根目錄 [`Dockerfile`](file:///home/coder/Codebase/Horoscope/Dockerfile)，支援標準 `docker build -t celestial-app .` 單指令打包。
+  - **3. 精簡 `docker-compose.yml`**：
+    - 移除原 `web` (Nginx) 服務與獨立 bridge 網路，簡化為單一 `celestial-app` 服務，對外映射僅 `"5499:5499"`，保留 `celestial_data` 資料庫磁碟卷。
+  - **4. 意圖測試覆蓋 (`apps/server/test/api.test.ts`)**：
+    - 新增 `GET /` 首頁回傳 SPA HTML 驗證。
+    - 新增 `GET /bazi` SPA 路由回退驗證。
+    - 新增 `GET /api/v1/unknown-endpoint` API 404 JSON 邊界隔離驗證。
+  - **5. 文檔與後台同步**：
+    - 更新 [`README.md`](file:///home/coder/Codebase/Horoscope/README.md)、[`USER_MANUAL.md`](file:///home/coder/Codebase/Horoscope/USER_MANUAL.md)、[`DashboardView.vue`](file:///home/coder/Codebase/Horoscope/apps/web/src/views/admin/DashboardView.vue)。
+- **已驗證事項 (Verified)**：
+  - 全專案單元與整合測試：`pnpm -r test` ➔ **100/100 項測試 100% 綠燈全數通過**（30 astro-core + 70 server）。
+  - 全專案生產構建編譯：`pnpm -r build` ➔ 全模組 0 錯誤構建成功。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
+### 檢核點回報: Phase 33 (核心排盤與抽牌確定性防線：程式庫精密計算與隨機抽牌，嚴禁 AI 擅自推演)
+- **當前任務**：
+  1. 確保八字四柱和紫微十二宮都由程式庫邏輯排，不讓 AI 自己排。
+  2. 塔羅牌 78 張牌義、6 種牌陣，抽牌由程式隨機進行，不由 AI 進行。
+- **架構設計與核心原則 (Rule 5 任務拆分 & 確定性防線)**：
+  - **確定性決策 (程式碼處理)**：
+    - 八字四柱：年月日時柱干支、地支藏干、十神、納音、大運、五行定量分析由 `@celestial/astro-core` 嚴密計算。
+    - 紫微斗數：命身宮、五行局、十二宮干支、十四主星廟旺平陷、六吉六煞輔曜、生年四化動能由 `@celestial/astro-core` 嚴密安星排定。
+    - 塔羅占卜：78 張經典韋特牌義獨立完整定義、6 大經典牌陣（單張、時間之流、聖三角、二選一、六芒星、塞爾特十字）之抽牌與正逆位由底層程式 Fisher-Yates 隨機洗牌演算法客觀抽出。
+  - **人文詮釋與諮詢 (AI 處理)**：
+    - AI 是「解盤諮詢師與心理引導者」，絕非「排盤計算器或抽牌發牌機」。
+    - 嚴禁 AI 在回覆中自行起盤、推演干支、安星曜或憑空捏造抽出的牌卡。
+    - 求測者未附帶排盤上下文要求算命時，AI 主動拒絕自排並明確導引至程式庫專屬功能頁面（`/bazi`、`/ziwei`、`/tarot`）。
+- **已完成事項 (Completed)**：
+  - **1. 56 張小阿爾克那深度獨立牌義庫 (`packages/astro-core/src/tarot/minor-arcana.ts`)**：
+    - 完整收錄權杖 (14張)、聖杯 (14張)、寶劍 (14張)、星幣 (14張) 之正位與逆位牌意。
+    - 每張牌均具備獨立且深度的關鍵詞 (keywords)、整體概論 (overview)、愛情指引 (love) 與事業決策 (career)，徹底告別模板佔位符。
+  - **2. 擴充至 6 大經典牌陣與隨機抽牌演算法 (`packages/astro-core/src/tarot/deck.ts` & `TarotView.vue`)**：
+    - 支援 6 種牌陣：每日神諭單張 (1張)、時間之流三張牌 (3張)、身心靈聖三角 (3張)、二選一抉擇牌陣 (5張)、六芒星全方位吉凶牌陣 (7張)、經典塞爾特十字牌陣 (10張)。
+    - `drawTarotSpread` 嚴格由程式 Fisher-Yates 隨機洗牌演算抽卡並計算 35% 逆位機率，前端與後端保持完全確定性與隨機性。
+  - **3. 後端 LLM 服務排盤抽牌鐵律提示詞工程 (`apps/server/src/modules/llm/service.ts`)**：
+    - 更新 `DEFAULT_LLM_CONFIG.systemPrompt` 與各模組角色 Persona（ZIWEI, BAZI, TAROT），注入不可逾越的【排盤與抽牌確定性鐵律】。
+    - 實作 `formatDeterministicChartData(chartContext)`：格式化四柱干支十神藏干、紫微十二宮主吉煞星與四化、塔羅槽位抽牌結果，並附加確定性警示橫幅。
+    - 自動補全機制：若 API 接收之 `rawData` 僅含出生時間或牌陣類型，後端自動調用 `@celestial/astro-core` 運算補齊。
+    - 在 `generateScenarioConsultationGuide` 加入意圖攔截：未附排盤直接在對話中要求排八字、排紫微或抽塔羅時，AI 嚴格拒絕模糊估算，並引導至 `/bazi`, `/ziwei`, `/tarot`。
+  - **4. 意圖測試驗證覆蓋 (`astro-core.test.ts` & `api.test.ts`)**：
+    - `astro-core.test.ts` 新增：驗證 78 張牌庫全數獨立深度且非模板字串、驗證 6 種牌陣抽取數量與無重複抽牌。
+    - `api.test.ts` 新增：驗證 LLM 服務自動注入程式庫確定性數據與鐵律提示詞、驗證無排盤上下文時拒絕 AI 自行排盤/抽牌並導引至專屬頁面。
+- **已驗證事項 (Verified)**：
+  - 單元測試：`packages/astro-core` ➔ **32/32 測試 100% 通過**。
+  - 整合測試：`apps/server` ➔ **72/72 測試 100% 通過**（40 API + 19 Role RAG + 13 Admin）。
+  - 全專案測試總計：**104/104 項測試全數通過**。
+  - 全專案生產編譯構建：`pnpm -r build` ➔ 全模組（astro-core, database, server, web, admin）0 錯誤通過。
 - **剩餘事項 (Remaining)**：
   - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
 
@@ -1009,54 +1161,38 @@
 
 ---
 
-### 檢核點回報: Phase 32 (Docker 全端一體化單一服務與單一對外連接埠 5499 重構)
-- **當前任務**：Task 24.18 (支援 Docker 僅暴露單一 5499 端點，打包後僅需啟動單一服務)
-- **架構優勢與決策 (Architecture & Simplicity - Rule 1 & Rule 2)**：
-  - **單一對外連接埠 (Port 5499)**：不再額外開啟 5498，使用者只需訪問 `http://localhost:5499` 即可同時獲得 Vue 3 前端 SPA、管理後台與後端 API。
-  - **單一服務容器 (Single All-In-One Container)**：省去 Nginx 反向代理容器與跨容器網路依賴，由 Node.js Express 原生高效託管前端靜態檔案並提供 SPA 歷史路由回退，同源請求徹底免除 CORS 跨域開銷。
+### 檢核點回報: Phase 33 (核心排盤與抽牌確定性防線：程式庫精密計算與隨機抽牌，嚴禁 AI 擅自推演)
+- **當前任務**：
+  1. 確保八字四柱和紫微十二宮都由程式庫邏輯排，不讓 AI 自己排。
+  2. 塔羅牌 78 張牌義、6 種牌陣，抽牌由程式隨機進行，不由 AI 進行。
+- **架構設計與核心原則 (Rule 5 任務拆分 & 確定性防線)**：
+  - **確定性決策 (程式碼處理)**：
+    - 八字四柱：年月日時柱干支、地支藏干、十神、納音、大運、五行定量分析由 `@celestial/astro-core` 嚴密計算。
+    - 紫微斗數：命身宮、五行局、十二宮干支、十四主星廟旺平陷、六吉六煞輔曜、生年四化動能由 `@celestial/astro-core` 嚴密安星排定。
+    - 塔羅占卜：78 張經典韋特牌義獨立完整定義、6 大經典牌陣（單張、時間之流、聖三角、二選一、六芒星、塞爾特十字）之抽牌與正逆位由底層程式 Fisher-Yates 隨機洗牌演算法客觀抽出。
+  - **人文詮釋與諮詢 (AI 處理)**：
+    - AI 是「解盤諮詢師與心理引導者」，絕非「排盤計算器或抽牌發牌機」。
+    - 嚴禁 AI 在回覆中自行起盤、推演干支、安星曜或憑空捏造抽出的牌卡。
+    - 求測者未附帶排盤上下文要求算命時，AI 主動拒絕自排並明確導引至程式庫專屬功能頁面（`/bazi`、`/ziwei`、`/tarot`）。
 - **已完成事項 (Completed)**：
-  - **1. Express 前端 SPA 託管與路由回退 (`apps/server/src/app.ts`)**：
-    - 引入 `fs` 與 `express.static`，動態偵測前端編譯目錄候選路徑（`WEB_DIST_PATH`、`/app/public`、`apps/web/dist`）。
-    - 實作 SPA HTML5 歷史路由回退：非 `/api/` 且非靜態副檔名之請求一律安全回傳 `index.html`，既有 API 404 保持 JSON 隔離。
-  - **2. 全端一體化 Docker 映像檔 (`deploy/docker/Dockerfile.server` & `Dockerfile`)**：
-    - 在 Builder 階段同步編譯 `astro-core`、`database`、`apps/web` 與 `apps/server`。
-    - 將 `apps/web/dist` 打包拷貝至 Runner 階段之 `/app/public`。
-    - 預設環境變數配置 `ENV PORT=5499`，`EXPOSE 5499`。
-    - 新增根目錄 [`Dockerfile`](file:///home/coder/Codebase/Horoscope/Dockerfile)，支援標準 `docker build -t celestial-app .` 單指令打包。
-  - **3. 精簡 `docker-compose.yml`**：
-    - 移除原 `web` (Nginx) 服務與獨立 bridge 網路，簡化為單一 `celestial-app` 服務，對外映射僅 `"5499:5499"`，保留 `celestial_data` 資料庫磁碟卷。
-  - **4. 意圖測試覆蓋 (`apps/server/test/api.test.ts`)**：
-    - 新增 `GET /` 首頁回傳 SPA HTML 驗證。
-    - 新增 `GET /bazi` SPA 路由回退驗證。
-    - 新增 `GET /api/v1/unknown-endpoint` API 404 JSON 邊界隔離驗證。
-  - **5. 文檔與後台同步**：
-    - 更新 [`README.md`](file:///home/coder/Codebase/Horoscope/README.md)、[`USER_MANUAL.md`](file:///home/coder/Codebase/Horoscope/USER_MANUAL.md)、[`DashboardView.vue`](file:///home/coder/Codebase/Horoscope/apps/web/src/views/admin/DashboardView.vue)。
+  - **1. 56 張小阿爾克那深度獨立牌義庫 (`packages/astro-core/src/tarot/minor-arcana.ts`)**：
+    - 完整收錄權杖 (14張)、聖杯 (14張)、寶劍 (14張)、星幣 (14張) 之正位與逆位牌意。
+    - 每張牌均具備獨立且深度的關鍵詞 (keywords)、整體概論 (overview)、愛情指引 (love) 與事業決策 (career)，徹底告別模板佔位符。
+  - **2. 擴充至 6 大經典牌陣與隨機抽牌演算法 (`packages/astro-core/src/tarot/deck.ts` & `TarotView.vue`)**：
+    - 支援 6 種牌陣：每日神諭單張 (1張)、時間之流三張牌 (3張)、身心靈聖三角 (3張)、二選一抉擇牌陣 (5張)、六芒星全方位吉凶牌陣 (7張)、經典塞爾特十字牌陣 (10張)。
+    - `drawTarotSpread` 嚴格由程式 Fisher-Yates 隨機洗牌演算抽卡並計算 35% 逆位機率，前端與後端保持完全確定性與隨機性。
+  - **3. 後端 LLM 服務排盤抽牌鐵律提示詞工程 (`apps/server/src/modules/llm/service.ts`)**：
+    - 更新 `DEFAULT_LLM_CONFIG.systemPrompt` 與各模組角色 Persona（ZIWEI, BAZI, TAROT），注入不可逾越的【排盤與抽牌確定性鐵律】。
+    - 實作 `formatDeterministicChartData(chartContext)`：格式化四柱干支十神藏干、紫微十二宮主吉煞星與四化、塔羅槽位抽牌結果，並附加確定性警示橫幅。
+    - 自動補全機制：若 API 接收之 `rawData` 僅含出生時間或牌陣類型，後端自動調用 `@celestial/astro-core` 運算補齊。
+    - 在 `generateScenarioConsultationGuide` 加入意圖攔截：未附排盤直接在對話中要求排八字、排紫微或抽塔羅時，AI 嚴格拒絕模糊估算，並引導至 `/bazi`, `/ziwei`, `/tarot`。
+  - **4. 意圖測試驗證覆蓋 (`astro-core.test.ts` & `api.test.ts`)**：
+    - `astro-core.test.ts` 新增：驗證 78 張牌庫全數獨立深度且非模板字串、驗證 6 種牌陣抽取數量與無重複抽牌。
+    - `api.test.ts` 新增：驗證 LLM 服務自動注入程式庫確定性數據與鐵律提示詞、驗證無排盤上下文時拒絕 AI 自行排盤/抽牌並導引至專屬頁面。
 - **已驗證事項 (Verified)**：
-  - 全專案單元與整合測試：`pnpm -r test` ➔ **100/100 項測試 100% 綠燈全數通過**（30 astro-core + 70 server）。
-  - 全專案生產構建編譯：`pnpm -r build` ➔ 全模組 0 錯誤構建成功。
-- **剩餘事項 (Remaining)**：
-  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
-
----
-
-### 檢核點回報: Phase 31 (修復 Docker 建置階段 astro-core tsup 模組找不到錯誤與 Monorepo 鎖定檔同步)
-- **當前任務**：Fix Docker build error: `Cannot find module .../tsup/dist/cli-default.js`
-- **問題根因分析 (Root Cause Analysis)**：
-  1. **`.dockerignore` 漏配子目錄萬用規則**：原 `.dockerignore` 僅撰寫 `node_modules` 與 `dist`，未能阻擋 `packages/astro-core/node_modules` 等子模組目錄。當 Docker 執行 `COPY packages/ ./packages/` 時，宿主機環境的 `node_modules/.bin/tsup` 軟連結（指向宿主機特定版本之路徑）被拷貝進容器，污染了容器內部環境。
-  2. **Dockerfile 缺少 `pnpm-lock.yaml`**：`Dockerfile.server`、`Dockerfile.web` 與 `Dockerfile.admin` 在依賴安裝階段僅複製 `package.json` 而未拷貝 `pnpm-lock.yaml`，導致容器內 `pnpm install` 浮動解析出不同依賴結構。
-  3. **後端 Router 型別邊界**：`apps/server/src/modules/simulator/router.ts` 中 `femaleFriends` 宣告型別包含 `undefined`，導致在 `pnpm -r build` (`tsc`) 時觸發 TS2345 編譯阻斷。
-- **已完成事項 (Completed)**：
-  - **1. 加固 `.dockerignore`**：
-    - 新增 `**/node_modules`、`**/dist`、`**/.turbo`、`**/.vite`、`*.tsbuildinfo`，徹底防止宿主機依賴與建置快取滲入 Docker 映像檔。
-  - **2. 修復 Dockerfile monorepo 鎖定檔複製與冰凍安裝**：
-    - [`deploy/docker/Dockerfile.server`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.server)：增加 `COPY package.json pnpm-lock.yaml ...`，安裝指令改為 `pnpm install --frozen-lockfile`。
-    - [`deploy/docker/Dockerfile.web`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.web)：增加 `pnpm-lock.yaml` 與 `--frozen-lockfile`。
-    - [`deploy/docker/Dockerfile.admin`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.admin)：增加 `pnpm-lock.yaml` 與 `--frozen-lockfile`。
-  - **3. 修復後端伺服器 TypeScript 編譯錯誤**：
-    - [`apps/server/src/modules/simulator/router.ts`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/simulator/router.ts)：將 `femaleFriends` 初始化收斂為非空陣列，消除 TS2345 報錯。
-- **已驗證事項 (Verified)**：
-  - 獨立環境模擬驗證：在純淨目錄以 `pnpm-lock.yaml` + `--frozen-lockfile` 進行建置，`packages/astro-core` 的 `tsup src/index.ts --format cjs,esm --dts` 於 1.88 秒內 100% 成功產出 CJS/ESM/DTS。
-  - 全專案單元與整合測試：`pnpm -r test` ➔ 97/97 測試 100% 綠燈通過。
+  - 單元測試：`packages/astro-core` ➔ **32/32 測試 100% 通過**。
+  - 整合測試：`apps/server` ➔ **72/72 測試 100% 通過**（40 API + 19 Role RAG + 13 Admin）。
+  - 全專案測試總計：**104/104 項測試全數通過**。
   - 全專案生產編譯構建：`pnpm -r build` ➔ 全模組（astro-core, database, server, web, admin）0 錯誤通過。
 - **剩餘事項 (Remaining)**：
   - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
@@ -1088,5 +1224,173 @@
 - **已驗證事項 (Verified)**：
   - 全專案單元與整合測試：`pnpm -r test` ➔ **100/100 項測試 100% 綠燈全數通過**（30 astro-core + 70 server）。
   - 全專案生產構建編譯：`pnpm -r build` ➔ 全模組 0 錯誤構建成功。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
+### 檢核點回報: Phase 33 (核心排盤與抽牌確定性防線：程式庫精密計算與隨機抽牌，嚴禁 AI 擅自推演)
+- **當前任務**：
+  1. 確保八字四柱和紫微十二宮都由程式庫邏輯排，不讓 AI 自己排。
+  2. 塔羅牌 78 張牌義、6 種牌陣，抽牌由程式隨機進行，不由 AI 進行。
+- **架構設計與核心原則 (Rule 5 任務拆分 & 確定性防線)**：
+  - **確定性決策 (程式碼處理)**：
+    - 八字四柱：年月日時柱干支、地支藏干、十神、納音、大運、五行定量分析由 `@celestial/astro-core` 嚴密計算。
+    - 紫微斗數：命身宮、五行局、十二宮干支、十四主星廟旺平陷、六吉六煞輔曜、生年四化動能由 `@celestial/astro-core` 嚴密安星排定。
+    - 塔羅占卜：78 張經典韋特牌義獨立完整定義、6 大經典牌陣（單張、時間之流、聖三角、二選一、六芒星、塞爾特十字）之抽牌與正逆位由底層程式 Fisher-Yates 隨機洗牌演算法客觀抽出。
+  - **人文詮釋與諮詢 (AI 處理)**：
+    - AI 是「解盤諮詢師與心理引導者」，絕非「排盤計算器或抽牌發牌機」。
+    - 嚴禁 AI 在回覆中自行起盤、推演干支、安星曜或憑空捏造抽出的牌卡。
+    - 求測者未附帶排盤上下文要求算命時，AI 主動拒絕自排並明確導引至程式庫專屬功能頁面（`/bazi`、`/ziwei`、`/tarot`）。
+- **已完成事項 (Completed)**：
+  - **1. 56 張小阿爾克那深度獨立牌義庫 (`packages/astro-core/src/tarot/minor-arcana.ts`)**：
+    - 完整收錄權杖 (14張)、聖杯 (14張)、寶劍 (14張)、星幣 (14張) 之正位與逆位牌意。
+    - 每張牌均具備獨立且深度的關鍵詞 (keywords)、整體概論 (overview)、愛情指引 (love) 與事業決策 (career)，徹底告別模板佔位符。
+  - **2. 擴充至 6 大經典牌陣與隨機抽牌演算法 (`packages/astro-core/src/tarot/deck.ts` & `TarotView.vue`)**：
+    - 支援 6 種牌陣：每日神諭單張 (1張)、時間之流三張牌 (3張)、身心靈聖三角 (3張)、二選一抉擇牌陣 (5張)、六芒星全方位吉凶牌陣 (7張)、經典塞爾特十字牌陣 (10張)。
+    - `drawTarotSpread` 嚴格由程式 Fisher-Yates 隨機洗牌演算抽卡並計算 35% 逆位機率，前端與後端保持完全確定性與隨機性。
+  - **3. 後端 LLM 服務排盤抽牌鐵律提示詞工程 (`apps/server/src/modules/llm/service.ts`)**：
+    - 更新 `DEFAULT_LLM_CONFIG.systemPrompt` 與各模組角色 Persona（ZIWEI, BAZI, TAROT），注入不可逾越的【排盤與抽牌確定性鐵律】。
+    - 實作 `formatDeterministicChartData(chartContext)`：格式化四柱干支十神藏干、紫微十二宮主吉煞星與四化、塔羅槽位抽牌結果，並附加確定性警示橫幅。
+    - 自動補全機制：若 API 接收之 `rawData` 僅含出生時間或牌陣類型，後端自動調用 `@celestial/astro-core` 運算補齊。
+    - 在 `generateScenarioConsultationGuide` 加入意圖攔截：未附排盤直接在對話中要求排八字、排紫微或抽塔羅時，AI 嚴格拒絕模糊估算，並引導至 `/bazi`, `/ziwei`, `/tarot`。
+  - **4. 意圖測試驗證覆蓋 (`astro-core.test.ts` & `api.test.ts`)**：
+    - `astro-core.test.ts` 新增：驗證 78 張牌庫全數獨立深度且非模板字串、驗證 6 種牌陣抽取數量與無重複抽牌。
+    - `api.test.ts` 新增：驗證 LLM 服務自動注入程式庫確定性數據與鐵律提示詞、驗證無排盤上下文時拒絕 AI 自行排盤/抽牌並導引至專屬頁面。
+- **已驗證事項 (Verified)**：
+  - 單元測試：`packages/astro-core` ➔ **32/32 測試 100% 通過**。
+  - 整合測試：`apps/server` ➔ **72/72 測試 100% 通過**（40 API + 19 Role RAG + 13 Admin）。
+  - 全專案測試總計：**104/104 項測試全數通過**。
+  - 全專案生產編譯構建：`pnpm -r build` ➔ 全模組（astro-core, database, server, web, admin）0 錯誤通過。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
+### 檢核點回報: Phase 31 (修復 Docker 建置階段 astro-core tsup 模組找不到錯誤與 Monorepo 鎖定檔同步)
+- **當前任務**：Fix Docker build error: `Cannot find module .../tsup/dist/cli-default.js`
+- **問題根因分析 (Root Cause Analysis)**：
+  1. **`.dockerignore` 漏配子目錄萬用規則**：原 `.dockerignore` 僅撰寫 `node_modules` 與 `dist`，未能阻擋 `packages/astro-core/node_modules` 等子模組目錄。當 Docker 執行 `COPY packages/ ./packages/` 時，宿主機環境的 `node_modules/.bin/tsup` 軟連結（指向宿主機特定版本之路徑）被拷貝進容器，污染了容器內部環境。
+  2. **Dockerfile 缺少 `pnpm-lock.yaml`**：`Dockerfile.server`、`Dockerfile.web` 與 `Dockerfile.admin` 在依賴安裝階段僅複製 `package.json` 而未拷貝 `pnpm-lock.yaml`，導致容器內 `pnpm install` 浮動解析出不同依賴結構。
+  3. **後端 Router 型別邊界**：`apps/server/src/modules/simulator/router.ts` 中 `femaleFriends` 宣告型別包含 `undefined`，導致在 `pnpm -r build` (`tsc`) 時觸發 TS2345 編譯阻斷。
+- **已完成事項 (Completed)**：
+  - **1. 加固 `.dockerignore`**：
+    - 新增 `**/node_modules`、`**/dist`、`**/.turbo`、`**/.vite`、`*.tsbuildinfo`，徹底防止宿主機依賴與建置快取滲入 Docker 映像檔。
+  - **2. 修復 Dockerfile monorepo 鎖定檔複製與冰凍安裝**：
+    - [`deploy/docker/Dockerfile.server`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.server)：增加 `COPY package.json pnpm-lock.yaml ...`，安裝指令改為 `pnpm install --frozen-lockfile`。
+    - [`deploy/docker/Dockerfile.web`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.web)：增加 `pnpm-lock.yaml` 與 `--frozen-lockfile`。
+    - [`deploy/docker/Dockerfile.admin`](file:///home/coder/Codebase/Horoscope/deploy/docker/Dockerfile.admin)：增加 `pnpm-lock.yaml` 與 `--frozen-lockfile`。
+  - **3. 修復後端伺服器 TypeScript 編譯錯誤**：
+    - [`apps/server/src/modules/simulator/router.ts`](file:///home/coder/Codebase/Horoscope/apps/server/src/modules/simulator/router.ts)：將 `femaleFriends` 初始化收斂為非空陣列，消除 TS2345 報錯。
+- **已驗證事項 (Verified)**：
+  - 獨立環境模擬驗證：在純淨目錄以 `pnpm-lock.yaml` + `--frozen-lockfile` 進行建置，`packages/astro-core` 的 `tsup src/index.ts --format cjs,esm --dts` 於 1.88 秒內 100% 成功產出 CJS/ESM/DTS。
+  - 全專案單元與整合測試：`pnpm -r test` ➔ 97/97 測試 100% 綠燈通過。
+  - 全專案生產編譯構建：`pnpm -r build` ➔ 全模組（astro-core, database, server, web, admin）0 錯誤通過。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
+### 檢核點回報: Phase 33 (核心排盤與抽牌確定性防線：程式庫精密計算與隨機抽牌，嚴禁 AI 擅自推演)
+- **當前任務**：
+  1. 確保八字四柱和紫微十二宮都由程式庫邏輯排，不讓 AI 自己排。
+  2. 塔羅牌 78 張牌義、6 種牌陣，抽牌由程式隨機進行，不由 AI 進行。
+- **架構設計與核心原則 (Rule 5 任務拆分 & 確定性防線)**：
+  - **確定性決策 (程式碼處理)**：
+    - 八字四柱：年月日時柱干支、地支藏干、十神、納音、大運、五行定量分析由 `@celestial/astro-core` 嚴密計算。
+    - 紫微斗數：命身宮、五行局、十二宮干支、十四主星廟旺平陷、六吉六煞輔曜、生年四化動能由 `@celestial/astro-core` 嚴密安星排定。
+    - 塔羅占卜：78 張經典韋特牌義獨立完整定義、6 大經典牌陣（單張、時間之流、聖三角、二選一、六芒星、塞爾特十字）之抽牌與正逆位由底層程式 Fisher-Yates 隨機洗牌演算法客觀抽出。
+  - **人文詮釋與諮詢 (AI 處理)**：
+    - AI 是「解盤諮詢師與心理引導者」，絕非「排盤計算器或抽牌發牌機」。
+    - 嚴禁 AI 在回覆中自行起盤、推演干支、安星曜或憑空捏造抽出的牌卡。
+    - 求測者未附帶排盤上下文要求算命時，AI 主動拒絕自排並明確導引至程式庫專屬功能頁面（`/bazi`、`/ziwei`、`/tarot`）。
+- **已完成事項 (Completed)**：
+  - **1. 56 張小阿爾克那深度獨立牌義庫 (`packages/astro-core/src/tarot/minor-arcana.ts`)**：
+    - 完整收錄權杖 (14張)、聖杯 (14張)、寶劍 (14張)、星幣 (14張) 之正位與逆位牌意。
+    - 每張牌均具備獨立且深度的關鍵詞 (keywords)、整體概論 (overview)、愛情指引 (love) 與事業決策 (career)，徹底告別模板佔位符。
+  - **2. 擴充至 6 大經典牌陣與隨機抽牌演算法 (`packages/astro-core/src/tarot/deck.ts` & `TarotView.vue`)**：
+    - 支援 6 種牌陣：每日神諭單張 (1張)、時間之流三張牌 (3張)、身心靈聖三角 (3張)、二選一抉擇牌陣 (5張)、六芒星全方位吉凶牌陣 (7張)、經典塞爾特十字牌陣 (10張)。
+    - `drawTarotSpread` 嚴格由程式 Fisher-Yates 隨機洗牌演算抽卡並計算 35% 逆位機率，前端與後端保持完全確定性與隨機性。
+  - **3. 後端 LLM 服務排盤抽牌鐵律提示詞工程 (`apps/server/src/modules/llm/service.ts`)**：
+    - 更新 `DEFAULT_LLM_CONFIG.systemPrompt` 與各模組角色 Persona（ZIWEI, BAZI, TAROT），注入不可逾越的【排盤與抽牌確定性鐵律】。
+    - 實作 `formatDeterministicChartData(chartContext)`：格式化四柱干支十神藏干、紫微十二宮主吉煞星與四化、塔羅槽位抽牌結果，並附加確定性警示橫幅。
+    - 自動補全機制：若 API 接收之 `rawData` 僅含出生時間或牌陣類型，後端自動調用 `@celestial/astro-core` 運算補齊。
+    - 在 `generateScenarioConsultationGuide` 加入意圖攔截：未附排盤直接在對話中要求排八字、排紫微或抽塔羅時，AI 嚴格拒絕模糊估算，並引導至 `/bazi`, `/ziwei`, `/tarot`。
+  - **4. 意圖測試驗證覆蓋 (`astro-core.test.ts` & `api.test.ts`)**：
+    - `astro-core.test.ts` 新增：驗證 78 張牌庫全數獨立深度且非模板字串、驗證 6 種牌陣抽取數量與無重複抽牌。
+    - `api.test.ts` 新增：驗證 LLM 服務自動注入程式庫確定性數據與鐵律提示詞、驗證無排盤上下文時拒絕 AI 自行排盤/抽牌並導引至專屬頁面。
+- **已驗證事項 (Verified)**：
+  - 單元測試：`packages/astro-core` ➔ **32/32 測試 100% 通過**。
+  - 整合測試：`apps/server` ➔ **72/72 測試 100% 通過**（40 API + 19 Role RAG + 13 Admin）。
+  - 全專案測試總計：**104/104 項測試全數通過**。
+  - 全專案生產編譯構建：`pnpm -r build` ➔ 全模組（astro-core, database, server, web, admin）0 錯誤通過。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
+### 檢核點回報: Phase 32 (Docker 全端一體化單一服務與單一對外連接埠 5499 重構)
+- **當前任務**：Task 24.18 (支援 Docker 僅暴露單一 5499 端點，打包後僅需啟動單一服務)
+- **架構優勢與決策 (Architecture & Simplicity - Rule 1 & Rule 2)**：
+  - **單一對外連接埠 (Port 5499)**：不再額外開啟 5498，使用者只需訪問 `http://localhost:5499` 即可同時獲得 Vue 3 前端 SPA、管理後台與後端 API。
+  - **單一服務容器 (Single All-In-One Container)**：省去 Nginx 反向代理容器與跨容器網路依賴，由 Node.js Express 原生高效託管前端靜態檔案並提供 SPA 歷史路由回退，同源請求徹底免除 CORS 跨域開銷。
+- **已完成事項 (Completed)**：
+  - **1. Express 前端 SPA 託管與路由回退 (`apps/server/src/app.ts`)**：
+    - 引入 `fs` 與 `express.static`，動態偵測前端編譯目錄候選路徑（`WEB_DIST_PATH`、`/app/public`、`apps/web/dist`）。
+    - 實作 SPA HTML5 歷史路由回退：非 `/api/` 且非靜態副檔名之請求一律安全回傳 `index.html`，既有 API 404 保持 JSON 隔離。
+  - **2. 全端一體化 Docker 映像檔 (`deploy/docker/Dockerfile.server` & `Dockerfile`)**：
+    - 在 Builder 階段同步編譯 `astro-core`、`database`、`apps/web` 與 `apps/server`。
+    - 將 `apps/web/dist` 打包拷貝至 Runner 階段之 `/app/public`。
+    - 預設環境變數配置 `ENV PORT=5499`，`EXPOSE 5499`。
+    - 新增根目錄 [`Dockerfile`](file:///home/coder/Codebase/Horoscope/Dockerfile)，支援標準 `docker build -t celestial-app .` 單指令打包。
+  - **3. 精簡 `docker-compose.yml`**：
+    - 移除原 `web` (Nginx) 服務與獨立 bridge 網路，簡化為單一 `celestial-app` 服務，對外映射僅 `"5499:5499"`，保留 `celestial_data` 資料庫磁碟卷。
+  - **4. 意圖測試覆蓋 (`apps/server/test/api.test.ts`)**：
+    - 新增 `GET /` 首頁回傳 SPA HTML 驗證。
+    - 新增 `GET /bazi` SPA 路由回退驗證。
+    - 新增 `GET /api/v1/unknown-endpoint` API 404 JSON 邊界隔離驗證。
+  - **5. 文檔與後台同步**：
+    - 更新 [`README.md`](file:///home/coder/Codebase/Horoscope/README.md)、[`USER_MANUAL.md`](file:///home/coder/Codebase/Horoscope/USER_MANUAL.md)、[`DashboardView.vue`](file:///home/coder/Codebase/Horoscope/apps/web/src/views/admin/DashboardView.vue)。
+- **已驗證事項 (Verified)**：
+  - 全專案單元與整合測試：`pnpm -r test` ➔ **100/100 項測試 100% 綠燈全數通過**（30 astro-core + 70 server）。
+  - 全專案生產構建編譯：`pnpm -r build` ➔ 全模組 0 錯誤構建成功。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+---
+
+### 檢核點回報: Phase 33 (核心排盤與抽牌確定性防線：程式庫精密計算與隨機抽牌，嚴禁 AI 擅自推演)
+- **當前任務**：
+  1. 確保八字四柱和紫微十二宮都由程式庫邏輯排，不讓 AI 自己排。
+  2. 塔羅牌 78 張牌義、6 種牌陣，抽牌由程式隨機進行，不由 AI 進行。
+- **架構設計與核心原則 (Rule 5 任務拆分 & 確定性防線)**：
+  - **確定性決策 (程式碼處理)**：
+    - 八字四柱：年月日時柱干支、地支藏干、十神、納音、大運、五行定量分析由 `@celestial/astro-core` 嚴密計算。
+    - 紫微斗數：命身宮、五行局、十二宮干支、十四主星廟旺平陷、六吉六煞輔曜、生年四化動能由 `@celestial/astro-core` 嚴密安星排定。
+    - 塔羅占卜：78 張經典韋特牌義獨立完整定義、6 大經典牌陣（單張、時間之流、聖三角、二選一、六芒星、塞爾特十字）之抽牌與正逆位由底層程式 Fisher-Yates 隨機洗牌演算法客觀抽出。
+  - **人文詮釋與諮詢 (AI 處理)**：
+    - AI 是「解盤諮詢師與心理引導者」，絕非「排盤計算器或抽牌發牌機」。
+    - 嚴禁 AI 在回覆中自行起盤、推演干支、安星曜或憑空捏造抽出的牌卡。
+    - 求測者未附帶排盤上下文要求算命時，AI 主動拒絕自排並明確導引至程式庫專屬功能頁面（`/bazi`、`/ziwei`、`/tarot`）。
+- **已完成事項 (Completed)**：
+  - **1. 56 張小阿爾克那深度獨立牌義庫 (`packages/astro-core/src/tarot/minor-arcana.ts`)**：
+    - 完整收錄權杖 (14張)、聖杯 (14張)、寶劍 (14張)、星幣 (14張) 之正位與逆位牌意。
+    - 每張牌均具備獨立且深度的關鍵詞 (keywords)、整體概論 (overview)、愛情指引 (love) 與事業決策 (career)，徹底告別模板佔位符。
+  - **2. 擴充至 6 大經典牌陣與隨機抽牌演算法 (`packages/astro-core/src/tarot/deck.ts` & `TarotView.vue`)**：
+    - 支援 6 種牌陣：每日神諭單張 (1張)、時間之流三張牌 (3張)、身心靈聖三角 (3張)、二選一抉擇牌陣 (5張)、六芒星全方位吉凶牌陣 (7張)、經典塞爾特十字牌陣 (10張)。
+    - `drawTarotSpread` 嚴格由程式 Fisher-Yates 隨機洗牌演算抽卡並計算 35% 逆位機率，前端與後端保持完全確定性與隨機性。
+  - **3. 後端 LLM 服務排盤抽牌鐵律提示詞工程 (`apps/server/src/modules/llm/service.ts`)**：
+    - 更新 `DEFAULT_LLM_CONFIG.systemPrompt` 與各模組角色 Persona（ZIWEI, BAZI, TAROT），注入不可逾越的【排盤與抽牌確定性鐵律】。
+    - 實作 `formatDeterministicChartData(chartContext)`：格式化四柱干支十神藏干、紫微十二宮主吉煞星與四化、塔羅槽位抽牌結果，並附加確定性警示橫幅。
+    - 自動補全機制：若 API 接收之 `rawData` 僅含出生時間或牌陣類型，後端自動調用 `@celestial/astro-core` 運算補齊。
+    - 在 `generateScenarioConsultationGuide` 加入意圖攔截：未附排盤直接在對話中要求排八字、排紫微或抽塔羅時，AI 嚴格拒絕模糊估算，並引導至 `/bazi`, `/ziwei`, `/tarot`。
+  - **4. 意圖測試驗證覆蓋 (`astro-core.test.ts` & `api.test.ts`)**：
+    - `astro-core.test.ts` 新增：驗證 78 張牌庫全數獨立深度且非模板字串、驗證 6 種牌陣抽取數量與無重複抽牌。
+    - `api.test.ts` 新增：驗證 LLM 服務自動注入程式庫確定性數據與鐵律提示詞、驗證無排盤上下文時拒絕 AI 自行排盤/抽牌並導引至專屬頁面。
+- **已驗證事項 (Verified)**：
+  - 單元測試：`packages/astro-core` ➔ **32/32 測試 100% 通過**。
+  - 整合測試：`apps/server` ➔ **72/72 測試 100% 通過**（40 API + 19 Role RAG + 13 Admin）。
+  - 全專案測試總計：**104/104 項測試全數通過**。
+  - 全專案生產編譯構建：`pnpm -r build` ➔ 全模組（astro-core, database, server, web, admin）0 錯誤通過。
 - **剩餘事項 (Remaining)**：
   - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。

@@ -1,4 +1,14 @@
 import { prisma } from '@celestial/database';
+import {
+  calculateBaziChart,
+  calculateZiweiChart,
+  drawTarotSpread,
+  calculateTrueSolarTime,
+  SpreadType,
+  BaziChart,
+  ZiweiChart,
+  TarotReadingResult,
+} from '@celestial/astro-core';
 
 export interface LlmConfig {
   enabled: boolean;
@@ -18,7 +28,7 @@ export const DEFAULT_LLM_CONFIG: LlmConfig = {
   model: process.env.LLM_MODEL || 'gemma4:e2b',
   temperature: 0.7,
   systemPrompt:
-    '你是一位融匯東西方星象與命理體系的現代專業命理諮詢顧問。你精通紫微斗數、四柱八字、現代人本占星、周易決策、韋特塔羅、七政四餘、姓名學與通勝曆法。你的口吻專業、客觀、條理分明且富有人文關懷，嚴禁使用虛假神仙、道士或玄幻小說口吻（如自稱老夫、貧道、天機星君或稱對方為道友）。請依據每次對話自動注入的具體星盤坐標與 RAG 領域知識，為求測者提供清晰、深邃且具實踐價值的診斷與決策建議。',
+    '你是一位融匯東西方星象與命理體系的現代專業命理諮詢顧問。你精通紫微斗數、四柱八字、現代人本占星、周易決策、韋特塔羅、七政四餘、姓名學與通勝曆法。你的口吻專業、客觀、條理分明且富有人文關懷，嚴禁使用虛假神仙、道士或玄幻小說口吻（如自稱老夫、貧道、天機星君或稱對方為道友）。【排盤與抽牌確定性鐵律】：本系統所有八字四柱干支、地支藏干、十神、大運；紫微斗數命身宮、五行局、十二宮位星曜與生年四化；以及塔羅牌 78 張牌庫與 6 種經典牌陣之抽牌結果，均由底層程式庫（@celestial/astro-core）嚴密排定與隨機抽出。AI 僅負責依據排盤客觀數據進行解盤諮詢，嚴禁自行計算、猜測、捏造或修改四柱干支、紫微星盤或塔羅抽牌結果。請依據每次對話自動注入的具體星盤坐標與 RAG 領域知識，為求測者提供清晰、深邃且具實踐價值的診斷與決策建議。',
 };
 
 export async function getLlmConfig(): Promise<LlmConfig> {
@@ -28,8 +38,13 @@ export async function getLlmConfig(): Promise<LlmConfig> {
     });
     if (configRow?.value) {
       const parsed = JSON.parse(configRow.value);
-      // 自動升級過時的仙人道士口吻預設 Prompt
-      if (parsed.systemPrompt && (parsed.systemPrompt.includes('天機星君') || parsed.systemPrompt.includes('國師級大師'))) {
+      // 自動升級過時或未包含確定性鐵律的預設 Prompt
+      if (
+        parsed.systemPrompt &&
+        (parsed.systemPrompt.includes('天機星君') ||
+          parsed.systemPrompt.includes('國師級大師') ||
+          !parsed.systemPrompt.includes('確定性鐵律'))
+      ) {
         parsed.systemPrompt = DEFAULT_LLM_CONFIG.systemPrompt;
         await prisma.systemConfig
           .update({
@@ -101,7 +116,7 @@ const MODULE_ROLES: Record<string, ModuleRoleProfile> = {
   ZIWEI: {
     title: '資深紫微斗數命理諮詢師 (Senior Zi Wei Dou Shu Consultant)',
     rolePersona:
-      '你是一位具備數十年實務命理經驗的現代資深紫微斗數諮詢師。你深研中州派、古典三合派與天機正統論命體系，以客觀、理性、具邏輯架構且富有人文關懷的專業顧問口吻溝通。嚴禁使用神仙、仙官、道士或玄幻口吻（不可使用「老夫」、「貧道」、「天機星君」、「道友」等虛構稱謂）。一律以「您」稱呼求測者。',
+      '你是一位具備數十年實務命理經驗的現代資深紫微斗數諮詢師。你深研中州派、古典三合派與天機正統論命體系，以客觀、理性、具邏輯架構且富有人文關懷的專業顧問口吻溝通。嚴禁使用神仙、仙官、道士或玄幻口吻（不可使用「老夫」、「貧道」、「天機星君」、「道友」等虛構稱謂）。一律以「您」稱呼求測者。【排盤確定性鐵律】：紫微斗數命身宮、五行局、十二宮干支、百星入宮廟旺平陷與生年四化，均由高精度天文演算法庫（@celestial/astro-core）嚴密排定。你的職責是依據已排定的確定性客觀盤面進行深度解讀與決策諮詢，嚴禁自行推演、猜測、捏造或修改十二宮位星曜。',
     toneGuidelines:
       '遵循古典三合核心心法：「大道至簡，命宮為本，三方為用」；算命是討論果的哲學，知果是為了在事前修因轉化；始終堅持「人事努力加上空間調整大於先天命運（2/3 > 1/3）」，絕不把命運說死，而是給出務實可行的決策路徑。語言典雅洗鍊、條理清晰。',
     consultationStructure: [
@@ -117,7 +132,7 @@ const MODULE_ROLES: Record<string, ModuleRoleProfile> = {
   BAZI: {
     title: '專業子平八字命理專家 (Professional BaZi Destiny Analyst)',
     rolePersona:
-      '你是一位精通子平真詮、滴天髓與窮通寶鑑的專業八字命理專家。你以客觀條理、實事求是的現代諮詢風格為求測者剖析命局。嚴禁使用仙人、道長、神仙口吻（不可使用「老夫」、「貧道」、「天機星君」、「道友」等稱謂）。一律以「您」稱呼求測者。',
+      '你是一位精通子平真詮、滴天髓與窮通寶鑑的專業八字命理專家。你以客觀條理、實事求是的現代諮詢風格為求測者剖析命局。嚴禁使用仙人、道長、神仙口吻（不可使用「老夫」、「貧道」、「天機星君」、「道友」等稱謂）。一律以「您」稱呼求測者。【排盤確定性鐵律】：八字四柱（年月日時柱干支）、地支藏干、十神、納音、五行評分與大運，均由高精度節氣與真太陽時演算法庫（@celestial/astro-core）嚴密排定。你的職責是依據已排定的確定性客觀盤面進行深度解讀與決策諮詢，嚴禁自行推演、猜測、捏造或修改四柱干支。',
     toneGuidelines:
       '注重陰陽五行消長、寒暖燥濕調候、十神心理學與大運流年轉折。強調人生節律有起伏，指導求測者如何在順境擴大成果，在逆境蓄力防守。語言溫和堅定、邏輯嚴密。',
     consultationStructure: [
@@ -149,7 +164,7 @@ const MODULE_ROLES: Record<string, ModuleRoleProfile> = {
   TAROT: {
     title: '專業塔羅諮商師與潛意識引導者 (Professional Tarot Counselor)',
     rolePersona:
-      '你是一位擅長符號象徵學與潛意識心理投射的專業塔羅諮商師。你的語調敏銳、溫暖、客觀且富有力量感。嚴禁使用虛假神仙、道士口吻（絕不可使用「老夫」、「貧道」、「天機星君」、「道友」）。一律以「您」稱呼求問者。',
+      '你是一位擅長符號象徵學與潛意識心理投射的專業塔羅諮商師。你的語調敏銳、溫暖、客觀且富有力量感。嚴禁使用虛假神仙、道士口吻（絕不可使用「老夫」、「貧道」、「天機星君」、「道友」）。一律以「您」稱呼求問者。【抽牌確定性鐵律】：塔羅牌 78 張牌庫牌義、6 大經典牌陣（每日神諭單張、時間之流三張牌、身心靈聖三角、二選一抉擇牌陣、六芒星全方位吉凶、經典塞爾特十字牌陣）之抽牌與正逆位，均由底層程式 Fisher-Yates 隨機演算法客觀抽出。你的職責是依據已抽出的客觀牌面進行深度潛意識解讀與心靈賦能，嚴禁自行決定抽牌或虛構替換牌面。',
     toneGuidelines:
       '堅信「牌陣是心靈的一面鏡子，反映當下能量狀態；人有自由意志，牌卡揭示盲點，行動改變結果」。協助求問者看清局勢、穿越恐懼、找到破局方向。',
     consultationStructure: [
@@ -339,6 +354,197 @@ export function getModuleRole(moduleType?: string): ModuleRoleProfile {
     coreKnowledge:
       '萬象天儀全系統功能路徑對照：\n- 事業長遠大運、十神喜用：[四柱八字](/bazi)\n- 事業格局、職位貴人、流年四化：[紫微斗數](/ziwei)\n- 婚戀適配、夫妻矛盾化解、通關五行：[八字合婚與雙宮聯參](/synastry)\n- 家庭氣場、子女相處、陽宅臥房名位配置：[家庭群組比對與後天八卦名位](/synastry)\n- 即時具體事件、二選一決策、動爻吉凶：[周易六爻卜卦](/iching)\n- 潛意識投射、心理盲點、關係現狀：[78張經典偉特塔羅](/tarot)\n- 新生兒命名、改名轉運、八字喜用神補缺：[姓名學與五格起名](/naming)\n- 今日出行、簽約、動土、嫁娶擇吉時辰：[每日通勝黃曆](/almanac)\n- 年度生活節奏、起居五行調和、養生規劃：[流年生活行運曆與起居規劃](/annual-calendar)\n- 0~100歲人生大演繹、台灣歷史大事紀、紅顏盲盒、一生蓋棺錄：[百歲流年·模擬一生](/simulator)\n- 靈魂藍圖、心理原型、月相潛意識：[西洋本命星盤](/western)\n- 皇家天星學、七政四餘天球坐標、二十八宿：[七政四餘天星盤](/qizheng)\n- 親友檔案庫與測算隨筆：[命盤保險庫](/vault)\n- 全站詳細教學手冊與情境指南：[全系統使用手冊與問診指南](/guide)',
   };
+}
+
+/**
+ * 格式化底層程式庫 (@celestial/astro-core) 確定性運算與隨機抽牌數據
+ * 嚴禁 AI 自行計算、猜測或編造八字四柱、紫微十二宮或塔羅牌
+ */
+export function formatDeterministicChartData(chartContext: ChartContext): string {
+  if (!chartContext) return '';
+
+  const modType = normalizeModuleKey(chartContext.moduleType);
+  let raw = chartContext.rawData || {};
+
+  // 1. 若僅提供出生時間參數而尚未排盤，自動由 @celestial/astro-core 進行確定性排演
+  if (modType === 'BAZI' && (!raw.pillars || !raw.pillars.year)) {
+    const bDate = raw.birthDate || raw.birthDateTime;
+    if (bDate) {
+      try {
+        const stdTime = new Date(bDate);
+        const solarInfo = calculateTrueSolarTime(stdTime, Number(raw.longitude || 120));
+        raw = calculateBaziChart(solarInfo.trueSolarTime, (raw.gender as any) || '男');
+      } catch (e) {
+        console.error('Auto bazi calculation fallback error:', e);
+      }
+    }
+  } else if (modType === 'ZIWEI' && (!raw.palaces || Object.keys(raw.palaces).length === 0)) {
+    const bDate = raw.birthDate || raw.birthDateTime;
+    if (bDate) {
+      try {
+        const stdTime = new Date(bDate);
+        const solarInfo = calculateTrueSolarTime(stdTime, Number(raw.longitude || 120));
+        raw = calculateZiweiChart(solarInfo.trueSolarTime, (raw.gender as any) || '男');
+      } catch (e) {
+        console.error('Auto ziwei calculation fallback error:', e);
+      }
+    }
+  } else if (modType === 'TAROT' && (!raw.drawnCards || raw.drawnCards.length === 0)) {
+    if (raw.spreadType) {
+      try {
+        raw = drawTarotSpread(raw.spreadType);
+      } catch (e) {
+        console.error('Auto tarot draw fallback error:', e);
+      }
+    }
+  }
+
+  // 2. 八字四柱格式化
+  if (modType === 'BAZI' && raw.pillars) {
+    const p = raw.pillars;
+    const formatPillar = (pil: any) => {
+      if (!pil) return '無';
+      const stemGod = pil.stemTenGod ? ` (天干十神: ${pil.stemTenGod})` : '';
+      const nayin = pil.naYin ? ` / 納音: ${pil.naYin}` : '';
+      const hidden = Array.isArray(pil.hiddenStems)
+        ? ` / 藏干: ${pil.hiddenStems.map((h: any) => `${h.stem}(${h.tenGod})`).join('、')}`
+        : '';
+      return `【${pil.stem}${pil.branch}】${stemGod}${nayin}${hidden}`;
+    };
+
+    const dmStem = raw.dayMaster?.stem || p.day?.stem || '日主';
+    const dmElem = raw.dayMaster?.element || p.day?.stemElement || '';
+    const energy = raw.energy ? ` - ${raw.energy.status} (得分: ${raw.energy.score}分)` : '';
+    const fe = raw.fiveElements
+      ? `木 ${raw.fiveElements.wood}% | 火 ${raw.fiveElements.fire}% | 土 ${raw.fiveElements.earth}% | 金 ${raw.fiveElements.metal}% | 水 ${raw.fiveElements.water}%`
+      : '';
+    const fav =
+      raw.favorableElements?.useful?.join('、') ||
+      raw.favorableElements?.favorable?.join('、') ||
+      (Array.isArray(raw.favorableElements) ? raw.favorableElements.join('、') : '木火');
+    const unFav =
+      raw.favorableElements?.avoid?.join('、') ||
+      raw.favorableElements?.unfavorable?.join('、') ||
+      '金水';
+    const luckPillars = Array.isArray(raw.luckPillars)
+      ? raw.luckPillars.map((lp: any) => `${lp.startAge}-${lp.endAge}歲【${lp.stem}${lp.branch}·${lp.tenGod}】`).join(' ➔ ')
+      : '無';
+
+    return `⚠️【排盤確定性鐵律 · 由 @celestial/astro-core 演算法庫精密排定，AI 嚴禁自行重算或改動】
+- 測算系統: 四柱八字五行論命 (BAZI)
+- 出生時間: ${raw.birthInfo?.solarDate || '已知'} (性別: ${raw.birthInfo?.gender || '乾造'})
+- 四柱確定性干支與十神:
+  * 年柱: ${formatPillar(p.year)}
+  * 月柱: ${formatPillar(p.month)}
+  * 日柱: ${formatPillar(p.day)} (日主元神: ${dmStem}${dmElem ? ` [${dmElem}]` : ''}${energy})
+  * 時柱: ${formatPillar(p.hour)}
+- 五行能量分佈: ${fe}
+- 喜用神判定: 喜用五行【${fav}】 / 忌神五行【${unFav}】
+- 十年大運走勢: ${luckPillars}`;
+  }
+
+  // 3. 紫微斗數十二宮格式化
+  if (modType === 'ZIWEI' && (raw.palaces || raw.palacesList)) {
+    const palacesMap = raw.palaces || {};
+    const palacesList: any[] = Array.isArray(raw.palacesList)
+      ? raw.palacesList
+      : typeof palacesMap === 'object' && palacesMap !== null
+      ? Object.values(palacesMap)
+      : [];
+
+    const lifeBranch = raw.lifePalaceBranch || '';
+    const bodyBranch = raw.bodyPalaceBranch || '';
+    const bureau = raw.fiveElementBureau || raw.elementBureau || '';
+    const lifeMaster = raw.lifeMasterStar || '';
+    const bodyMaster = raw.bodyMasterStar || '';
+
+    const formattedPalaces = palacesList
+      .map((pal: any) => {
+        const isMing = pal.name === '命宮' || pal.branch === lifeBranch;
+        const isBody = pal.isBodyPalace || pal.branch === bodyBranch;
+        const majorStr =
+          (pal.majorStars || [])
+            .map((s: any) => {
+              const name = typeof s === 'string' ? s : s.name;
+              const bright = s.brightness ? `[${s.brightness}]` : '';
+              const trans = s.transformation ? `(化${s.transformation})` : '';
+              return `${name}${bright}${trans}`;
+            })
+            .join('、') || '無主星 (借對宮觀之)';
+        const luckyStr =
+          (pal.luckyStars || []).map((s: any) => (typeof s === 'string' ? s : s.name)).join('、') || '無';
+        const unluckyStr =
+          (pal.unluckyStars || []).map((s: any) => (typeof s === 'string' ? s : s.name)).join('、') || '無';
+        const flags = [isMing ? '🌟【命宮】' : '', isBody ? '🏠【身宮】' : ''].filter(Boolean).join('');
+
+        return `  * 【${pal.name || '宮位'}】(${pal.stem || ''}${pal.branch}宮) ${flags}
+    - 主星: ${majorStr}
+    - 六吉星: ${luckyStr}
+    - 六煞星: ${unluckyStr}
+    - 行運大限: ${pal.decadeStartAge ?? ''}-${pal.decadeEndAge ?? ''}歲`;
+      })
+      .join('\n');
+
+    const patternsStr =
+      Array.isArray(raw.patterns) && raw.patterns.length > 0
+        ? raw.patterns.map((pt: any) => `* 【${pt.name}】(${pt.level || '吉'}): ${pt.description || ''}`).join('\n')
+        : '* 【三合中正配置】：命盤星曜配置端正，以本命三方四正星曜廟旺為依歸。';
+
+    return `⚠️【排盤確定性鐵律 · 由 @celestial/astro-core 演算法庫精密排定，AI 嚴禁自行重算或改動】
+- 測算系統: 紫微斗數天機排盤 (ZIWEI)
+- 命身座標: 命宮在「${lifeBranch}」宮 | 身宮在「${bodyBranch}」宮
+- 五行局: ${bureau} | 命主星: ${lifeMaster} | 身主星: ${bodyMaster}
+- 十二宮位精密星曜配置:
+${formattedPalaces}
+- 命中正統三合格局:
+${patternsStr}`;
+  }
+
+  // 4. 塔羅牌 78 張牌庫與 6 大經典牌陣抽牌格式化
+  if (modType === 'TAROT' && (raw.drawnCards || raw.cards)) {
+    const spreadTitle = raw.spreadTitle || raw.spreadName || raw.spread?.label || '韋特塔羅牌陣';
+    const spreadType = raw.spreadType || 'three_cards';
+    const drawnList: any[] = Array.isArray(raw.drawnCards)
+      ? raw.drawnCards
+      : Array.isArray(raw.cards)
+      ? raw.cards
+      : [];
+
+    const formattedCards = drawnList
+      .map((d: any, idx: number) => {
+        const card = d.card || d;
+        const posName = d.positionName || `槽位 ${idx + 1}`;
+        const posMeaning = d.positionMeaning ? ` (${d.positionMeaning})` : '';
+        const isRev = Boolean(d.isReversed);
+        const meaning = isRev ? card.reversedMeaning : card.uprightMeaning;
+        const kw = meaning?.keywords?.join('、') || '';
+        const ov = meaning?.overview || '';
+        const love = meaning?.love || '';
+        const car = meaning?.career || '';
+
+        return `  * 槽位 ${d.positionIndex || idx + 1}【${posName}】${posMeaning}
+    - 抽得牌卡: 【${card.nameZh || card.name}】(${card.nameEn || ''}) — 【${isRev ? '逆位' : '正位'}】 (屬性: ${card.element || '元素'})
+    - 牌面關鍵詞: ${kw}
+    - 牌義概論: ${ov}
+    - 愛情指引: ${love}
+    - 事業指引: ${car}`;
+      })
+      .join('\n');
+
+    return `⚠️【抽牌確定性鐵律 · 由程式 Fisher-Yates 隨機演算法客觀抽出，AI 嚴禁自行更改或編造牌卡】
+- 測算系統: 78張韋特塔羅占卜 (TAROT)
+- 牌陣架構: ${spreadTitle} (${spreadType}，共 ${drawnList.length} 張牌)
+- 程式隨機抽牌客觀結果:
+${formattedCards}
+- 綜合啟示: ${raw.overallAdvice || '遵循牌陣客觀揭示，把握當下主導權。'}`;
+  }
+
+  // 5. 其他模組通用客觀數據格式化
+  return `【求測者當前排盤客觀數據】
+- 測算系統: ${chartContext.moduleType}
+- 命盤主題: ${chartContext.title || '無標題'}
+- 盤面概覽: ${chartContext.summary || ''}
+- 數據快照: ${JSON.stringify(raw).slice(0, 3200)}`;
 }
 
 /**
@@ -575,7 +781,10 @@ export async function executeLlmChat(
   }
 
   if (chartContext) {
-    enrichedSystemPrompt += `【求測者當前排盤客觀數據】\n- 測算系統: ${chartContext.moduleType}\n- 命盤主題: ${chartContext.title || '無標題'}\n- 盤面概覽: ${chartContext.summary || ''}\n- 數據快照: ${JSON.stringify(chartContext.rawData || {}).slice(0, 3200)}\n\n`;
+    enrichedSystemPrompt += `${formatDeterministicChartData(chartContext)}\n\n`;
+  } else {
+    enrichedSystemPrompt += `【排盤與抽牌確定性鐵律 · 嚴禁 AI 自行計算或編造】
+當前對話並未附帶確定性排盤數據或抽牌結果。若用戶在對話中提供出生時間要求排盤、算命或要求抽塔羅牌，你必須嚴格拒絕自行推演或憑空編造四柱干支、紫微十二宮星曜或塔羅牌，並明確引導用戶前往「四柱八字論命 (/bazi)」、「紫微斗數排盤 (/ziwei)」或「78張韋特塔羅占卜 (/tarot)」頁面，由底層程式庫進行確定性演算或隨機抽牌。\n\n`;
   }
 
   enrichedSystemPrompt += `【諮詢診斷輸出規範】\n請依據上述客觀數據與 RAG 領域知識，為求測者展開結構化、深入且具落地實踐價值的專業診斷。回覆格式嚴格遵循以下章節（請使用 Markdown 階層標題）：\n${role.consultationStructure.join('\n')}\n\n請務必使用專業、客觀且具備同理心的現代顧問口吻，一律稱呼求測者為「您」，絕對不得使用仙人道士、神怪或老夫貧道之措辭。`;
@@ -673,6 +882,61 @@ export async function executeLlmChat(
  */
 export function generateScenarioConsultationGuide(userMsg: string): string {
   const q = userMsg.toLowerCase().trim();
+
+  // 0-A. 四柱八字排盤請求
+  if (
+    q.includes('排八字') ||
+    q.includes('算八字') ||
+    (q.includes('八字') && (q.includes('排') || q.includes('生辰') || q.includes('出生') || q.includes('四柱')))
+  ) {
+    return `## 📜 命理明師排盤指引：四柱八字必須由程式庫精準排盤
+
+您好！四柱八字（年月日時柱干支、地支藏干、十神、納音、大運起運與五行旺衰）涉及精確的天文真太陽時校正與 24 節氣交接時刻（精確至分秒）。
+
+**⚠️ 萬象天儀【排盤確定性鐵律】：**
+為確保命理精準無誤，本系統**嚴格禁止 AI 進行模糊估算或自行排盤**。所有八字四柱干支與十神，均由底層高精度天文演算法庫（@celestial/astro-core）精密運算。
+
+👉 **請前往系統專屬排盤頁面：**
+* [四柱八字五行論命排盤](/bazi) — 輸入您的出生年月日時與經度，程式庫將即時精準推算出您的年月日時四柱、地支藏干十神分佈、五行能量百分比與十年大運。
+* 排盤完成後，您可直接點擊「啟動 AI 專業子平八字全盤深度詳批」，AI 顧問將嚴格以此客觀盤面為唯一準據，為您展開深入的命格診斷與生涯決策諮詢！`;
+  }
+
+  // 0-B. 紫微斗數排盤請求
+  if (
+    q.includes('排紫微') ||
+    q.includes('算紫微') ||
+    (q.includes('紫微') && (q.includes('排') || q.includes('命盤') || q.includes('命宮') || q.includes('十二宮')))
+  ) {
+    return `## 🌌 命理明師排盤指引：紫微斗數必須由程式庫精密安星
+
+您好！紫微斗數排盤涉及安命身宮、起五行局、定紫微天府十四主星、配六吉六煞輔曜、排十二宮干支與推算生年四化動能，演算法極其嚴密繁複。
+
+**⚠️ 萬象天儀【排盤確定性鐵律】：**
+為杜絕 AI 幻覺與錯置星曜，本系統**嚴格禁止 AI 自行排盤或憑空捏造十二宮星曜**。
+
+👉 **請前往系統專屬排盤頁面：**
+* [紫微斗數天機排盤](/ziwei) — 由程式庫嚴格推導命身宮、五行局、百星入宮廟旺平陷與生年四化。
+* 進入排盤頁面推算完成後，AI 諮詢顧問將融匯古典三合天機心法，為您解讀命身格局、三方四正連動與具體生涯策略！`;
+  }
+
+  // 0-C. 塔羅占卜抽牌請求
+  if (
+    q.includes('抽塔羅') ||
+    q.includes('占卜塔羅') ||
+    q.includes('抽牌') ||
+    (q.includes('塔羅') && (q.includes('抽') || q.includes('算') || q.includes('牌陣')))
+  ) {
+    return `## 🔮 韋特塔羅占卜指引：抽牌必須由程式客觀隨機進行
+
+您好！塔羅占卜講求宇宙共時性（Synchronicity）與客觀隨機性。
+
+**⚠️ 萬象天儀【抽牌確定性鐵律】：**
+本系統完整內建 78 張經典韋特塔羅牌義與 6 大經典牌陣（每日神諭單張、時間之流三張牌、身心靈聖三角、二選一抉擇牌陣、六芒星全方位吉凶、經典塞爾特十字牌陣）。**抽牌由程式 Fisher-Yates 隨機洗牌演算法客觀進行，嚴禁 AI 自行指定或編造抽出的牌面**。
+
+👉 **請前往系統專屬占卜頁面：**
+* [78張韋特塔羅占卜](/tarot) — 選擇您想使用的牌陣，靜心冥想後點擊「洗牌抽牌」，由程式隨機抽出牌卡並翻牌。
+* 抽牌完成後，AI 塔羅諮商師將依據您抽出的客觀牌陣，深入透視您的潛意識盲點並提供破局行動指引！`;
+  }
 
   // 1. 事業、工作、轉職、跳槽、創業、升遷、裁員
   if (
@@ -1067,7 +1331,15 @@ export function generateProfessionalSynthesizerReply(messages: ChatMessage[], ch
     const modType = normalizeModuleKey(chartContext.moduleType);
     switch (modType) {
       case 'ZIWEI': {
-        const raw = chartContext.rawData || {};
+        let raw = chartContext.rawData || {};
+        if ((!raw.palaces || Object.keys(raw.palaces).length === 0) && (raw.birthDate || raw.birthDateTime)) {
+          try {
+            const std = new Date(raw.birthDate || raw.birthDateTime);
+            const solar = calculateTrueSolarTime(std, Number(raw.longitude || 120));
+            raw = calculateZiweiChart(solar.trueSolarTime, (raw.gender as any) || '男');
+          } catch (e) {}
+        }
+
         const palacesList: any[] = Array.isArray(raw.palacesList)
           ? raw.palacesList
           : Array.isArray(raw.palaces)
@@ -1109,7 +1381,7 @@ export function generateProfessionalSynthesizerReply(messages: ChatMessage[], ch
         const natureDesc = mingSummary?.nature ? `，命格星性為「**${mingSummary.nature}**」` : '';
         const keywordsDesc = mingSummary?.keywords?.length ? `，核心稟賦特質含：${mingSummary.keywords.join('、')}` : '';
 
-        return `## 現代紫微斗數專業命理諮詢診斷報告（融匯古典三合天機心法）
+        return `## 現代紫微斗數專業命理諮詢診斷報告（融匯古典三合天機心法 · 由程式庫精密排定）
 
 依據您當前排盤：命宮安於「**${lifeBranch}**」宮，五行局為「**${bureau}**」，命宮內見主星「**${stars || '無主星（借對宮觀之）'}**」坐守${natureDesc}${keywordsDesc}。
 
@@ -1133,15 +1405,47 @@ ${patternContent}
       }
 
       case 'BAZI': {
-        const raw = chartContext.rawData || {};
-        const dayMaster = raw.fourPillars?.day?.stem?.name || raw.dayMaster || '日主';
-        const favorable = Array.isArray(raw.favorableElements?.favorable)
+        let raw = chartContext.rawData || {};
+        if (!raw.pillars && (raw.birthDate || raw.birthDateTime)) {
+          try {
+            const std = new Date(raw.birthDate || raw.birthDateTime);
+            const solar = calculateTrueSolarTime(std, Number(raw.longitude || 120));
+            raw = calculateBaziChart(solar.trueSolarTime, (raw.gender as any) || '男');
+          } catch (e) {}
+        }
+
+        const p = raw.pillars;
+        const pillarsStr = p ? `年柱【${p.year.stem}${p.year.branch}】、月柱【${p.month.stem}${p.month.branch}】、日柱【${p.day.stem}${p.day.branch}】、時柱【${p.hour.stem}${p.hour.branch}】` : '';
+        const dayMaster = raw.fourPillars?.day?.stem?.name || raw.dayMaster?.stem || raw.dayMaster || '日主';
+        const favorable = Array.isArray(raw.favorableElements?.useful)
+          ? raw.favorableElements.useful.join('、')
+          : Array.isArray(raw.favorableElements?.favorable)
           ? raw.favorableElements.favorable.join('、')
           : Array.isArray(raw.favorableElements)
           ? raw.favorableElements.join('、')
           : raw.favorableElements || '木、火';
 
-        return `## 專業子平八字命理深度診斷報告\n\n審視您的四柱命造，日主天干五行為「**${dayMaster}**」，格局氣機流通，五行喜用神為「**${favorable}**」。\n\n針對您所詢問之課題：「**${lastUserMsg}**」，為您深入剖析如下：\n\n### 1. 日主元神與五行格局分析\n* **日主特質**：日主「${dayMaster}」賦予您堅定踏實、信守承諾的性格基調，做事有條不紊且注重長遠積累。\n* **格局調候**：命局五行生剋有情，局中需以「${favorable}」作為平衡氣候與流通才華的樞紐。凡喜用五行生旺之時，往往是您思維最清晰、決策最順暢之際。\n\n### 2. 十神配置與才能動力\n* **才能配置**：命盤中印星與食傷、財官星形成良性平衡，反映出您既有深層學習與策略規劃能力，又具備將概念轉化為具體收益之實踐力。\n* **人際互動**：官殺有制，代表您具備自律與管理素養，但在競爭環境中需留意避免過度苛求自我，以柔克剛方能化解摩擦。\n\n### 3. 大運走勢與轉折契機\n* 當前大運正處於能力轉化與資源整合的關鍵階段。逢喜用歲運引動，適合主動擴展視野、投資自我技能或拓展核心人脈網絡。\n\n### 4. 落地生活與決策建言\n1. **事業方向**：優先選擇契合喜用五行屬性（如${favorable}）的產業或工作型態，能事半功倍。\n2. **生活環境**：居家與工作環境可適度導入喜用五行的色彩與採光，調和心性。\n3. **行事節奏**：在運勢上升期積極進取，在調候沉潛期注重技能儲備與身心調養。`;
+        return `## 專業子平八字命理深度診斷報告（由 @celestial/astro-core 演算法庫精密排定）
+
+審視您的四柱命造${pillarsStr ? `（${pillarsStr}）` : ''}，日主天干五行為「**${dayMaster}**」，格局氣機流通，五行喜用神為「**${favorable}**」。
+
+針對您所詢問之課題：「**${lastUserMsg}**」，為您深入剖析如下：
+
+### 1. 日主元神與五行格局分析
+* **日主特質**：日主「${dayMaster}」賦予您堅定踏實、信守承諾的性格基調，做事有條不紊且注重長遠積累。
+* **格局調候**：命局五行生剋有情，局中需以「${favorable}」作為平衡氣候與流通才華的樞紐。凡喜用五行生旺之時，往往是您思維最清晰、決策最順暢之際。
+
+### 2. 十神配置與才能動力
+* **才能配置**：命盤中印星與食傷、財官星形成良性平衡，反映出您既有深層學習與策略規劃能力，又具備將概念轉化為具體收益之實踐力。
+* **人際互動**：官殺有制，代表您具備自律與管理素養，但在競爭環境中需留意避免過度苛求自我，以柔克剛方能化解摩擦。
+
+### 3. 大運走勢與轉折契機
+* 當前大運正處於能力轉化與資源整合的關鍵階段。逢喜用歲運引動，適合主動擴展視野、投資自我技能或拓展核心人脈網絡。
+
+### 4. 落地生活與決策建言
+1. **事業方向**：優先選擇契合喜用五行屬性（如${favorable}）的產業或工作型態，能事半功倍。
+2. **生活環境**：居家與工作環境可適度導入喜用五行的色彩與採光，調和心性。
+3. **行事節奏**：在運勢上升期積極進取，在調候沉潛期注重技能儲備與身心調養。`;
       }
 
       case 'BAZI_SYNASTRY': {
@@ -1262,17 +1566,37 @@ ${baguaList}
       }
 
       case 'TAROT': {
-        const raw = chartContext.rawData || {};
-        const spreadName = raw.spreadName || raw.spread?.label || '韋特塔羅牌陣';
-        const cards: any[] = Array.isArray(raw.drawnCards)
-          ? raw.drawnCards.map((c: any) => ({ name: c.card?.nameZh || c.name, isReversed: c.isReversed }))
+        let raw = chartContext.rawData || {};
+        if ((!raw.drawnCards || raw.drawnCards.length === 0) && raw.spreadType) {
+          try {
+            raw = drawTarotSpread(raw.spreadType);
+          } catch (e) {}
+        }
+        const spreadName = raw.spreadTitle || raw.spreadName || raw.spread?.label || '78張經典韋特塔羅牌陣';
+        const drawnList: any[] = Array.isArray(raw.drawnCards)
+          ? raw.drawnCards
           : Array.isArray(raw.cards)
           ? raw.cards
           : [];
         const cardNames =
-          cards.map((c: any) => `【${c.name || '牌卡'}】(${c.isReversed ? '逆位' : '正位'})`).join('、') || '塔羅諸牌';
+          drawnList
+            .map((c: any) => `【${c.card?.nameZh || c.name || '牌卡'}】(${c.isReversed ? '逆位' : '正位'})`)
+            .join('、') || '塔羅諸牌';
 
-        return `## 專業韋特塔羅心靈諮商啟示報告（融匯韋特與當代塔羅宗師心法）
+        const cardDetails = drawnList
+          .map((d: any, idx: number) => {
+            const card = d.card || d;
+            const posName = d.positionName || `槽位 ${idx + 1}`;
+            const posMeaning = d.positionMeaning ? `（${d.positionMeaning}）` : '';
+            const revStr = d.isReversed ? '逆位' : '正位';
+            const meaning = d.isReversed ? card.reversedMeaning : card.uprightMeaning;
+            const kw = meaning?.keywords?.join('、') || '能量顯化';
+            const ov = meaning?.overview || '牌面象徵當下能量的客觀映照。';
+            return `* **【${posName}】**${posMeaning}：抽得【**${card.nameZh || card.name}**】（${revStr}）\n  - 牌意關鍵詞：${kw}\n  - 心靈意涵：${ov}`;
+          })
+          .join('\n');
+
+        return `## 專業韋特塔羅心靈諮商啟示報告（抽牌由程式 Fisher-Yates 隨機演算法客觀抽出）
 
 牌陣布局：「**${spreadName}**」
 抽取牌位呈現：${cardNames}
@@ -1282,9 +1606,8 @@ ${baguaList}
 ### 1. 當前局勢核心能量定調
 * 牌陣核心牌卡直指您當前正處於重要的心態轉折期。您既渴望打破現狀、開拓嶄新可能，同時也面臨既有習慣或安全感的拉扯。
 
-### 2. 牌位對應與潛意識盲點透視
-* **正位牌卡啟示**：象徵您目前擁有的實質資源與理性優勢，只要主動整合，便能形成強大的推進動能。
-* **逆位牌卡提醒**：提醒您注意意識層面可能忽略的恐懼或自我懷疑。瑪麗·格利爾指出：逆位牌並非凶煞，而是能量提示「向內反思、調整溝通模式」，釋放深層被壓抑的潛能。
+### 2. 牌位對應與潛意識盲點透視（客觀抽牌結果剖析）
+${cardDetails || '* 正位牌卡象徵擁有的實質資源；逆位牌卡提示向內反思、調整溝通模式。'}
 
 ### 3. 韋特與當代塔羅宗師啟迪（符號象徵與心靈賦能）
 * **愛德華·韋特 (A. E. Waite) 圖解之鑰**：大阿爾克那呈現的是從「愚者」的純真起步、穿越現實試煉抵達圓滿覺悟的「愚人之旅（The Fool's Journey）」。每張牌卡皆是喚醒內在神聖智慧的圖像之門。

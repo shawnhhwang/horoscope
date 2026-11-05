@@ -26,6 +26,7 @@ export * from './western/calculator.js';
 // 塔羅占卜
 export * from './tarot/types.js';
 export * from './tarot/deck.js';
+export * from './tarot/minor-arcana.js';
 
 // 七政四餘天星
 export * from './qizheng/types.js';

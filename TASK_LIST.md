@@ -19,6 +19,7 @@
 | **Phase 23** | **流年生活行運曆、起居習慣日記與 AI 規劃** | 十二流月曆、起居 CRUD、五行諧振評分、年度生活規劃書 | 5 步驟 |
 | **Phase 24** | **百歲流年·人生推演模擬器 (0-100 BaZi Life Odyssey)** | 0~100歲流年骨幹、五維屬性規則、台灣時代大事紀擬真、雙軌推進、LLM 抉擇、一生蓋棺論定 | 7 步驟 |
 | **Phase 29** | **超詳細使用者說明手冊、網站連結指南與命理明師智能問診導航** | 完整使用手冊 (USER_MANUAL.md)、全站情境指南 View (/guide)、AI 明師情境問診、Markdown 站內跳轉 | 5 步驟 |
+| **Phase 30** | **核心排盤與抽牌確定性防線 (Deterministic Core Calculation & Tarot Engine Law)** | 八字四柱/紫微十二宮由程式庫精密排演、塔羅78張牌義/6大牌陣由程式隨機洗牌抽牌、AI 解盤鐵律與拒絕自排導引 | 4 步驟 |
 
 ---
 
@@ -668,6 +669,54 @@
     - 精簡 `docker-compose.yml` 為單一服務 `celestial-app`，對外僅暴露單一連接埠 `5499:5499`，徹底省去獨立 Nginx 容器與多容器通訊負擔。
     - 編寫 API 與 SPA 路由專項整合測試（涵蓋首頁 `/`、SPA 路由 `/bazi` 與 404 JSON 邊界隔離）。
   - **驗證方式**：單元測試 30/30、後端整合測試 70/70，全專案 100 項測試 100% 綠燈，`pnpm -r build` 0 錯誤。
+
+---
+
+## Phase 30: 核心排盤與抽牌確定性防線 (Deterministic Core Calculation & Tarot Engine Law)
+
+### 任務目標
+落實 Rule 5（任務拆分）：程式碼處理確定性計算與隨機抽牌，AI 專注於人文脈絡與解盤諮詢。
+確保八字四柱干支十神與紫微十二宮百星四化均由 `@celestial/astro-core` 演算法庫精密排演；
+確保 78 張韋特塔羅牌義獨立完整、6 大經典牌陣擴充完備，抽牌由程式 Fisher-Yates 隨機演算法客觀進行，嚴禁 AI 進行模糊計算、星盤捏造或虛構抽牌。
+
+- [x] **Task 30.1: 八字四柱與紫微十二宮演算法確定性排盤保證 (Deterministic BaZi & ZiWei Core Engine)**
+  - **範圍**：
+    - 確保 `calculateBaziChart` 與 `calculateZiweiChart` 涵蓋真太陽時校正、精確節氣交接、年月日時柱干支、地支藏干、十神、納音、大運起運、五行能量定量分析。
+    - 紫微斗數精密安命身宮、五行局、十四主星廟旺平陷、六吉六煞輔曜、十二宮干支與生年四化動能，全數由確定性代碼推導。
+    - 後端 API 與前端視圖（`BaziView.vue`、`ZiweiView.vue`）100% 透過純函數庫計算，杜絕向外部 LLM 委派排盤計算。
+  - **驗證方式**：astro-core 32 項單元測試全數通過。
+
+- [x] **Task 30.2: 塔羅牌 78 張獨立牌義深度定義、6 大經典牌陣擴充與程式 Fisher-Yates 隨機洗牌演算法抽牌 (78 Tarot Cards, 6 Classic Spreads & Algorithmic Shuffling)**
+  - **範圍**：
+    - 在 `packages/astro-core/src/tarot/minor-arcana.ts` 為 56 張小阿爾克那（權杖 14 張、聖杯 14 張、寶劍 14 張、星幣 14 張）逐一建立深度正逆位牌意（關鍵詞、整體心靈概論、愛情感情指引、事業決策方針），徹底告別模板佔位符。
+    - 牌庫精準維持 78 張（22 大阿爾克那 + 56 小阿爾克那），100% 映射至實體牌面圖片檔案。
+    - 牌陣槽位擴充為 6 大經典牌陣：
+      1. `single`: 每日神諭單張牌陣 (1張)
+      2. `three_cards`: 時間之流三張牌陣 (3張)
+      3. `holy_triangle`: 身心靈聖三角牌陣 (3張)
+      4. `two_choices`: 二選一抉擇牌陣 (5張)
+      5. `hexagram`: 六芒星全方位吉凶牌陣 (7張)
+      6. `celtic_cross`: 經典塞爾特十字牌陣 (10張)
+    - 抽牌嚴格由 `drawTarotSpread` 透過 Fisher-Yates 洗牌演算法進行客觀隨機抽取與逆位機率計算，嚴禁 AI 虛構或手動指定抽出的牌卡。
+    - 前端 `TarotView.vue` 同步支援 6 種牌陣選擇與即時翻牌體驗。
+  - **驗證方式**：astro-core 32/32 單元測試全綠，驗證 78 張牌非模板與 6 種牌陣抽取無重複。
+
+- [x] **Task 30.3: 後端 LLM 服務排盤抽牌鐵律提示詞工程、格式化數據注入器 (`formatDeterministicChartData`) 與 AI 算命自排拒絕導引機制**
+  - **範圍**：
+    - 在 `apps/server/src/modules/llm/service.ts` 制定【排盤與抽牌確定性鐵律】：AI 是「解盤諮詢師」，絕非「排盤計算器或抽牌機」。
+    - 在 `DEFAULT_LLM_CONFIG.systemPrompt`、`MODULE_ROLES.ZIWEI`、`MODULE_ROLES.BAZI`、`MODULE_ROLES.TAROT` 與 `enrichedSystemPrompt` 注入不可逾越的鐵律規則。
+    - 實作 `formatDeterministicChartData(chartContext: ChartContext)`：自動將八字四柱干支/十神/喜用、紫微十二宮主煞星廟旺/四化、塔羅隨機抽出牌卡槽位/牌義，格式化為嚴謹客觀文字，杜絕 raw JSON 截斷與 AI 幻覺。
+    - 若傳入的 `rawData` 僅包含出生時間參數或牌陣類型，後端自動由 `@celestial/astro-core` 底層計算/抽牌補全。
+    - 在 `generateScenarioConsultationGuide` 與內建合成器中加入意圖攔截：求測者直接在對話中要求排八字、排紫微或抽塔羅牌且無上下文時，AI 嚴格拒絕自行推演，並明確引導至專屬頁面（`/bazi`, `/ziwei`, `/tarot`）由程式庫演算。
+  - **驗證方式**：server 40 項 API 測試（含新增的確定性排盤數據注入與 AI 拒絕自排導引測試）全數綠燈通過。
+
+- [x] **Task 30.4: 全套意圖整合測試與跨端編譯驗收 (104 Tests 100% Pass & Multi-Package Build)**
+  - **範圍**：
+    - `packages/astro-core`: 32/32 單元測試通過。
+    - `apps/server`: 72/72 整合測試通過（40 API + 19 Role RAG + 13 Admin）。
+    - 全專案共計 104/104 項測試全數通過（100% Pass）。
+    - `@celestial/astro-core`、`@celestial/server`、`@celestial/web` 生產構建 0 錯誤。
+  - **驗證方式**：`pnpm -r test` 全綠，`pnpm -r build` 全綠。
 
 ---
 

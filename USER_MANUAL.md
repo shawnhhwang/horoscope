@@ -66,7 +66,7 @@ $$\text{人事努力} \left(\frac{1}{3}\right) + \text{地理空間調適} \left
 | **周易六爻卜卦** | `/iching` | [http://localhost:5499/iching](http://localhost:5499/iching) | 銅錢搖卦 / 先天數理起卦 | 即時具體事件決策、二選一難題、動爻變卦吉凶、384 爻辭 |
 | **姓名學五格起名** | `/naming` | [http://localhost:5499/naming](http://localhost:5499/naming) | 姓氏、當前名字 / 生辰喜用 | 康熙筆劃、天人地總外五格 81 數理、三才生剋、喜用補缺起名 |
 | **西洋本命星盤** | `/western` | [http://localhost:5499/western](http://localhost:5499/western) | 出生年月日時、經緯度 | 開普勒十大行星、上升ASC/天頂MC四軸、五大相位、八大月相原型 |
-| **偉特塔羅牌占卜** | `/tarot` | [http://localhost:5499/tarot](http://localhost:5499/tarot) | 抽牌張數與牌陣選擇 | 心理投射、心靈盲點、5 大牌陣（單張/時間流/聖三角/二選一/十字） |
+| **偉特塔羅牌占卜** | `/tarot` | [http://localhost:5499/tarot](http://localhost:5499/tarot) | 抽牌張數與牌陣選擇 | 78張完整牌庫、6 大經典牌陣（單張/時間流/聖三角/二選一/六芒星/十字）、程式 Fisher-Yates 隨機洗牌 |
 | **七政四餘天星盤** | `/qizheng` | [http://localhost:5499/qizheng](http://localhost:5499/qizheng) | 出生年月日時、經緯度 | 皇家天星學、七政四餘、廿八宿度數入宿、十二辰次、恩難四星 |
 | **命盤保險庫與隨筆** | `/vault` | [http://localhost:5499/vault](http://localhost:5499/vault) | 登入會員或 DEMO 身分 | 親友生辰檔案一鍵調用、個人測算感悟日記管理 |
 | **後台管理中樞** | `/admin/dashboard`| [http://localhost:5499/admin/dashboard](http://localhost:5499/admin/dashboard)| 管理員登入或 DEMO ADMIN | 運營大盤、SQLite 備份還原、解讀辭庫熱編修、會員權限、LLM 參數 |
@@ -245,13 +245,15 @@ flowchart TD
 *   **功能路徑**：[http://localhost:5499/tarot](http://localhost:5499/tarot)
 *   **需要輸入**：選擇牌陣，心中默想問題，點擊洗牌與抽牌。
 *   **畫面重點與解盤指標**：
-    *   **5 種經典牌陣**：
-        1. 單張啟示牌陣 (Daily Oracle)
-        2. 時間之流牌陣 (過去 / 現在 / 未來 3 張)
-        3. 身心靈聖三角牌陣 (Mind, Body, Spirit)
-        4. 二選一決策牌陣 (兩條路徑比較 5 張)
-        5. 塞爾特十字牌陣 (深度全方位 10 張)
-    *   **正位與逆位完整牌義**：採用 Pamela Colman Smith 1909 公有領域高解析度牌面，解析包含意識光明面與潛意識陰影整合。
+    *   **⚠️【抽牌確定性鐵律】**：本系統完整內建 78 張獨立韋特塔羅牌義，**抽牌嚴格由程式 Fisher-Yates 隨機洗牌演算法客觀抽出（不由 AI 進行）**，AI 僅負責依據已抽出的牌面進行深度潛意識解讀與決策啟迪。
+    *   **6 種經典牌陣**：
+        1. 每日神諭單張牌陣 (Daily Oracle，1 張)
+        2. 時間之流牌陣 (過去 / 現在 / 未來，3 張)
+        3. 身心靈聖三角牌陣 (Mind, Body, Spirit，3 張)
+        4. 二選一抉擇牌陣 (兩條路徑比較，5 張)
+        5. 六芒星全方位吉凶牌陣 (因果阻力與終局預測，7 張)
+        6. 經典塞爾特十字牌陣 (深度全方位解碼，10 張)
+    *   **78 張獨立深度正逆位牌義**：採用 Pamela Colman Smith 1909 公有領域高解析度牌面，56 張小阿爾克那與 22 張大阿爾克那均具備獨立的正逆位關鍵詞、心靈概論、愛情指引與事業決策方針。
 
 ---
 

@@ -435,6 +435,55 @@ describe('🌟 萬象天儀 核心演算法庫 Intent-Based Tests', () => {
         expect(stat.size).toBeGreaterThan(10240); // 檔案大小需大於 10KB
       });
     });
+
+    it('78 張牌庫應全數具備獨立且深度的正逆位牌意 (非模板字串)', () => {
+      const deck = generateFullDeck();
+      expect(deck.length).toBe(78);
+      deck.forEach((card) => {
+        expect(card.uprightMeaning.keywords.length).toBeGreaterThanOrEqual(3);
+        expect(card.uprightMeaning.overview.length).toBeGreaterThanOrEqual(15);
+        expect(card.uprightMeaning.love.length).toBeGreaterThanOrEqual(10);
+        expect(card.uprightMeaning.career.length).toBeGreaterThanOrEqual(10);
+
+        expect(card.reversedMeaning.keywords.length).toBeGreaterThanOrEqual(3);
+        expect(card.reversedMeaning.overview.length).toBeGreaterThanOrEqual(15);
+        expect(card.reversedMeaning.love.length).toBeGreaterThanOrEqual(10);
+        expect(card.reversedMeaning.career.length).toBeGreaterThanOrEqual(10);
+
+        // 牌名與概論不得為模板佔位符
+        expect(card.uprightMeaning.overview).not.toContain('${');
+        expect(card.uprightMeaning.keywords[0]).not.toContain('能量');
+      });
+    });
+
+    it('應支援完整的 6 種經典牌陣 (單張、時間之流、聖三角、二選一、六芒星、塞爾特十字) 且抽牌由程式隨機進行', () => {
+      const spreadConfigs: { spread: any; expectedCount: number }[] = [
+        { spread: 'single', expectedCount: 1 },
+        { spread: 'three_cards', expectedCount: 3 },
+        { spread: 'holy_triangle', expectedCount: 3 },
+        { spread: 'two_choices', expectedCount: 5 },
+        { spread: 'hexagram', expectedCount: 7 },
+        { spread: 'celtic_cross', expectedCount: 10 },
+      ];
+
+      spreadConfigs.forEach(({ spread, expectedCount }) => {
+        const res = drawTarotSpread(spread);
+        expect(res.drawnCards.length).toBe(expectedCount);
+        const cardIds = new Set(res.drawnCards.map((c) => c.card.id));
+        expect(cardIds.size).toBe(expectedCount); // 隨機抽牌無重複
+        res.drawnCards.forEach((d) => {
+          expect(d.positionName).toBeDefined();
+          expect(d.positionMeaning).toBeDefined();
+          expect(typeof d.isReversed).toBe('boolean');
+        });
+      });
+
+      // 驗證六芒星牌陣槽位定義
+      const hexRes = drawTarotSpread('hexagram');
+      expect(hexRes.spreadTitle).toContain('六芒星');
+      expect(hexRes.drawnCards[0].positionName).toContain('過去起因');
+      expect(hexRes.drawnCards[6].positionName).toContain('最終綜合預測');
+    });
   });
 
   describe('8. 七政四餘天星排盤演算法 (Qizheng Siyu Celestial Chart)', () => {

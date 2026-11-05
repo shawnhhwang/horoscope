@@ -431,6 +431,135 @@ describe('🚀 萬象天儀 後端 API 服務整合測試', () => {
       }
     });
 
+    it('POST /api/v1/llm/chat 應注入確定性排盤數據 (八字四柱干支與十神、紫微十二宮、塔羅抽牌)，並嚴禁 AI 自行排盤或抽牌', async () => {
+      let capturedSystemPrompt = '';
+      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (_url, init: any) => {
+        const payload = JSON.parse(String(init?.body || '{}'));
+        capturedSystemPrompt = payload.messages?.[0]?.content || '';
+        return {
+          ok: true,
+          json: async () => ({
+            choices: [
+              {
+                message: {
+                  content: '專業顧問解析完成：四柱星曜均依客觀盤面開展。',
+                },
+              },
+            ],
+          }),
+        } as any;
+      });
+
+      try {
+        // 1. 八字：驗證傳入八字資料時，系統自動格式化確定性四柱數據並加入鐵律標語
+        const baziRes = await request(app)
+          .post('/api/v1/llm/chat')
+          .send({
+            messages: [{ role: 'user', content: '請為我分析日主五行與大運' }],
+            chartContext: {
+              moduleType: 'BAZI',
+              title: '四柱八字盤',
+              rawData: {
+                birthDate: '1995-10-24T14:30:00Z',
+                gender: '男',
+                longitude: 121.56,
+              },
+            },
+          });
+        expect(baziRes.status).toBe(200);
+        expect(capturedSystemPrompt).toContain('排盤確定性鐵律');
+        expect(capturedSystemPrompt).toContain('@celestial/astro-core');
+        expect(capturedSystemPrompt).toContain('年柱');
+        expect(capturedSystemPrompt).toContain('月柱');
+        expect(capturedSystemPrompt).toContain('日柱');
+        expect(capturedSystemPrompt).toContain('時柱');
+
+        // 2. 紫微斗數：驗證傳入紫微盤時，系統注入十二宮精密配置與確定性鐵律
+        const ziweiRes = await request(app)
+          .post('/api/v1/llm/chat')
+          .send({
+            messages: [{ role: 'user', content: '請為我分析紫微命身宮' }],
+            chartContext: {
+              moduleType: 'ZIWEI',
+              title: '紫微天機排盤',
+              rawData: {
+                birthDate: '1995-10-24T14:30:00Z',
+                gender: '男',
+                longitude: 121.56,
+              },
+            },
+          });
+        expect(ziweiRes.status).toBe(200);
+        expect(capturedSystemPrompt).toContain('排盤確定性鐵律');
+        expect(capturedSystemPrompt).toContain('十二宮位精密星曜配置');
+        expect(capturedSystemPrompt).toContain('命宮');
+
+        // 3. 塔羅占卜：驗證傳入塔羅時，系統注入由程式隨機抽出之牌陣與抽牌鐵律
+        const tarotRes = await request(app)
+          .post('/api/v1/llm/chat')
+          .send({
+            messages: [{ role: 'user', content: '請為我解讀此次抽牌心靈啟示' }],
+            chartContext: {
+              moduleType: 'TAROT',
+              title: '時間之流三張牌陣',
+              rawData: {
+                spreadType: 'three_cards',
+              },
+            },
+          });
+        expect(tarotRes.status).toBe(200);
+        expect(capturedSystemPrompt).toContain('抽牌確定性鐵律');
+        expect(capturedSystemPrompt).toContain('Fisher-Yates 隨機演算法');
+        expect(capturedSystemPrompt).toContain('槽位 1');
+        expect(capturedSystemPrompt).toContain('槽位 2');
+        expect(capturedSystemPrompt).toContain('槽位 3');
+      } finally {
+        fetchSpy.mockRestore();
+      }
+    });
+
+    it('當求測者在對話中要求排八字、排紫微或抽塔羅且未附排盤上下文時，系統應嚴格拒絕 AI 自行推算並導引至程式庫專屬頁面', async () => {
+      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('LLM endpoint offline fallback'));
+      try {
+        // 1. 詢問排八字
+        const baziGuideRes = await request(app)
+          .post('/api/v1/llm/chat')
+          .send({
+            messages: [{ role: 'user', content: '我是 1990年5月20日 14點出生的男生，請幫我排八字算命' }],
+          });
+        expect(baziGuideRes.status).toBe(200);
+        expect(baziGuideRes.body.data.reply).toContain('排盤確定性鐵律');
+        expect(baziGuideRes.body.data.reply).toContain('嚴格禁止 AI 進行模糊估算或自行排盤');
+        expect(baziGuideRes.body.data.reply).toContain('/bazi');
+
+        // 2. 詢問排紫微
+        const ziweiGuideRes = await request(app)
+          .post('/api/v1/llm/chat')
+          .send({
+            messages: [{ role: 'user', content: '請幫我排紫微斗數命盤，我想看命宮主星' }],
+          });
+        expect(ziweiGuideRes.status).toBe(200);
+        expect(ziweiGuideRes.body.data.reply).toContain('排盤確定性鐵律');
+        expect(ziweiGuideRes.body.data.reply).toContain('嚴格禁止 AI 自行排盤或憑空捏造十二宮星曜');
+        expect(ziweiGuideRes.body.data.reply).toContain('/ziwei');
+
+        // 3. 詢問抽塔羅
+        const tarotGuideRes = await request(app)
+          .post('/api/v1/llm/chat')
+          .send({
+            messages: [{ role: 'user', content: '請幫我抽塔羅牌算感情復合' }],
+          });
+        expect(tarotGuideRes.status).toBe(200);
+        expect(tarotGuideRes.body.data.reply).toContain('抽牌確定性鐵律');
+        expect(tarotGuideRes.body.data.reply).toContain('78 張經典韋特塔羅牌義');
+        expect(tarotGuideRes.body.data.reply).toContain('6 大經典牌陣');
+        expect(tarotGuideRes.body.data.reply).toContain('抽牌由程式 Fisher-Yates 隨機洗牌演算法客觀進行');
+        expect(tarotGuideRes.body.data.reply).toContain('/tarot');
+      } finally {
+        fetchSpy.mockRestore();
+      }
+    });
+
     it('管理員應能查詢與動態修改 LLM 助手配置', async () => {
       // 1. 查詢當前配置
       const getRes = await request(app)

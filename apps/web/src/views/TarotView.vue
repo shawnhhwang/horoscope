@@ -384,6 +384,7 @@ const spreads: { type: SpreadType; label: string; count: number }[] = [
   { type: 'three_cards', label: '時間之流三張牌', count: 3 },
   { type: 'holy_triangle', label: '身心靈聖三角', count: 3 },
   { type: 'two_choices', label: '二選一抉擇牌陣', count: 5 },
+  { type: 'hexagram', label: '六芒星全方位吉凶', count: 7 },
   { type: 'celtic_cross', label: '塞爾特十字經典牌陣', count: 10 },
 ];
 

@@ -1,4 +1,5 @@
 import { DrawnCard, SpreadType, TarotCard, TarotReadingResult, TarotSuit } from './types.js';
+import { MINOR_ARCANA_DATA } from './minor-arcana.js';
 
 // 22 張大阿爾克那 (Major Arcana)
 const MAJOR_ARCANA_DEFINITIONS: Omit<TarotCard, 'id'>[] = [
@@ -434,7 +435,7 @@ export function generateFullDeck(): TarotCard[] {
     });
   });
 
-  // 2. 加入 56 張小阿爾克那
+  // 2. 加入 56 張小阿爾克那 (完整 56 張經典偉特牌義獨立定義)
   const suits: { suit: TarotSuit; nameZh: string; element: '火' | '水' | '風' | '土' }[] = [
     { suit: 'wands', nameZh: '權杖', element: '火' },
     { suit: 'cups', nameZh: '聖杯', element: '水' },
@@ -444,61 +445,18 @@ export function generateFullDeck(): TarotCard[] {
 
   let cardId = 22;
   suits.forEach((s) => {
-    // 1(Ace) ~ 10
-    for (let num = 1; num <= 10; num++) {
-      const numLabel = num === 1 ? '首牌 (Ace)' : `${num}`;
+    const suitDefs = MINOR_ARCANA_DATA[s.suit] || [];
+    suitDefs.forEach((def) => {
       cards.push({
         id: cardId++,
-        nameEn: `${s.suit} ${num}`,
-        nameZh: `${s.nameZh}${numLabel}`,
+        nameEn: def.nameEn,
+        nameZh: def.nameZh,
         arcana: 'minor',
         suit: s.suit,
-        number: num,
+        number: def.number,
         element: s.element,
-        uprightMeaning: {
-          keywords: [`${s.nameZh}能量`, '積極順行', '專注行動'],
-          overview: `${s.nameZh}元素正位顯化，象徵在${s.element}屬性領域具備主動且協調的創造力。`,
-          love: `感情中展現出真誠主動的一面，彼此信任加深。`,
-          career: `工作進度推進順暢，掌握了關鍵的執行資源與要領。`,
-        },
-        reversedMeaning: {
-          keywords: [`${s.nameZh}阻滯`, '精力分散', '需重整節奏'],
-          overview: `${s.nameZh}能量過剩或匱乏，需要放緩節奏檢視內外平衡。`,
-          love: `溝通節奏錯位，需多些體貼與聆聽。`,
-          career: `執行中出現小波折，宜重新梳理流程後再繼續。`,
-        },
-      });
-    }
-
-    // 4 張宮廷牌 (侍從 Page, 騎士 Knight, 王后 Queen, 國王 King)
-    const courtCards = [
-      { num: 11, title: '侍從 (Page)' },
-      { num: 12, title: '騎士 (Knight)' },
-      { num: 13, title: '王后 (Queen)' },
-      { num: 14, title: '國王 (King)' },
-    ];
-
-    courtCards.forEach((court) => {
-      cards.push({
-        id: cardId++,
-        nameEn: `${s.suit} ${court.title}`,
-        nameZh: `${s.nameZh}${court.title}`,
-        arcana: 'minor',
-        suit: s.suit,
-        number: court.num,
-        element: s.element,
-        uprightMeaning: {
-          keywords: [`${s.nameZh}人格`, '能力發揮', '掌控局面'],
-          overview: `象徵具備${s.nameZh}成熟特質的人物或自身相應人格的完美顯現。`,
-          love: `在感情中展現出可靠迷人的特質，給予堅定的支持。`,
-          career: `領導統御或專業執行力受到高度肯定，扮演關鍵角色。`,
-        },
-        reversedMeaning: {
-          keywords: ['不成熟表現', '情緒失衡', '缺乏耐心'],
-          overview: `警惕任性或缺乏擔當的消極行為，需提升成熟度與包容力。`,
-          love: `關係中偶有孩子氣或固執己見的小爭執。`,
-          career: `處事不夠老練，需虛心接受前輩的指點與批評。`,
-        },
+        uprightMeaning: def.uprightMeaning,
+        reversedMeaning: def.reversedMeaning,
       });
     });
   });
@@ -506,8 +464,8 @@ export function generateFullDeck(): TarotCard[] {
   return cards;
 }
 
-// 牌陣槽位定義
-const SPREAD_CONFIGS: Record<SpreadType, { title: string; count: number; positions: { name: string; meaning: string }[] }> = {
+// 牌陣槽位定義 (全系統完整 6 大經典牌陣)
+export const SPREAD_CONFIGS: Record<SpreadType, { title: string; count: number; positions: { name: string; meaning: string }[] }> = {
   single: {
     title: '每日神諭單張牌陣',
     count: 1,
@@ -540,6 +498,19 @@ const SPREAD_CONFIGS: Record<SpreadType, { title: string; count: number; positio
       { name: '選擇 A 的結局', meaning: '第一種選項最終可能獲得的成果' },
       { name: '選擇 B 的路徑', meaning: '採取第二種選項將面臨的過程' },
       { name: '選擇 B 的結局', meaning: '第二種選項最終可能獲得的成果' },
+    ],
+  },
+  hexagram: {
+    title: '六芒星全方位吉凶牌陣',
+    count: 7,
+    positions: [
+      { name: '1. 過去起因', meaning: '導致問題形成的過往基礎與深層因由' },
+      { name: '2. 當前處境', meaning: '當下所身處的實際狀態與核心考驗' },
+      { name: '3. 未來走向', meaning: '若順其自然發展的近期未來演變' },
+      { name: '4. 內在助力', meaning: '自身具備的潛在優勢、才幹與心靈資源' },
+      { name: '5. 外在阻力', meaning: '外部環境的挑戰、阻礙與潛在盲點' },
+      { name: '6. 內心希望與恐懼', meaning: '潛意識中最深層的渴望或擔憂焦點' },
+      { name: '7. 最終綜合預測', meaning: '整合所有能量與因果後的終局指引' },
     ],
   },
   celtic_cross: {

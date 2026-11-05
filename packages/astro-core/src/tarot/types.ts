@@ -25,7 +25,7 @@ export interface TarotCard {
   imagePlaceholder?: string;
 }
 
-export type SpreadType = 'single' | 'three_cards' | 'holy_triangle' | 'two_choices' | 'celtic_cross';
+export type SpreadType = 'single' | 'three_cards' | 'holy_triangle' | 'two_choices' | 'hexagram' | 'celtic_cross';
 
 export interface DrawnCard {
   card: TarotCard;
