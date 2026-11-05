@@ -193,11 +193,56 @@
             <div class="text-xs font-serif text-dark-gold tracking-widest uppercase mb-2">TAROT ESOTERICISM</div>
             <h3 class="font-serif text-xl font-bold mb-2 group-hover:text-dark-gold transition-colors">78張韋特塔羅占卜</h3>
             <p class="text-xs text-dark-muted leading-relaxed mb-4">
-              22 大阿爾克那與 56 小阿爾克那，沉浸式翻牌與正逆位解析，支援塞爾特十字等 5 大牌陣。
+              22 大阿爾克那與 56 小阿爾克那，沉浸式翻牌與正逆位解析，支援塞爾特十字等 6 大牌陣。
             </p>
           </div>
           <div class="flex items-center text-xs font-serif text-dark-gold pt-2 border-t border-dark-gold/15">
             <span>洗牌抽取神諭</span>
+            <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+          </div>
+        </router-link>
+
+        <!-- 9. 文鳥靈動抽籤 (鳥卦占卜) -->
+        <router-link to="/buncho" class="group glass-panel rounded-2xl p-6 hover:border-dark-gold transition-all duration-300 hover:shadow-cosmic relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-serif text-dark-gold tracking-widest uppercase mb-2">BUNCHO DIVINATION</div>
+            <h3 class="font-serif text-xl font-bold mb-2 group-hover:text-dark-gold transition-colors">文鳥占卜 · 鳥卦抽籤</h3>
+            <p class="text-xs text-dark-muted leading-relaxed mb-4">
+              仿真靈鳥出籠啄籤動畫與擬真生動圖像，二十八星宿靈動籤詩、神鳥悄悄話及感情事業五大向度啟示。
+            </p>
+          </div>
+          <div class="flex items-center text-xs font-serif text-dark-gold pt-2 border-t border-dark-gold/15">
+            <span>請靈鳥銜籤指點</span>
+            <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+          </div>
+        </router-link>
+
+        <!-- 10. 台灣廟宇六十甲子籤詩與擲筊 -->
+        <router-link to="/temple-poem" class="group glass-panel rounded-2xl p-6 hover:border-dark-gold transition-all duration-300 hover:shadow-cosmic relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-serif text-dark-gold tracking-widest uppercase mb-2">TEMPLE POEM & BWA-BWEI</div>
+            <h3 class="font-serif text-xl font-bold mb-2 group-hover:text-dark-gold transition-colors">台灣廟宇籤詩 · 擲筊請示</h3>
+            <p class="text-xs text-dark-muted leading-relaxed mb-4">
+              正統媽祖六十甲子籤詩全庫、稟報神明搖籤、真實月牙木筊擲筊（聖筊/笑筊/陰筊）定籤，十大事項精準斷析。
+            </p>
+          </div>
+          <div class="flex items-center text-xs font-serif text-dark-gold pt-2 border-t border-dark-gold/15">
+            <span>虔心求籤擲筊</span>
+            <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+          </div>
+        </router-link>
+
+        <!-- 11. 周公解夢與榮格原型釋夢 -->
+        <router-link to="/dream" class="group glass-panel rounded-2xl p-6 hover:border-dark-gold transition-all duration-300 hover:shadow-cosmic relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-serif text-dark-gold tracking-widest uppercase mb-2">DREAM INTERPRETATION</div>
+            <h3 class="font-serif text-xl font-bold mb-2 group-hover:text-dark-gold transition-colors">周公解夢 · 潛意識原型</h3>
+            <p class="text-xs text-dark-muted leading-relaxed mb-4">
+              八大分類周公古籍原義、現代生活吉凶徵兆，結合榮格心理學潛意識意象解析，支援多意象夢境合成推演。
+            </p>
+          </div>
+          <div class="flex items-center text-xs font-serif text-dark-gold pt-2 border-t border-dark-gold/15">
+            <span>探索夢境密碼</span>
             <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
           </div>
         </router-link>

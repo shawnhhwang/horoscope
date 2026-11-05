@@ -15,6 +15,20 @@ import {
   calculateAnnualDestinyCalendar,
   evaluateHabitResonance,
   FiveElement,
+  drawBunchoLot,
+  getAllBunchoLots,
+  getBunchoLotById,
+  drawTempleLot,
+  castBwaBwei,
+  getAllTemplePoemLots,
+  getTemplePoemLotById,
+  getTemplePoemLotByStemBranch,
+  formatTemplePoemAspectReport,
+  searchDreamDictionary,
+  getDreamEntriesByCategory,
+  getAllDreamCategories,
+  getDreamEntryById,
+  interpretDreamScenario,
 } from '@celestial/astro-core';
 import { prisma } from '@celestial/database';
 
@@ -308,4 +322,147 @@ calculatorRouter.post('/annual-planner/analyze', async (req: Request, res: Respo
     return res.status(500).json({ success: false, message: err.message || '起居規劃診斷失敗' });
   }
 });
+
+// 11. 文鳥抽籤模組 (Java Sparrow Divination)
+calculatorRouter.post('/buncho/draw', async (req: Request, res: Response) => {
+  try {
+    const { question, aspect, customLotId } = req.body;
+    const result = drawBunchoLot({
+      question,
+      aspect,
+      customLotId: customLotId ? Number(customLotId) : undefined,
+    });
+
+    return res.json({
+      success: true,
+      data: result,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message || '文鳥抽籤失敗' });
+  }
+});
+
+calculatorRouter.get('/buncho/lots', async (_req: Request, res: Response) => {
+  try {
+    const lots = getAllBunchoLots();
+    return res.json({
+      success: true,
+      data: lots,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message || '讀取文鳥靈籤庫失敗' });
+  }
+});
+
+// 12. 台灣廟宇六十甲子籤詩與解籤系統 (Taiwan Temple Poem & Bwa-Bwei System)
+calculatorRouter.post('/temple/draw', async (req: Request, res: Response) => {
+  try {
+    const { customLotId, seekerName, inquiryAspect, question } = req.body;
+    const lot = drawTempleLot({
+      customLotId: customLotId ? Number(customLotId) : undefined,
+      seekerName,
+      inquiryAspect,
+      question,
+    });
+
+    const aspectReport = formatTemplePoemAspectReport(lot, inquiryAspect || 'general');
+
+    return res.json({
+      success: true,
+      data: {
+        lot,
+        aspectReport,
+        seekerName: seekerName || '信士/信女',
+        inquiryAspect: inquiryAspect || 'general',
+        question: question || '所求吉凶指引',
+      },
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message || '廟宇抽籤失敗' });
+  }
+});
+
+calculatorRouter.post('/temple/bwei', async (req: Request, res: Response) => {
+  try {
+    const { customType } = req.body;
+    const result = castBwaBwei(customType);
+
+    return res.json({
+      success: true,
+      data: result,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message || '擲筊請示失敗' });
+  }
+});
+
+calculatorRouter.get('/temple/lots', async (_req: Request, res: Response) => {
+  try {
+    const lots = getAllTemplePoemLots();
+    return res.json({
+      success: true,
+      data: lots,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message || '讀取廟宇籤詩庫失敗' });
+  }
+});
+
+calculatorRouter.get('/temple/lot/:id', async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const lot = getTemplePoemLotById(id);
+    if (!lot) {
+      return res.status(404).json({ success: false, message: '查無此籤號' });
+    }
+    return res.json({
+      success: true,
+      data: lot,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message || '讀取籤詩失敗' });
+  }
+});
+
+// 13. 周公解夢與潛意識意象分析 (Duke of Zhou Dream Interpretation)
+calculatorRouter.post('/dream/search', async (req: Request, res: Response) => {
+  try {
+    const { keyword = '', category } = req.body;
+    const result = searchDreamDictionary(String(keyword), category);
+
+    return res.json({
+      success: true,
+      data: result,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message || '周公解夢檢索失敗' });
+  }
+});
+
+calculatorRouter.post('/dream/analyze', async (req: Request, res: Response) => {
+  try {
+    const { scenario = '' } = req.body;
+    const analysis = interpretDreamScenario(String(scenario));
+
+    return res.json({
+      success: true,
+      data: analysis,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message || '夢境交織剖析失敗' });
+  }
+});
+
+calculatorRouter.get('/dream/categories', async (_req: Request, res: Response) => {
+  try {
+    const categories = getAllDreamCategories();
+    return res.json({
+      success: true,
+      data: categories,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message || '取得解夢分類失敗' });
+  }
+});
+
 

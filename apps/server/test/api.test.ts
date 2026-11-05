@@ -239,6 +239,74 @@ describe('🚀 萬象天儀 後端 API 服務整合測試', () => {
       expect(res.body.data.evaluation.resonanceScore).toBeGreaterThanOrEqual(50);
       expect(res.body.data.evaluation.actionPlans.length).toBeGreaterThanOrEqual(2);
     });
+
+    it('POST /api/v1/calculator/buncho/draw 應成功抽取文鳥靈籤與動態擬真過程數據', async () => {
+      const res = await request(app).post('/api/v1/calculator/buncho/draw').send({
+        question: '今年能否順利考取理想研究所？',
+        aspect: '學業',
+        customLotId: 1,
+      });
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.lot.id).toBe(1);
+      expect(res.body.data.lot.name).toContain('靈雀銜春');
+      expect(res.body.data.lot.poem.length).toBe(4);
+      expect(res.body.data.lot.birdAction).toContain('白文鳥');
+      expect(res.body.data.lot.aspects.study).toBeDefined();
+
+      const lotsRes = await request(app).get('/api/v1/calculator/buncho/lots');
+      expect(lotsRes.status).toBe(200);
+      expect(lotsRes.body.data.length).toBe(28);
+    });
+
+    it('POST /api/v1/calculator/temple/draw 與 /temple/bwei 應成功抽取六十甲子籤並支援擲筊與面向解籤', async () => {
+      const drawRes = await request(app).post('/api/v1/calculator/temple/draw').send({
+        seekerName: '林信士',
+        inquiryAspect: 'marriage',
+        question: '與當前對象是否合適步入婚姻？',
+        customLotId: 1,
+      });
+      expect(drawRes.status).toBe(200);
+      expect(drawRes.body.success).toBe(true);
+      expect(drawRes.body.data.lot.stemBranch).toBe('甲子');
+      expect(drawRes.body.data.lot.title).toContain('包公');
+      expect(drawRes.body.data.aspectReport.aspectTitle).toContain('婚姻');
+      expect(drawRes.body.data.aspectReport.aspectInterpretation).toBeDefined();
+
+      const bweiRes = await request(app).post('/api/v1/calculator/temple/bwei').send({
+        customType: 'sheng_bwei',
+      });
+      expect(bweiRes.status).toBe(200);
+      expect(bweiRes.body.data.type).toBe('sheng_bwei');
+      expect(bweiRes.body.data.typeName).toBe('聖筊');
+      expect(bweiRes.body.data.isAccepted).toBe(true);
+
+      const lotsRes = await request(app).get('/api/v1/calculator/temple/lots');
+      expect(lotsRes.status).toBe(200);
+      expect(lotsRes.body.data.length).toBe(60);
+    });
+
+    it('POST /api/v1/calculator/dream/search 與 /dream/analyze 應成功檢索周公原典與榮格多象徵分析', async () => {
+      const searchRes = await request(app).post('/api/v1/calculator/dream/search').send({
+        keyword: '蛇',
+      });
+      expect(searchRes.status).toBe(200);
+      expect(searchRes.body.data.total).toBeGreaterThanOrEqual(1);
+      expect(searchRes.body.data.matchedEntries[0].classicText).toContain('周公解夢');
+
+      const analyzeRes = await request(app).post('/api/v1/calculator/dream/analyze').send({
+        scenario: '夢見自己飛在天上，地上有好多大水和金龍在游動！',
+      });
+      expect(analyzeRes.status).toBe(200);
+      expect(analyzeRes.body.data.matchedKeywords.length).toBeGreaterThanOrEqual(2);
+      expect(analyzeRes.body.data.dominantOmen).toBe('大吉');
+      expect(analyzeRes.body.data.synthesis.omenSummary).toBeTruthy();
+      expect(analyzeRes.body.data.synthesis.psychologicalCore).toBeTruthy();
+
+      const catRes = await request(app).get('/api/v1/calculator/dream/categories');
+      expect(catRes.status).toBe(200);
+      expect(catRes.body.data.length).toBe(8);
+    });
   });
 
   describe('3. 個人命盤庫與測算日記 (Profiles & Readings)', () => {
@@ -555,6 +623,36 @@ describe('🚀 萬象天儀 後端 API 服務整合測試', () => {
         expect(tarotGuideRes.body.data.reply).toContain('6 大經典牌陣');
         expect(tarotGuideRes.body.data.reply).toContain('抽牌由程式 Fisher-Yates 隨機洗牌演算法客觀進行');
         expect(tarotGuideRes.body.data.reply).toContain('/tarot');
+
+        // 4. 詢問文鳥抽籤
+        const bunchoGuideRes = await request(app)
+          .post('/api/v1/llm/chat')
+          .send({
+            messages: [{ role: 'user', content: '可以幫我文鳥抽籤占卜看看事業嗎？' }],
+          });
+        expect(bunchoGuideRes.status).toBe(200);
+        expect(bunchoGuideRes.body.data.reply).toContain('文鳥抽籤必須由程式庫擬真開局');
+        expect(bunchoGuideRes.body.data.reply).toContain('/buncho');
+
+        // 5. 詢問廟宇籤詩與擲筊
+        const templeGuideRes = await request(app)
+          .post('/api/v1/llm/chat')
+          .send({
+            messages: [{ role: 'user', content: '我想求籤詩，可以幫我擲筊抽一張媽祖籤嗎？' }],
+          });
+        expect(templeGuideRes.status).toBe(200);
+        expect(templeGuideRes.body.data.reply).toContain('六十甲子籤與擲筊必須由程式公正進行');
+        expect(templeGuideRes.body.data.reply).toContain('/temple-poem');
+
+        // 6. 詢問周公解夢
+        const dreamGuideRes = await request(app)
+          .post('/api/v1/llm/chat')
+          .send({
+            messages: [{ role: 'user', content: '我昨晚夢到好多蛇爬進家裡，請幫我解夢' }],
+          });
+        expect(dreamGuideRes.status).toBe(200);
+        expect(dreamGuideRes.body.data.reply).toContain('夢境符號必須由經典字典庫精準檢索');
+        expect(dreamGuideRes.body.data.reply).toContain('/dream');
       } finally {
         fetchSpy.mockRestore();
       }

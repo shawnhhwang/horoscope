@@ -13,6 +13,9 @@ import SynastryView from '../views/SynastryView.vue';
 import AnnualPlannerView from '../views/AnnualPlannerView.vue';
 import LifeSimulatorView from '../views/LifeSimulatorView.vue';
 import UserManualView from '../views/UserManualView.vue';
+import BunchoView from '../views/BunchoView.vue';
+import TemplePoemView from '../views/TemplePoemView.vue';
+import DreamView from '../views/DreamView.vue';
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
@@ -21,6 +24,12 @@ const routes = [
   { path: '/user-manual', redirect: '/guide' },
   { path: '/ziwei', name: 'ziwei', component: ZiweiView },
   { path: '/bazi', name: 'bazi', component: BaziView },
+  { path: '/buncho', name: 'buncho', component: BunchoView },
+  { path: '/bird-divination', redirect: '/buncho' },
+  { path: '/temple-poem', name: 'temple-poem', component: TemplePoemView, alias: '/temple' },
+  { path: '/temple', redirect: '/temple-poem' },
+  { path: '/dream', name: 'dream', component: DreamView, alias: '/zhougong' },
+  { path: '/zhougong', redirect: '/dream' },
   { path: '/simulator', name: 'simulator', component: LifeSimulatorView },
   { path: '/life-simulator', redirect: '/simulator' },
   { path: '/synastry', name: 'synastry', component: SynastryView },

@@ -20,6 +20,7 @@
 | **Phase 24** | **百歲流年·人生推演模擬器 (0-100 BaZi Life Odyssey)** | 0~100歲流年骨幹、五維屬性規則、台灣時代大事紀擬真、雙軌推進、LLM 抉擇、一生蓋棺論定 | 7 步驟 |
 | **Phase 29** | **超詳細使用者說明手冊、網站連結指南與命理明師智能問診導航** | 完整使用手冊 (USER_MANUAL.md)、全站情境指南 View (/guide)、AI 明師情境問診、Markdown 站內跳轉 | 5 步驟 |
 | **Phase 30** | **核心排盤與抽牌確定性防線 (Deterministic Core Calculation & Tarot Engine Law)** | 八字四柱/紫微十二宮由程式庫精密排演、塔羅78張牌義/6大牌陣由程式隨機洗牌抽牌、AI 解盤鐵律與拒絕自排導引 | 4 步驟 |
+| **Phase 31** | **文鳥靈動占卜、台灣廟宇六十甲子籤詩擲筊、周公解夢模組** | 28宿靈鳥出籠啄籤動畫與擬真圖、60甲子媽祖籤詩四部曲擲筊驗杯、8大分類周公古籍與榮格原型釋夢、API 與 UI 全端整合 | 5 步驟 |
 
 ---
 
@@ -717,6 +718,52 @@
     - 全專案共計 104/104 項測試全數通過（100% Pass）。
     - `@celestial/astro-core`、`@celestial/server`、`@celestial/web` 生產構建 0 錯誤。
   - **驗證方式**：`pnpm -r test` 全綠，`pnpm -r build` 全綠。
+
+---
+
+## Phase 31: 文鳥抽籤占卜、台灣廟宇籤詩擲筊、周公解夢模組
+
+- [x] **Task 31.1: 文鳥靈動占卜引擎 (`@celestial/astro-core/buncho`) 與擬真圖片動畫生成**
+  - **範圍**：
+    - 實作 28 宿靈鳥籤詩資料庫 (`buncho/lots.ts`)，每支籤具備獨立詩偈、吉凶等級、五面向建議（感情、事業、財富、學業、決策）與專屬「神鳥悄悄話」。
+    - 抽籤計算器 (`buncho/calculator.ts`) 支援真隨機與自訂挑籤。
+    - 生成擬真白文鳥在竹籠蓄勢待發 (`buncho_cage_ready.jpg`) 與探身出籠銜籤 (`buncho_picking_lot.jpg`) 寫實圖片。
+    - 前端 `BunchoView.vue` 建立 5 階段靈鳥出籠動畫狀態機（`idle` -> `praying` -> `cage_opening` -> `hopping_out` -> `pecking_lots` -> `drawing_lot` -> `delivering` -> `revealed`）與籤詩捲軸展示。
+  - **驗證方式**：astro-core 單元測試通過，圖片載入正常，前端動畫狀態流轉流暢。
+
+- [x] **Task 31.2: 台灣廟宇六十甲子媽祖靈籤與正統擲筊請示引擎 (`@celestial/astro-core/temple-poem`)**
+  - **範圍**：
+    - 實作完整六十甲子媽祖籤詩資料庫 (`temple-poem/lots.ts`)，第一籤甲子至第六十籤癸亥，含七言四句詩文、歷史典故、聖意總綱與十大事項（事業、功名、婚姻、健康、財利、求子、官司、出行、失物、家運）個別斷語。
+    - 實作正統擲筊模擬器 `castBwaBwei()`：嚴格判定聖筊（一平一凸）、笑筊（兩平朝上）、陰筊（兩凸朝下）。
+    - 生成廟宇神案前籤筒 (`temple_cylinder.jpg`) 與月牙紅木筊 (`temple_bwa_bwei.jpg`) 寫實素材。
+    - 前端 `TemplePoemView.vue` 嚴格遵循四部曲古禮：虔心稟報 -> 搖籤筒抽籤 -> 擲筊請示神意（必須擲得聖筊方能定籤）-> 展開籤詩並高亮求問事項。
+  - **驗證方式**：astro-core 單元測試驗證 60 籤完整度與擲筊三象機率分佈。
+
+- [x] **Task 31.3: 周公解夢八大分類古籍字典與榮格原型心理學釋夢引擎 (`@celestial/astro-core/dream`)**
+  - **範圍**：
+    - 實作周公解夢高頻符號辭庫 (`dream/dictionary.ts`)，涵蓋八大類別（天象、人體、動物、植物、建築、財寶、事端、神鬼），每條詞目具備古籍原文斷語、白話析夢、現代吉凶建議與榮格原型深層心理學意象。
+    - 實作多意象複合情境解析演算法 `interpretDreamScenario()`，智慧識別夢境描述中的多重意象並合成綜合吉凶指數與行動建議。
+    - 生成夢境周公超現實唯美場景素材 (`dream_zhougong.jpg`)。
+    - 前端 `DreamView.vue` 提供關鍵字搜尋、熱門標籤快選、八大類別過濾，以及多意象情境複合解析分頁。
+  - **驗證方式**：astro-core 單元測試驗證關鍵詞模糊搜尋、類別過濾與多意象情景合成評分。
+
+- [x] **Task 31.4: 後端 API 路由、LLM 智能顧問角色與確定性數據格式化整合**
+  - **範圍**：
+    - 在 `apps/server/src/modules/calculator/router.ts` 新增 9 個端點：
+      - 文鳥：`POST /buncho/draw`, `GET /buncho/lots`
+      - 廟宇：`POST /temple/draw`, `POST /temple/bwei`, `GET /temple/lots`, `GET /temple/lot/:id`
+      - 解夢：`POST /dream/search`, `POST /dream/analyze`, `GET /dream/categories`
+    - 在 `apps/server/src/modules/llm/service.ts` 擴充 `MODULE_ROLES`（`BUNCHO`, `TEMPLE_POEM`, `DREAM`），擴充 `formatDeterministicChartData` 為三個新模組格式化結構化命理數據，並在情境導航中加入自動引導端點。
+    - 整合後端單元測試與 API 測試：新增 3 個模組的端點校驗與確定性輸出檢查。
+  - **驗證方式**：server 測試 75/75 全數通過。
+
+- [x] **Task 31.5: 前端路由、導航欄、首頁卡片、使用者說明手冊與全系統端點驗收**
+  - **範圍**：
+    - `apps/web/src/router/index.ts`: 註冊 `/buncho`, `/temple-poem`, `/dream` 路由與別名。
+    - `apps/web/src/components/layout/Navbar.vue`: 橫向導覽按鈕新增文鳥占卜、廟宇籤詩、周公解夢。
+    - `apps/web/src/views/HomeView.vue`: 新增 3 張特色功能卡片。
+    - `USER_MANUAL.md` 與 `apps/web/src/views/UserManualView.vue`: 同步更新為 15 大模組操作指南、13 大問診情境地圖與全站連結表。
+  - **驗證方式**：`pnpm -r test` 115 項測試 100% 通過，`pnpm -r build` 全模組生產構建成功。
 
 ---
 

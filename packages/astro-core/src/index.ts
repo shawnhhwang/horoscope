@@ -48,4 +48,20 @@ export * from './life-simulator/rules-engine.js';
 export * from './life-simulator/taiwan-history.js';
 export * from './life-simulator/female-friends.js';
 
+// 文鳥抽籤 (靈雀神諭)
+export * from './buncho/types.js';
+export * from './buncho/lots.js';
+export * from './buncho/calculator.js';
+
+// 台灣廟宇六十甲子籤詩與解籤系統
+export * from './temple-poem/types.js';
+export * from './temple-poem/lots.js';
+export * from './temple-poem/calculator.js';
+
+// 周公解夢與潛意識夢境分析
+export * from './dream/types.js';
+export * from './dream/dictionary.js';
+export * from './dream/calculator.js';
+
+
 

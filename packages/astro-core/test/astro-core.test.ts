@@ -39,6 +39,20 @@ import {
   getBlindRomanticEncounter,
   applyRomanticDecision,
   calculateOneInEightBillion,
+  drawBunchoLot,
+  getAllBunchoLots,
+  getBunchoLotById,
+  drawTempleLot,
+  castBwaBwei,
+  getAllTemplePoemLots,
+  getTemplePoemLotById,
+  getTemplePoemLotByStemBranch,
+  formatTemplePoemAspectReport,
+  searchDreamDictionary,
+  getDreamEntriesByCategory,
+  getAllDreamCategories,
+  getDreamEntryById,
+  interpretDreamScenario,
 } from '../src/index.js';
 
 describe('🌟 萬象天儀 核心演算法庫 Intent-Based Tests', () => {
@@ -1039,6 +1053,170 @@ describe('🌟 萬象天儀 核心演算法庫 Intent-Based Tests', () => {
       expect(summary8B.biographyRichText).toContain('80億分之一');
       expect(summary8B.biographyRichText).toContain('沈婉晴');
       expect(summary8B.oneInEightBillion).toBeDefined();
+    });
+  });
+
+  describe('12. 文鳥抽籤演算法庫 (Buncho Divination Engine)', () => {
+    it('應能隨機抽取文鳥靈籤並支援指定籤號確定性驗算', () => {
+      const randomResult = drawBunchoLot({ question: '今年適合換工作嗎？', aspect: '事業' });
+      expect(randomResult.lot).toBeDefined();
+      expect(randomResult.lot.id).toBeGreaterThanOrEqual(1);
+      expect(randomResult.lot.id).toBeLessThanOrEqual(28);
+      expect(randomResult.question).toBe('今年適合換工作嗎？');
+      expect(randomResult.aspect).toBe('事業');
+      expect(randomResult.drawnAt).toBeDefined();
+
+      // 指定第 1 籤
+      const lot1Result = drawBunchoLot({ customLotId: 1 });
+      expect(lot1Result.lot.id).toBe(1);
+      expect(lot1Result.lot.name).toContain('靈雀銜春');
+      expect(lot1Result.lot.luckLevel).toBe('大吉');
+      expect(lot1Result.lot.poem.length).toBe(4);
+      expect(lot1Result.lot.birdAction).toContain('白文鳥');
+      expect(lot1Result.lot.aspects.career).toBeDefined();
+      expect(lot1Result.lot.birdAdvice).toContain('啾');
+    });
+
+    it('文鳥靈籤庫應完整收錄 28 籤且全數具備獨立詩文與面向斷語', () => {
+      const allLots = getAllBunchoLots();
+      expect(allLots.length).toBe(28);
+
+      const ids = new Set(allLots.map((l) => l.id));
+      expect(ids.size).toBe(28);
+
+      for (const lot of allLots) {
+        expect(lot.name).toBeTruthy();
+        expect(lot.poem.length).toBe(4);
+        expect(lot.birdAction.length).toBeGreaterThan(10);
+        expect(lot.keywords.length).toBeGreaterThanOrEqual(3);
+        expect(lot.overallExplanation.length).toBeGreaterThan(15);
+        expect(lot.aspects.love).toBeTruthy();
+        expect(lot.aspects.career).toBeTruthy();
+        expect(lot.aspects.wealth).toBeTruthy();
+        expect(lot.aspects.study).toBeTruthy();
+        expect(lot.aspects.decision).toBeTruthy();
+        expect(lot.birdAdvice).toBeTruthy();
+      }
+
+      const lot7 = getBunchoLotById(7);
+      expect(lot7?.name).toContain('翠竹報平');
+    });
+  });
+
+  describe('13. 台灣廟宇六十甲子籤詩與擲筊系統 (Taiwan Temple Poem & Bwa-Bwei System)', () => {
+    it('六十甲子籤庫應完整包含 1~60 籤且天干地支與典故皆嚴格對齊', () => {
+      const allLots = getAllTemplePoemLots();
+      expect(allLots.length).toBe(60);
+
+      const stems = allLots.map((l) => l.stemBranch);
+      expect(stems[0]).toBe('甲子');
+      expect(stems[59]).toBe('癸亥');
+
+      // 驗證無重複 ID
+      const ids = new Set(allLots.map((l) => l.id));
+      expect(ids.size).toBe(60);
+
+      for (const lot of allLots) {
+        expect(lot.poem.length).toBe(4);
+        expect(lot.allusion.length).toBeGreaterThan(10);
+        expect(lot.holyDecree.length).toBeGreaterThan(10);
+        expect(lot.aspects.career).toBeTruthy();
+        expect(lot.aspects.wealth).toBeTruthy();
+        expect(lot.aspects.marriage).toBeTruthy();
+        expect(lot.aspects.health).toBeTruthy();
+        expect(lot.aspects.pregnancy).toBeTruthy();
+        expect(lot.aspects.lawsuit).toBeTruthy();
+        expect(lot.aspects.travel).toBeTruthy();
+        expect(lot.aspects.lostItem).toBeTruthy();
+        expect(lot.aspects.family).toBeTruthy();
+        expect(lot.aspects.business).toBeTruthy();
+      }
+
+      // 依干支查詢
+      const jiazi = getTemplePoemLotByStemBranch('甲子');
+      expect(jiazi?.id).toBe(1);
+      expect(jiazi?.title).toContain('包公');
+
+      const guihai = getTemplePoemLotById(60);
+      expect(guihai?.stemBranch).toBe('癸亥');
+      expect(guihai?.luckLevel).toBe('大吉');
+    });
+
+    it('擲筊演算法應依物理機率與自訂模式輸出聖筊、笑筊與陰筊', () => {
+      const sheng = castBwaBwei('sheng_bwei');
+      expect(sheng.type).toBe('sheng_bwei');
+      expect(sheng.typeName).toBe('聖筊');
+      expect(sheng.isAccepted).toBe(true);
+      expect(sheng.block1 !== sheng.block2).toBe(true);
+
+      const xiao = castBwaBwei('xiao_bwei');
+      expect(xiao.type).toBe('xiao_bwei');
+      expect(xiao.typeName).toBe('笑筊');
+      expect(xiao.isAccepted).toBe(false);
+      expect(xiao.block1).toBe('flat');
+      expect(xiao.block2).toBe('flat');
+
+      const yin = castBwaBwei('yin_bwei');
+      expect(yin.type).toBe('yin_bwei');
+      expect(yin.typeName).toBe('陰筊');
+      expect(yin.isAccepted).toBe(false);
+      expect(yin.block1).toBe('round');
+      expect(yin.block2).toBe('round');
+
+      // 隨機擲筊多次應能產生三種結果之一
+      const randomBwei = castBwaBwei();
+      expect(['sheng_bwei', 'xiao_bwei', 'yin_bwei']).toContain(randomBwei.type);
+    });
+
+    it('應能依據特定問事面向 (如婚姻、求財、官司) 精準格式化解籤報告', () => {
+      const lot1 = getTemplePoemLotById(1)!;
+      const marriageReport = formatTemplePoemAspectReport(lot1, 'marriage');
+      expect(marriageReport.aspectTitle).toContain('婚姻');
+      expect(marriageReport.aspectInterpretation).toBe(lot1.aspects.marriage);
+
+      const careerReport = formatTemplePoemAspectReport(lot1, 'career');
+      expect(careerReport.aspectTitle).toContain('功名');
+      expect(careerReport.aspectInterpretation).toBe(lot1.aspects.career);
+    });
+  });
+
+  describe('14. 周公解夢與潛意識意象分析 (Duke of Zhou Dream Interpretation)', () => {
+    it('解夢字典應涵蓋八大分類且每項皆有原典、白話與榮格心理學分析', () => {
+      const categories = getAllDreamCategories();
+      expect(categories.length).toBe(8);
+
+      const snake = getDreamEntryById('dream_snake');
+      expect(snake).toBeDefined();
+      expect(snake?.keyword).toBe('蛇');
+      expect(snake?.classicText).toContain('周公解夢');
+      expect(snake?.vernacularMeaning.length).toBeGreaterThan(20);
+      expect(snake?.psychologicalAnalysis).toContain('榮格');
+      expect(snake?.actionAdvice.length).toBeGreaterThan(10);
+    });
+
+    it('應支援關鍵字模糊搜尋與分類過濾', () => {
+      const searchRes = searchDreamDictionary('蛇');
+      expect(searchRes.total).toBeGreaterThanOrEqual(1);
+      expect(searchRes.matchedEntries.some((e) => e.keyword === '蛇')).toBe(true);
+
+      const searchTeeth = searchDreamDictionary('掉牙齒');
+      expect(searchTeeth.total).toBeGreaterThanOrEqual(1);
+      expect(searchTeeth.matchedEntries[0].id).toBe('dream_teeth_falling');
+
+      const animalEntries = getDreamEntriesByCategory('animal');
+      expect(animalEntries.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it('夢境交織解析演算法應能從長篇敘述中自動抽樣多重意象並給出綜合主導吉凶與心理指引', () => {
+      const scenario = '昨晚做了一個奇怪的夢，我夢見自己走過一座大橋，水面突然發大水，橋邊還有一條巨大的金龍在空中飛翔！';
+      const analysis = interpretDreamScenario(scenario);
+
+      expect(analysis.matchedKeywords.length).toBeGreaterThanOrEqual(2);
+      expect(analysis.entries.length).toBeGreaterThanOrEqual(2);
+      expect(analysis.dominantOmen).toBe('大吉');
+      expect(analysis.synthesis.omenSummary).toContain('大吉');
+      expect(analysis.synthesis.psychologicalCore).toBeTruthy();
+      expect(analysis.synthesis.actionGuidance).toBeTruthy();
     });
   });
 });

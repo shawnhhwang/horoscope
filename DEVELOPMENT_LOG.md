@@ -1394,3 +1394,58 @@
   - 全專案生產編譯構建：`pnpm -r build` ➔ 全模組（astro-core, database, server, web, admin）0 錯誤通過。
 - **剩餘事項 (Remaining)**：
   - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。
+
+
+---
+
+### 檢核點回報: Phase 34 (文鳥靈動占卜、台灣廟宇六十甲子籤詩擲筊、周公解夢模組)
+- **當前任務**：
+  1. 新增文鳥抽籤模組，要有圖片與抽籤的示意過程。
+  2. 新增台灣廟宇常見的籤詩與解籤系統，可以針對要問哪一方面進行解籤。
+  3. 新增周公解夢模組。
+- **架構設計與核心原則 (Rule 1 先想再寫 & Rule 2 先求簡單 & Rule 5 任務拆分)**：
+  - **文鳥占卜 (鳥卦)**：
+    - 結合二十八宿靈鳥籤詩庫（28 支），每籤包含四言/七言詩偈、吉凶評級、五面向建議（感情、事業、財富、學業、決策）與白話神鳥悄悄話。
+    - 生成白文鳥在精緻竹籠蓄勢待發 (`buncho_cage_ready.jpg`) 與出籠精挑細選啄籤 (`buncho_picking_lot.jpg`) 寫實圖片。
+    - 實作 5 階段擬真狀態機（`idle` -> `praying` -> `cage_opening` -> `hopping_out` -> `pecking_lots` -> `drawing_lot` -> `delivering` -> `revealed`），配合進度條與視覺過渡。
+  - **台灣廟宇籤詩與正統擲筊 (媽祖六十甲子籤)**：
+    - 完整收錄六十甲子媽祖靈籤全庫（1~60 甲子至癸亥），包含七言四句詩文、歷史典故、聖意總綱與十大事項（事業、功名、婚姻、健康、財利、求子、官司、出行、失物、家運）個別斷語。
+    - 正統四部曲古禮：虔心稟報 -> 搖籤筒抽籤 -> 擲筊請示神意 (Bwa-Bwei) -> 定籤與事項斷析。
+    - 擲筊嚴格判定：聖筊（一平一凸）方可定籤；笑筊（兩平朝上）或陰筊（兩凸朝下）需放回籤支重新搖籤。
+    - 生成廟宇神案前籤筒 (`temple_cylinder.jpg`) 與一對月牙紅木筊 (`temple_bwa_bwei.jpg`) 寫實素材。
+  - **周公解夢與潛意識意象 (榮格原型心理學)**：
+    - 涵蓋八大分類（天地日月、人體肢體、珍禽異獸、草木花果、建築宮室、財寶器物、日常事端、鬼神凶吉），收錄千條古義。
+    - 支援關鍵詞模糊搜尋、熱門標籤快選、八大類別篩選。
+    - 實作多意象複合情境解析演算法 `interpretDreamScenario()`，智慧識別夢境描述中的多重意象並合成綜合吉凶指數與行動建議。
+    - 雙重維度對照：周公古籍原典（吉凶兆頭）+ 榮格深層心理學原型（潛意識補償、陰影釋放）。
+    - 生成周公解夢超現實唯美場景圖 (`dream_zhougong.jpg`)。
+  - **後端 API 與 LLM 智能明師整合**：
+    - Calculator 路由新增 9 個端點（文鳥抽籤、廟宇搖籤/擲筊/查籤、解夢搜尋/情境分析）。
+    - LLM 服務擴充角色（`BUNCHO`, `TEMPLE_POEM`, `DREAM`），擴充 `formatDeterministicChartData` 為 3 個模組注入確定性命理數據，並在智能情境導航中加入自動引導。
+- **已完成事項 (Completed)**：
+  - **1. 核心算命庫擴充 (`packages/astro-core`)**：
+    - `src/buncho/`：`types.ts`, `lots.ts`, `calculator.ts`
+    - `src/temple-poem/`：`types.ts`, `lots.ts`, `calculator.ts`
+    - `src/dream/`：`types.ts`, `dictionary.ts`, `calculator.ts`
+    - `src/index.ts`：導出全部新模組。
+    - `test/astro-core.test.ts`：新增 Suite 12 (文鳥 28 籤抽籤與向度測試)、Suite 13 (廟宇 60 甲子與擲筊測試)、Suite 14 (周公解夢搜尋與多意象情境測試)。
+  - **2. 後端 API 與 LLM 服務整合 (`apps/server`)**：
+    - `src/modules/calculator/router.ts`：註冊 9 個 API 端點。
+    - `src/modules/llm/service.ts`：擴充 Persona、確定性格式化與情境導航引導。
+    - `test/api.test.ts`：新增 3 個新模組之端點整合測試與 LLM 引導攔截測試。
+  - **3. 前端三大專屬視圖 (`apps/web/src/views/`)**：
+    - `BunchoView.vue`：5 階段出籠銜籤互動動畫、寫實圖片切換、靈鳥悄悄話、向度切換與仙師諮詢。
+    - `TemplePoemView.vue`：四部曲求籤古禮、搖籤筒、手動擲筊驗杯（聖/笑/陰筊）、60 甲子古風籤條與十大事項高亮。
+    - `DreamView.vue`：關鍵詞搜尋、熱門標籤、八大分類過濾、多意象複合分析、周公古籍與榮格心理學雙軌解析。
+  - **4. 網站導航與使用者說明手冊同步**：
+    - `apps/web/src/router/index.ts`：新增 `/buncho`、`/temple-poem`、`/dream` 路由與別名。
+    - `apps/web/src/components/layout/Navbar.vue`：橫向導覽列新增 3 個功能按鈕。
+    - `apps/web/src/views/HomeView.vue`：特色功能網格新增 3 張卡片。
+    - `USER_MANUAL.md` 與 `apps/web/src/views/UserManualView.vue`：同步擴充為 15 大模組詳細指南與 13 大問診情境地圖。
+- **已驗證事項 (Verified)**：
+  - 單元測試：`packages/astro-core` ➔ **40/40 測試 100% 通過**。
+  - 整合測試：`apps/server` ➔ **75/75 測試 100% 通過**。
+  - 全專案測試總計：**115/115 項測試全數綠燈通過**。
+  - 全專案生產編譯構建：`pnpm -r build` ➔ 全模組 0 錯誤通過。
+- **剩餘事項 (Remaining)**：
+  - Git Commit 並 Push 至遠端 GitHub 儲存庫 `origin main`。

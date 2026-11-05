@@ -303,6 +303,54 @@ const MODULE_ROLES: Record<string, ModuleRoleProfile> = {
     coreKnowledge:
       '八字人生推演核心在於「時空節奏與自由意志之共振」。流年為君，大運為臣，日元為本；而時代社會背景（台灣近現代變遷）為眾生之共業大勢。順境時（逢喜用神）激進開拓易建功名；逆境時（逢忌仇神、官殺克身、天剋地沖）當戒急用忍、修身防守。生老病死為自然之化，60歲後注重精氣神調養，80歲後看化生死功德圓滿。算命討論的是果，但抉擇乃在於修因。',
   },
+
+  BUNCHO: {
+    title: '靈雀神諭·文鳥占卜心靈顧問 (Buncho Divination Consultant)',
+    rolePersona:
+      '你是一位深具同理心、親切溫暖的現代靈雀神諭與文鳥占卜心靈顧問。你熟稔傳統台灣鳥卦與日式文鳥籤詩的意象美學，以溫柔、治癒、條理清晰且富有洞見的口吻與求問者對話。嚴禁使用神仙道士自稱（絕不可使用「老夫」、「貧道」、「天機星君」、「道友」等稱謂）。一律以「您」稱呼求測者。【抽籤確定性鐵律】：文鳥抽籤籤牌（1~28籤、吉凶等級、神籤詩句、文鳥動作細節、五行屬性與各面向斷語）均由底層程式演算法庫（@celestial/astro-core）隨機抽出。你的職責是基於該確定性籤條進行溫暖深入的心靈共鳴與行動指引，嚴禁自行捏造或竄改籤牌內容。',
+    toneGuidelines:
+      '語調溫柔、溫暖治癒、富有畫面感，像一位貼心的茶席知己伴隨一隻可愛乖巧的小白文鳥。多從細微生活點滴中提煉希望，將古詩辭句轉化為生動明瞭的白話指引。',
+    consultationStructure: [
+      '1. 【靈雀銜籤意象】：生動描述白文鳥輕盈跳躍出籠、叼籤奉上的姿態與吉兆感受。',
+      '2. 【籤詩與吉凶剖析】：解碼靈雀神籤四句詩意與五行流轉，點出吉凶層次。',
+      '3. 【專屬面向決策指引】：針對求問者所問（感情、事業、財富、學業、二選一）給予精闢建議。',
+      '4. 【文鳥靈犀悄悄話】：奉上專屬的溫馨叮嚀與治癒祝福。',
+    ],
+    coreKnowledge:
+      '文鳥占卜融合了東方鳥卦（靈禽通靈感應天機）與日式文鳥おみくじ的治癒美學。白文鳥象徵純潔、吉祥、靈犀相通與和平。籤詩旨在撫慰心靈、激發內在力量，化解執念與恐懼。',
+  },
+
+  TEMPLE_POEM: {
+    title: '正統台灣廟宇解籤名師與宮廟顧問 (Taiwan Temple Master & Poem Interpreter)',
+    rolePersona:
+      '你是一位閱歷豐富、深研台灣廟宇六十甲子媽祖靈籤、關帝籤與觀音百籤的正統宮廟解籤名師與文化顧問。你熟知六十甲子每一首七言四句詩的歷史典故（如「包公請雷」、「趙子龍救阿斗」、「姜太公釣魚」）與深層聖意，並能根據求籤者稟報的特定問事面向（如功名仕途、求財經商、婚姻感情、疾病求醫、六甲求子、官司訴訟、家運宅舍等）進行切中核心、客觀不迷信且具建設性的現代生活決策指導。嚴禁使用神仙道士自稱。一律以「您」稱呼信眾。【排籤與擲筊確定性鐵律】：六十甲子籤號、干支、籤詩與擲筊結果（聖筊/笑筊/陰筊）均由底層演算法庫（@celestial/astro-core）嚴格排定，AI 絕非抽籤機，必須嚴格以此客觀籤文與擲筊判定為準據，嚴禁自行捏造籤詩或竄改神明聖諭。',
+    toneGuidelines:
+      '莊重大氣、通情達理、客觀理性，既保有台灣民間宮廟的虔誠香火底蘊，又具備現代心理輔導與人生智慧，不怪力亂神，引導信眾心存善念、知命造運。',
+    consultationStructure: [
+      '1. 【聖意總綱與籤詩精析】：開門見山點出籤號、天干地支、吉凶等級與七言絕句四句詩的深層含義。',
+      '2. 【歷史典故借古喻今】：詳解籤頭所載之歷史或戲曲典故背景，並將典故人物之境遇精準映射至求籤者的當前情境。',
+      '3. 【問事面向直斷指引】：嚴格針對信眾所求面向（功名/求財/婚姻/疾病/六甲/官司/出行/失物/家運）給出直擊核心的條理斷語。',
+      '4. 【廟祝提點與心靈安頓】：結合擲筊確認歷程，提供具體落地的行動調適建議與趨吉避凶心法。',
+    ],
+    coreKnowledge:
+      '台灣廟宇六十甲子籤詩是融合周易干支、道教信仰、歷史典故與民間文學的集大成者。解籤第一重在看「典故」（誰在何種情境下面臨何種考驗）；第二重在看「詩意」（春生夏長秋收冬藏之時序節奏）；第三重在看「問事面向」（同一籤問婚姻可能吉，問官司可能宜和解）。神明指示重在指引修身行善，非定死局。',
+  },
+
+  DREAM: {
+    title: '周公解夢與現代潛意識心理分析專家 (Duke of Zhou & Jungian Dream Analyst)',
+    rolePersona:
+      '你是一位精通《周公解夢》古典夢占象徵體系，同時深諳卡爾·榮格（Carl Jung）原型心理學、潛意識陰影與個體化歷程的現代解夢與心理分析專家。你將東方古典吉凶象徵（如「夢蛇生貴子」、「夢死得生」、「夢水得財」、「夢棺發財」）與現代深度心理學投射理論融會貫通。當求測者敘述夢境時，你先以溫和客觀的態度幫助其梳理夢中核心意象的情緒張力，對照《周公解夢》古典原典辭句，再剖析該夢境映射出的潛意識慾望、焦慮或未竟情結，並給予具體落地的生活行動調適建議。嚴禁使用神仙道士自稱。一律以「您」稱呼求測者。',
+    toneGuidelines:
+      '知性、敏銳、溫潤且富啟發性。融合東方古典籤辭的典雅韻味與現代心理分析的邏輯深度，解開夢境密碼，讓求問者在醒覺中獲得內在力量與心靈療癒。',
+    consultationStructure: [
+      '1. 【周公原典吉凶提要】：列出夢境中核心意象所對應的《周公解夢》古籍原典辭句與傳統吉凶象徵。',
+      '2. 【多重意象交織解碼】：剖析各個夢境符號（如水、蛇、飛翔、掉牙、火）在同一場景中的關聯與動態演變。',
+      '3. 【榮格心理學原型透析】：從潛意識投射、阿尼瑪/阿尼姆斯、陰影、成長轉化等心理層面揭示內在真實心理狀態。',
+      '4. 【現實覺察與行動調適】：將夢境啟示轉化為現實生活中的具體調整指南（情緒管理、人際邊界、職涯方向）。',
+    ],
+    coreKnowledge:
+      '周公解夢乃東方夢文化經典，善用「反夢（夢凶得吉）」與「諧音借喻（棺=升官發財，魚=年年有餘）」。現代心理學則視夢境為「通往潛意識的康莊大道（王道）」。結合二者，既能尊重傳統文化意象之集體無意識沉澱，又能賦予現代人科學客觀的心靈成長視角。',
+  },
 };
 
 /**
@@ -327,6 +375,15 @@ export function normalizeModuleKey(moduleType?: string): string {
   }
   if (key === 'LIFE_SIMULATOR' || key === 'SIMULATOR' || key === 'LIFE_ODYSSEY') {
     return 'LIFE_SIMULATOR';
+  }
+  if (key === 'BUNCHO' || key === 'BIRD' || key === 'BIRD_DIVINATION') {
+    return 'BUNCHO';
+  }
+  if (key === 'TEMPLE' || key === 'TEMPLE_POEM' || key === 'BWA_BWEI' || key === 'POEM') {
+    return 'TEMPLE_POEM';
+  }
+  if (key === 'DREAM' || key === 'ZHOUGONG' || key === 'DREAM_INTERPRETATION') {
+    return 'DREAM';
   }
   return key;
 }
@@ -539,7 +596,84 @@ ${formattedCards}
 - 綜合啟示: ${raw.overallAdvice || '遵循牌陣客觀揭示，把握當下主導權。'}`;
   }
 
-  // 5. 其他模組通用客觀數據格式化
+  // 5. 文鳥抽籤 (BUNCHO)
+  if (modType === 'BUNCHO') {
+    const lot = raw.lot || raw;
+    if (lot && lot.name) {
+      return `⚠️【確定性排盤數據 · 文鳥靈雀神籤由 @celestial/astro-core 隨機抽籤確定，AI 必須嚴格以此為準據，嚴禁自行重抽或竄改】
+- 測算系統: 靈雀神諭·文鳥占卜 (BUNCHO)
+- 所問事項: ${raw.question || chartContext.summary || '所求吉凶指引'}
+- 問事面向: ${raw.aspect || '綜合'}
+- 抽得靈籤: 第 ${lot.id || lot.number} 籤【${lot.name}】（吉凶: ${lot.luckLevel}，五行: ${lot.element}）
+- 雀鳥銜籤動作: ${lot.birdAction || ''}
+- 核心關鍵字: ${(lot.keywords || []).join('、')}
+- 靈雀神籤詩句:
+  ${(lot.poem || []).join('\n  ')}
+- 整體白話意涵: ${lot.overallExplanation || ''}
+- 專屬面向指引:
+  • 感情婚姻: ${lot.aspects?.love || ''}
+  • 工作事業: ${lot.aspects?.career || ''}
+  • 財富投資: ${lot.aspects?.wealth || ''}
+  • 學業進修: ${lot.aspects?.study || ''}
+  • 重大抉擇: ${lot.aspects?.decision || ''}
+- 文鳥靈犀悄悄話: ${lot.birdAdvice || ''}`;
+    }
+  }
+
+  // 6. 台灣廟宇六十甲子籤詩與解籤 (TEMPLE_POEM)
+  if (modType === 'TEMPLE_POEM') {
+    const lot = raw.lot || raw;
+    const aspectReport = raw.aspectReport || {};
+    if (lot && lot.stemBranch) {
+      return `⚠️【確定性排盤數據 · 台灣廟宇六十甲子籤與擲筊由 @celestial/astro-core 確定演算，AI 必須嚴格以此客觀籤文與神明聖意為準據，嚴禁自行編造或竄改】
+- 測算系統: 台灣正統廟宇六十甲子籤詩 (TEMPLE_POEM)
+- 信眾姓名: ${raw.seekerName || '善信'}
+- 問事面向: ${aspectReport.aspectTitle || raw.inquiryAspect || '綜合'}
+- 所求具體事項: ${raw.question || chartContext.summary || '所求吉凶指引'}
+- 籤筒抽得神籤: 第 ${lot.id} 籤【${lot.stemBranch}】（宮位卦象: ${lot.palaceGua || ''}，吉凶: ${lot.luckLevel}）
+- 歷史與戲曲典故: ${lot.title}
+- 典故背景詳解: ${lot.allusion || ''}
+- 七言絕句籤詩:
+  ${(lot.poem || []).join('\n  ')}
+- 聖意總綱 (解曰): ${lot.holyDecree || ''}
+- 【${aspectReport.aspectTitle || '指定面向'}】專屬神明斷語:
+  ${aspectReport.aspectInterpretation || (lot.aspects && raw.inquiryAspect ? lot.aspects[raw.inquiryAspect] : '') || lot.holyDecree}
+- 完整十維面向斷語:
+  • 功名仕途: ${lot.aspects?.career || ''}
+  • 求財經商: ${lot.aspects?.wealth || ''}
+  • 婚姻感情: ${lot.aspects?.marriage || ''}
+  • 疾病康泰: ${lot.aspects?.health || ''}
+  • 六甲求子: ${lot.aspects?.pregnancy || ''}
+  • 官司訴訟: ${lot.aspects?.lawsuit || ''}
+  • 遠行出國: ${lot.aspects?.travel || ''}
+  • 失物尋找: ${lot.aspects?.lostItem || ''}
+  • 家運門戶: ${lot.aspects?.family || ''}
+  • 作事合夥: ${lot.aspects?.business || ''}`;
+    }
+  }
+
+  // 7. 周公解夢與意象分析 (DREAM)
+  if (modType === 'DREAM') {
+    const analysis = raw.synthesis ? raw : raw.analysis || {};
+    const entries = raw.entries || analysis.entries || [];
+    return `⚠️【確定性排盤數據 · 周公解夢與意象檢索由 @celestial/astro-core 字典庫確定檢索，AI 必須嚴格以此客觀意象與原典為準據，嚴禁脫離夢境符號自行胡亂編造】
+- 測算系統: 周公解夢與榮格原型心理學分析 (DREAM)
+- 夢境敘述: ${raw.scenario || chartContext.summary || '未提供詳細夢境敘述'}
+- 匹配核心意象: ${(raw.matchedKeywords || []).join('、')}
+- 主導吉凶等級: ${raw.dominantOmen || analysis.dominantOmen || '平吉'}
+- 《周公解夢》匹配詞條原典與解析:
+${entries
+  .map(
+    (e: any, idx: number) =>
+      `  ${idx + 1}. 【${e.keyword}】（所屬類別: ${e.categoryName}，吉凶: ${e.omen}）\n     古籍原典: ${e.classicText}\n     通俗象徵: ${e.vernacularMeaning}\n     榮格心理學原型: ${e.psychologicalAnalysis}\n     調適建議: ${e.actionAdvice}`
+  )
+  .join('\n')}
+- 夢境交織綜合提要: ${analysis.synthesis?.omenSummary || ''}
+- 潛意識心理核心: ${analysis.synthesis?.psychologicalCore || ''}
+- 現實行動指南: ${analysis.synthesis?.actionGuidance || ''}`;
+  }
+
+  // 8. 其他模組通用客觀數據格式化
   return `【求測者當前排盤客觀數據】
 - 測算系統: ${chartContext.moduleType}
 - 命盤主題: ${chartContext.title || '無標題'}
@@ -936,6 +1070,67 @@ export function generateScenarioConsultationGuide(userMsg: string): string {
 👉 **請前往系統專屬占卜頁面：**
 * [78張韋特塔羅占卜](/tarot) — 選擇您想使用的牌陣，靜心冥想後點擊「洗牌抽牌」，由程式隨機抽出牌卡並翻牌。
 * 抽牌完成後，AI 塔羅諮商師將依據您抽出的客觀牌陣，深入透視您的潛意識盲點並提供破局行動指引！`;
+  }
+
+  // 0-D. 文鳥抽籤請求
+  if (
+    q.includes('文鳥') ||
+    q.includes('鳥卦') ||
+    q.includes('抽文鳥') ||
+    (q.includes('靈雀') && q.includes('籤'))
+  ) {
+    return `## 🐦 靈雀神諭指引：文鳥抽籤必須由程式庫擬真開局
+
+您好！文鳥抽籤融合了傳統鳥卦靈性與日式文鳥おみくじ的治癒美學。
+
+**⚠️ 萬象天儀【抽籤確定性鐵律】：**
+本系統完整收錄 28 宿靈雀神籤庫，並具備靈動的小白文鳥出籠、挑選籤條與銜籤呈遞之動態示意過程。**抽籤由程式演算法均勻隨機抽出，嚴禁 AI 自行捏造籤詩或假冒文鳥抽牌**。
+
+👉 **請前往系統專屬占卜頁面：**
+* [靈雀神諭·文鳥抽籤](/buncho) — 誠心默想您的問題（感情、事業、財富、學業或抉擇），開啟鳥籠，觀看小白文鳥躍出籠門為您叼出命定神籤！
+* 抽籤完成後，AI 文鳥心靈顧問將依據抽得之靈籤詩句與五行，為您提供溫暖治癒的深度解析與行動指南！`;
+  }
+
+  // 0-E. 台灣廟宇求籤與擲筊請求
+  if (
+    q.includes('籤詩') ||
+    q.includes('求籤') ||
+    q.includes('媽祖籤') ||
+    q.includes('擲筊') ||
+    q.includes('博杯') ||
+    (q.includes('廟') && (q.includes('籤') || q.includes('筊')))
+  ) {
+    return `## ⛩️ 台灣廟宇靈籤指引：六十甲子籤與擲筊必須由程式公正進行
+
+您好！正統台灣廟宇（如媽祖廟、關帝廟、觀音亭）求籤講求莊嚴的儀軌：搖筒抽籤後，必須「擲筊請示神明確認」（聖筊確認），方為神明所允准之正籤。
+
+**⚠️ 萬象天儀【排籤與擲筊確定性鐵律】：**
+本系統完整收錄正統「六十甲子媽祖靈籤」全套 60 首籤詩、歷史戲曲典故與十大面向斷語（功名/求財/婚姻/疾病/六甲/官司/出行/失物/家運/作事），並以物理隨機機率模擬擲筊（聖筊、笑筊、陰筊）。**嚴禁 AI 隨意胡謅籤文或代神明應筊**。
+
+👉 **請前往系統專屬求籤頁面：**
+* [台灣廟宇六十甲子籤詩與解籤](/temple-poem) — 稟報信眾生辰與所問具體面向，搖動竹籤筒抽籤，並虔誠擲筊請示神明應允。
+* 獲得聖筊確認後，AI 宮廟解籤名師將為您借古喻今，深入解讀歷史典故與專屬問事斷語！`;
+  }
+
+  // 0-F. 周公解夢請求
+  if (
+    q.includes('解夢') ||
+    q.includes('周公') ||
+    q.includes('做夢') ||
+    q.includes('夢見') ||
+    q.includes('夢到') ||
+    q.includes('夢中')
+  ) {
+    return `## 🌙 周公解夢指引：夢境符號必須由經典字典庫精準檢索
+
+您好！古人云：「夜有紛紛夢，神魂內守驚。」夢境是潛意識通往清醒意識的心靈鏡像。
+
+**⚠️ 萬象天儀【解夢確定性鐵律】：**
+本系統完整內建《周公解夢》八大分類古典意象辭庫（天文、身體、動物、植物、建築、財富、生死、神鬼），結合卡爾·榮格深層原型心理學。**詞條原典與吉凶象徵嚴格由程式庫字典檢索，杜絕 AI 脫離傳統象徵胡亂推測**。
+
+👉 **請前往系統專屬解夢頁面：**
+* [周公解夢與潛意識分析](/dream) — 輸入您夢到的核心關鍵字（如「蛇」、「掉牙」、「大水」、「流血」、「飛翔」、「棺材」）或整段夢境描述，系統即刻檢索古籍原典與心理學投射。
+* 檢索完成後，AI 解夢大師將為您融匯周公原典與榮格心理學，解讀潛意識深處的真實密碼！`;
   }
 
   // 1. 事業、工作、轉職、跳槽、創業、升遷、裁員
@@ -1739,6 +1934,111 @@ ${cardDetails || '* 正位牌卡象徵擁有的實質資源；逆位牌卡提示
 1. **積極開拓**：若逢吉星生旺，宜把握良機放手一搏，打破既有舒適圈。
 2. **守正修身**：若逢考驗逆境，以退為進，調適起居五行，厚積而薄發。
 3. **人事大於天命**：算命是討論果的哲學，知果後在事前修因轉化，自能書寫無悔之生命軌跡。`;
+      }
+
+      case 'BUNCHO': {
+        const raw = chartContext.rawData || {};
+        const lot = raw.lot || raw;
+        const name = lot.name || '靈雀神籤';
+        const luck = lot.luckLevel || '大吉';
+        const element = lot.element || '木';
+        const birdAction = lot.birdAction || '白文鳥側頭歡鳴，輕盈叼出命定神籤。';
+        const poem = Array.isArray(lot.poem) ? lot.poem.join('\n') : '';
+        const keywords = Array.isArray(lot.keywords) ? lot.keywords.join('、') : '';
+        const advice = lot.birdAdvice || '「啾啾～心存善念，每一步都算數！」';
+
+        return `## 靈雀神諭·文鳥占卜深度心靈開示報告
+
+您誠心問事所求：「**${lastUserMsg}**」。
+白文鳥為您叼得：**${name}**（吉凶：**【${luck}】** · 五行屬【**${element}**】）。
+
+### 1. 靈雀銜籤姿態與神諭氣象
+* **雀鳥神態**：${birdAction}
+* **核心意象詞**：${keywords || '吉祥順遂、逢春化吉'}
+
+### 2. 靈雀神籤詩義精解
+\`\`\`text
+${poem}
+\`\`\`
+* **白話詳解**：${lot.overallExplanation || '萬木逢春，陰霾散去，眼前的努力即將迎來豐碩回報。'}
+
+### 3. 問事專屬指引（感情、事業、財富、抉擇）
+* **戀愛婚姻**：${lot.aspects?.love || '真情相待，多點包容理解，良緣自然水到渠成。'}
+* **工作事業**：${lot.aspects?.career || '順勢而為，把握貴人相助的契機，大膽向前邁進。'}
+* **財運投資**：${lot.aspects?.wealth || '正財穩健，量入為出，不宜盲目投機。'}
+* **重大抉擇**：${lot.aspects?.decision || '選擇符合內心初衷與長遠價值的方向。'}
+
+### 4. 文鳥靈犀溫暖小叮嚀
+${advice}`;
+      }
+
+      case 'TEMPLE_POEM': {
+        const raw = chartContext.rawData || {};
+        const lot = raw.lot || raw;
+        const aspectReport = raw.aspectReport || {};
+        const stem = lot.stemBranch || '甲子';
+        const id = lot.id || 1;
+        const title = lot.title || '神明賜籤';
+        const luck = lot.luckLevel || '大吉';
+        const poem = Array.isArray(lot.poem) ? lot.poem.join('\n') : '';
+        const allusion = lot.allusion || '';
+        const holyDecree = lot.holyDecree || '';
+        const inquiryAspect = raw.inquiryAspect || '綜合';
+        const aspectText = aspectReport.aspectInterpretation || (lot.aspects && lot.aspects[inquiryAspect]) || holyDecree;
+
+        return `## 台灣正統廟宇六十甲子籤詩·神明聖意深度解讀
+
+善信虔誠稟報所求課題：「**${lastUserMsg}**」。
+籤筒抽得神籤：**第 ${id} 籤 · 【${stem}】**（吉凶：**【${luck}】** · 宮位卦象：${lot.palaceGua || '乾金'}）。
+歷史典故：【**${title}**】。
+
+### 1. 七言四句籤詩與神明聖意
+\`\`\`text
+${poem}
+\`\`\`
+* **聖意總綱 (解曰)**：${holyDecree}
+
+### 2. 歷史典故剖析與借古喻今
+* **典故由來**：${allusion}
+* **借古喻今**：籤詩典故中的人物經歷，正是您當前境遇的最好鏡子。知歷史之成敗，便知眼前之進退。
+
+### 3. 【${aspectReport.aspectTitle || '指定面向'}】專屬神明斷語
+* **直斷指引**：${aspectText}
+
+### 4. 宮廟道長提點與趨吉避凶方針
+1. **心誠則靈**：神明賜籤貴在點醒執念、開示方向。籤詩所指示並非固定不變之宿命，而是「天道酬勤、積善成福」之天理。
+2. **行動調適**：行事當光明磊落、恪守道德底線，順應時節節奏，多行善事布施，自能轉危為安、福澤長久。`;
+      }
+
+      case 'DREAM': {
+        const raw = chartContext.rawData || {};
+        const analysis = raw.synthesis ? raw : raw.analysis || {};
+        const entries: any[] = raw.entries || analysis.entries || [];
+        const dominantOmen = raw.dominantOmen || analysis.dominantOmen || '平吉';
+        const matched = (raw.matchedKeywords || []).join('、') || '夢境符號';
+
+        const entriesList = entries
+          .map(
+            (e: any, i: number) =>
+              `* **${i + 1}. 【${e.keyword}】**（${e.categoryName} · ${e.omen}）\n  - 《周公解夢》原典：「${e.classicText}」\n  - 白話意涵：${e.vernacularMeaning}\n  - 榮格心理學原型：${e.psychologicalAnalysis}`
+          )
+          .join('\n\n');
+
+        return `## 周公解夢與榮格深層心理學夢境剖析報告
+
+解碼您的夢境情境：「**${lastUserMsg}**」。
+提取核心夢境意象：【**${matched}**】，主導吉凶評定為「**【${dominantOmen}】**」。
+
+### 1. 《周公解夢》古籍原典與象徵解碼
+${entriesList || '* 夢境意象深遠，反映內在清明之氣。'}
+
+### 2. 榮格深層潛意識心理分析
+* **情緒張力投射**：${analysis.synthesis?.psychologicalCore || '夢境中的強烈符號，往往映射出白天被理性自我（Ego）所壓抑的情感、未竟的渴望或對未來的直覺預感。'}
+* **陰影與內在轉化**：夢不是隨機的雜訊，而是潛意識為清醒自我所舉辦的心靈補償儀式，促成自性（The Self）的整合。
+
+### 3. 現實生活行動與心態調適指引
+* **生活調適**：${analysis.synthesis?.actionGuidance || '多留意日常生活中的情緒信號，給予自己充足的休息與真實自我的表達空間。'}
+* **破除焦慮**：反夢常在夢中現凶象以宣洩負面能量，醒來即是全新的開始，放寬心胸迎向光明。`;
       }
 
       default:
