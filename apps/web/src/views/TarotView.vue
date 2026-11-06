@@ -37,6 +37,19 @@
       </button>
     </div>
 
+    <!-- 求問事項輸入框 -->
+    <div class="max-w-xl mx-auto mb-6">
+      <div class="glass-panel rounded-2xl p-3 border border-dark-gold/30 flex items-center space-x-3 shadow-cosmic">
+        <span class="text-xs text-dark-gold font-bold whitespace-nowrap pl-2">🃏 默想求問：</span>
+        <input
+          v-model="seekerQuestion"
+          type="text"
+          placeholder="默念並輸入您心中所求（例如：近期感情走向如何？該換工作還是留下？）"
+          class="w-full bg-transparent text-xs text-dark-text placeholder-dark-muted/60 outline-none"
+        />
+      </div>
+    </div>
+
     <!-- 畫風切換與洗牌操作 -->
     <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
       <!-- 畫風切換 -->
@@ -65,9 +78,18 @@
       <button
         @click="handleDraw"
         :disabled="isDrawing"
-        class="px-10 py-3.5 rounded-full font-serif text-sm font-semibold tracking-wider bg-dark-gold text-dark-void hover:opacity-90 shadow-cosmic transition-all disabled:opacity-50"
+        class="px-10 py-3.5 rounded-full font-serif text-sm font-semibold tracking-wider bg-dark-gold text-dark-void hover:opacity-90 shadow-cosmic transition-all disabled:opacity-50 cursor-pointer"
       >
         {{ isDrawing ? '沉浸洗牌發牌中...' : '靜心冥想 · 洗牌抽牌' }}
+      </button>
+
+      <!-- 一鍵翻牌按鈕 -->
+      <button
+        v-if="readingResult && flippedCards.some((f) => !f)"
+        @click="flipAllCards"
+        class="px-5 py-2.5 rounded-full text-xs font-serif border border-dark-gold/50 text-dark-gold hover:bg-dark-gold/15 transition-all cursor-pointer"
+      >
+        ✨ 揭示全部牌面
       </button>
     </div>
 
@@ -128,11 +150,24 @@
             </div>
           </div>
 
-          <!-- 牌義簡述 -->
-          <div v-if="flippedCards[idx]" class="mt-3 text-xs leading-relaxed text-dark-muted">
-            <p class="line-clamp-2">
+          <!-- 牌義豐富詳解 (關鍵字、感情、事業) -->
+          <div v-if="flippedCards[idx]" class="mt-3 text-xs leading-relaxed space-y-1.5 text-left border-t border-dark-gold/15 pt-2">
+            <div class="flex flex-wrap gap-1 mb-1">
+              <span
+                v-for="kw in (cardItem.isReversed ? cardItem.card.reversedMeaning.keywords : cardItem.card.uprightMeaning.keywords).slice(0, 3)"
+                :key="kw"
+                class="text-[9px] px-1.5 py-0.5 rounded bg-dark-gold/15 text-dark-gold font-mono"
+              >
+                #{{ kw }}
+              </span>
+            </div>
+            <p class="text-[11px] text-dark-text/90">
               {{ cardItem.isReversed ? cardItem.card.reversedMeaning.overview : cardItem.card.uprightMeaning.overview }}
             </p>
+            <div class="text-[10px] text-dark-muted space-y-0.5 pt-1 border-t border-dark-gold/10">
+              <p>❤️ <strong>情感：</strong>{{ cardItem.isReversed ? cardItem.card.reversedMeaning.love : cardItem.card.uprightMeaning.love }}</p>
+              <p>💼 <strong>事業：</strong>{{ cardItem.isReversed ? cardItem.card.reversedMeaning.career : cardItem.card.uprightMeaning.career }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -145,10 +180,27 @@
         <div class="flex flex-col sm:flex-row justify-end gap-3">
           <button
             @click="saveTarotJournal"
-            class="px-6 py-2.5 rounded-lg font-serif text-xs font-semibold border border-dark-gold/40 text-dark-gold hover:bg-dark-gold/10 transition-colors cursor-pointer"
+            :disabled="savingJournal || journalSaved"
+            class="px-6 py-2.5 rounded-lg font-serif text-xs font-semibold border border-dark-gold/40 text-dark-gold hover:bg-dark-gold/10 transition-colors cursor-pointer disabled:opacity-50"
           >
-            儲存此次占卜至靈驗日記
+            {{ journalSaved ? '✅ 已成功儲存至日記' : savingJournal ? '儲存中...' : '儲存此次占卜至靈驗日記 💾' }}
           </button>
+        </div>
+
+        <!-- 命理閉環指引 -->
+        <div class="p-4 rounded-xl bg-black/40 border border-dark-gold/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs mt-6">
+          <div class="flex items-center space-x-2 text-dark-muted">
+            <span class="text-base">🌌</span>
+            <span>塔羅映照心靈原型，若想探究本命星盤或卦象辯證：</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <router-link to="/western" class="px-3 py-1 rounded-lg bg-dark-gold/15 hover:bg-dark-gold/25 text-dark-gold font-bold transition-colors">
+              看西洋本命盤 🪐
+            </router-link>
+            <router-link to="/iching" class="px-3 py-1 rounded-lg bg-dark-gold/15 hover:bg-dark-gold/25 text-dark-gold font-bold transition-colors">
+              卜周易六爻 ☯️
+            </router-link>
+          </div>
         </div>
       </div>
 
@@ -389,7 +441,10 @@ const spreads: { type: SpreadType; label: string; count: number }[] = [
 ];
 
 const selectedSpread = ref<SpreadType>('three_cards');
+const seekerQuestion = ref('');
 const isDrawing = ref(false);
+const savingJournal = ref(false);
+const journalSaved = ref(false);
 const readingResult = ref<any>(null);
 const flippedCards = ref<boolean[]>([]);
 const artStyle = ref<'celestial' | 'classic'>('celestial');
@@ -424,15 +479,24 @@ const filteredCards = computed(() => {
 
 function handleDraw() {
   isDrawing.value = true;
+  journalSaved.value = false;
   setTimeout(() => {
     readingResult.value = drawTarotSpread(selectedSpread.value);
-    flippedCards.value = new Array(readingResult.value.drawnCards.length).fill(true);
+    // 所有抽出的牌初始維持牌背朝上 (面朝下)，讓使用者逐張翻牌體驗儀式感
+    flippedCards.value = new Array(readingResult.value.drawnCards.length).fill(false);
     isDrawing.value = false;
   }, 500);
 }
 
+function flipAllCards() {
+  if (readingResult.value) {
+    flippedCards.value = new Array(readingResult.value.drawnCards.length).fill(true);
+  }
+}
+
 async function saveTarotJournal() {
-  if (!readingResult.value) return;
+  if (!readingResult.value || savingJournal.value) return;
+  savingJournal.value = true;
   try {
     const authStore = useAuthStore();
     const headers = await authStore.getAuthHeaders();
@@ -442,23 +506,32 @@ async function saveTarotJournal() {
 
     const res = await fetch('/api/v1/readings', {
       method: 'POST',
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
       body: JSON.stringify({
         moduleType: 'TAROT',
-        inputSnapshot: { spread: selectedSpread.value },
+        inputSnapshot: {
+          spread: selectedSpread.value,
+          question: seekerQuestion.value,
+        },
         chartOutput: readingResult.value,
-        aiSummary: `韋特塔羅占卜：${readingResult.value.spread.label}，抽得 ${cardSummary}`,
+        aiSummary: `韋特塔羅占卜：${readingResult.value.spread.label}，抽得 ${cardSummary}${seekerQuestion.value ? ` · 求問：${seekerQuestion.value}` : ''}`,
         userNotes: '於韋特塔羅占卜系統儲存抽牌記錄與心靈指引。',
       }),
     });
     const data = await res.json();
     if (data.success) {
+      journalSaved.value = true;
       alert('已成功將本次塔羅占卜紀錄儲存至占卜日記本！');
     } else {
       alert('儲存失敗：' + (data.message || '未知錯誤'));
     }
   } catch (err: any) {
-    alert('已成功將本次塔羅占卜紀錄儲存至占卜日記本！');
+    alert('儲存失敗：' + (err.message || '無法連線至伺服器'));
+  } finally {
+    savingJournal.value = false;
   }
 }
 
@@ -502,7 +575,8 @@ const cardSummary = computed(() => {
     .join('、');
 });
 const aiPrompt = computed(() => {
-  return `請以專業塔羅諮商師身份，融匯愛德華·韋特（A. E. Waite）《圖解之鑰》愚人之旅神聖象徵、蕾切爾·波拉克（Rachel Pollack）《78度的智慧》超越宿命之覺察賦能，以及瑪麗·格利爾（Mary K. Greer）逆位內在轉化心法，為我深度解析此韋特塔羅牌陣【${spreadLabel.value}】：抽得牌位分別為：${cardSummary.value}。請以心理投射與潛意識洞察視角，解構當前局勢的核心動力、正逆位所揭示的內在盲點、四元素消長，並給出清晰、可行且賦權的三步行動方案。`;
+  const qPart = seekerQuestion.value ? `求問者心中所求問事項為【${seekerQuestion.value}】。` : '';
+  return `請以專業塔羅諮商師身份，融匯愛德華·韋特（A. E. Waite）《圖解之鑰》愚人之旅神聖象徵、蕾切爾·波拉克（Rachel Pollack）《78度的智慧》超越宿命之覺察賦能，以及瑪麗·格利爾（Mary K. Greer）逆位內在轉化心法，為我深度解析此韋特塔羅牌陣【${spreadLabel.value}】：${qPart}抽得牌位分別為：${cardSummary.value}。請以心理投射與潛意識洞察視角，解構當前局勢的核心動力、正逆位所揭示的內在盲點、四元素消長，並給出清晰、可行且賦權的三步行動方案。`;
 });
 
 onMounted(() => {

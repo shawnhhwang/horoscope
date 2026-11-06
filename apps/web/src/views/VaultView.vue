@@ -93,24 +93,30 @@
           </div>
 
           <div class="flex flex-wrap gap-2 border-t border-dark-gold/15 pt-4 mt-2">
-            <router-link
-              to="/ziwei"
-              class="flex-1 min-w-[70px] py-1.5 rounded-lg text-center text-xs border border-dark-gold/30 hover:border-dark-gold text-dark-gold transition-colors"
+            <button
+              @click="openChart(p, '/ziwei')"
+              class="flex-1 min-w-[70px] py-1.5 rounded-lg text-center text-xs border border-dark-gold/30 hover:border-dark-gold text-dark-gold transition-colors cursor-pointer"
             >
               排紫微盤
-            </router-link>
-            <router-link
-              to="/bazi"
-              class="flex-1 min-w-[70px] py-1.5 rounded-lg text-center text-xs border border-dark-gold/30 hover:border-dark-gold text-dark-gold transition-colors"
+            </button>
+            <button
+              @click="openChart(p, '/bazi')"
+              class="flex-1 min-w-[70px] py-1.5 rounded-lg text-center text-xs border border-dark-gold/30 hover:border-dark-gold text-dark-gold transition-colors cursor-pointer"
             >
               排八字盤
-            </router-link>
-            <router-link
-              to="/western"
-              class="flex-1 min-w-[70px] py-1.5 rounded-lg text-center text-xs border border-dark-gold/30 hover:border-dark-gold text-dark-gold transition-colors"
+            </button>
+            <button
+              @click="openChart(p, '/western')"
+              class="flex-1 min-w-[70px] py-1.5 rounded-lg text-center text-xs border border-dark-gold/30 hover:border-dark-gold text-dark-gold transition-colors cursor-pointer"
             >
-              排西洋星盤
-            </router-link>
+              排西洋盤
+            </button>
+            <button
+              @click="openChart(p, '/simulator')"
+              class="flex-1 min-w-[70px] py-1.5 rounded-lg text-center text-xs border border-dark-gold/30 hover:border-dark-gold text-dark-gold transition-colors cursor-pointer"
+            >
+              百歲模擬
+            </button>
             <button
               @click="deleteProfile(p.id)"
               class="px-3 py-1.5 rounded-lg text-center text-xs border border-red-500/30 hover:bg-red-950/40 text-red-400 transition-colors cursor-pointer"
@@ -274,8 +280,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth.js';
 
+const router = useRouter();
 const authStore = useAuthStore();
 const activeTab = ref<'profiles' | 'journal'>('profiles');
 const showAddModal = ref(false);
@@ -347,6 +355,23 @@ function openAddProfileModal() {
   showAddModal.value = true;
 }
 
+function openChart(p: any, path: string) {
+  try {
+    sessionStorage.setItem('active_celestial_profile', JSON.stringify(p));
+  } catch (err) {}
+  router.push({
+    path,
+    query: {
+      profileId: p.id,
+      name: p.name,
+      birthDate: p.birthDatetime ? p.birthDatetime.slice(0, 16) : undefined,
+      gender: p.gender,
+      longitude: p.longitude,
+      latitude: p.latitude,
+    },
+  });
+}
+
 async function fetchProfiles() {
   loadingProfiles.value = true;
   try {
@@ -355,6 +380,9 @@ async function fetchProfiles() {
     const data = await res.json();
     if (data.success && Array.isArray(data.data) && data.data.length > 0) {
       profiles.value = data.data;
+      try {
+        localStorage.setItem('celestial_vault_profiles', JSON.stringify(data.data));
+      } catch (e) {}
     }
   } catch (err) {
     console.warn('Fetch profiles fallback to local store');

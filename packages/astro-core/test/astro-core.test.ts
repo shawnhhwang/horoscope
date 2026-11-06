@@ -1185,6 +1185,9 @@ describe('🌟 萬象天儀 核心演算法庫 Intent-Based Tests', () => {
       const categories = getAllDreamCategories();
       expect(categories.length).toBe(8);
 
+      const plantEntries = getDreamEntriesByCategory('plant');
+      expect(plantEntries.length).toBeGreaterThanOrEqual(4);
+
       const snake = getDreamEntryById('dream_snake');
       expect(snake).toBeDefined();
       expect(snake?.keyword).toBe('蛇');

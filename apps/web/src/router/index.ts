@@ -1,47 +1,26 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '../views/HomeView.vue';
-import ZiweiView from '../views/ZiweiView.vue';
-import BaziView from '../views/BaziView.vue';
-import IchingView from '../views/IchingView.vue';
-import NamingView from '../views/NamingView.vue';
-import WesternView from '../views/WesternView.vue';
-import TarotView from '../views/TarotView.vue';
-import VaultView from '../views/VaultView.vue';
-import QizhengView from '../views/QizhengView.vue';
-import AlmanacView from '../views/AlmanacView.vue';
-import SynastryView from '../views/SynastryView.vue';
-import AnnualPlannerView from '../views/AnnualPlannerView.vue';
-import LifeSimulatorView from '../views/LifeSimulatorView.vue';
-import UserManualView from '../views/UserManualView.vue';
-import BunchoView from '../views/BunchoView.vue';
-import TemplePoemView from '../views/TemplePoemView.vue';
-import DreamView from '../views/DreamView.vue';
 
 const routes = [
-  { path: '/', name: 'home', component: HomeView },
-  { path: '/guide', name: 'guide', component: UserManualView },
+  { path: '/', name: 'home', component: () => import('../views/HomeView.vue') },
+  { path: '/guide', name: 'guide', component: () => import('../views/UserManualView.vue') },
   { path: '/manual', redirect: '/guide' },
   { path: '/user-manual', redirect: '/guide' },
-  { path: '/ziwei', name: 'ziwei', component: ZiweiView },
-  { path: '/bazi', name: 'bazi', component: BaziView },
-  { path: '/buncho', name: 'buncho', component: BunchoView },
+  { path: '/ziwei', name: 'ziwei', component: () => import('../views/ZiweiView.vue') },
+  { path: '/bazi', name: 'bazi', component: () => import('../views/BaziView.vue') },
+  { path: '/buncho', name: 'buncho', component: () => import('../views/BunchoView.vue') },
   { path: '/bird-divination', redirect: '/buncho' },
-  { path: '/temple-poem', name: 'temple-poem', component: TemplePoemView, alias: '/temple' },
-  { path: '/temple', redirect: '/temple-poem' },
-  { path: '/dream', name: 'dream', component: DreamView, alias: '/zhougong' },
-  { path: '/zhougong', redirect: '/dream' },
-  { path: '/simulator', name: 'simulator', component: LifeSimulatorView },
-  { path: '/life-simulator', redirect: '/simulator' },
-  { path: '/synastry', name: 'synastry', component: SynastryView },
-  { path: '/annual-planner', name: 'annual-planner', component: AnnualPlannerView },
-  { path: '/planner', redirect: '/annual-planner' },
-  { path: '/qizheng', name: 'qizheng', component: QizhengView },
-  { path: '/almanac', name: 'almanac', component: AlmanacView },
-  { path: '/iching', name: 'iching', component: IchingView },
-  { path: '/naming', name: 'naming', component: NamingView },
-  { path: '/western', name: 'western', component: WesternView },
-  { path: '/tarot', name: 'tarot', component: TarotView },
-  { path: '/vault', name: 'vault', component: VaultView },
+  { path: '/temple-poem', name: 'temple-poem', component: () => import('../views/TemplePoemView.vue'), alias: ['/temple', '/poem'] },
+  { path: '/dream', name: 'dream', component: () => import('../views/DreamView.vue'), alias: ['/zhougong', '/dreams'] },
+  { path: '/simulator', name: 'simulator', component: () => import('../views/LifeSimulatorView.vue'), alias: '/life-simulator' },
+  { path: '/synastry', name: 'synastry', component: () => import('../views/SynastryView.vue'), alias: '/hehun' },
+  { path: '/annual-planner', name: 'annual-planner', component: () => import('../views/AnnualPlannerView.vue'), alias: ['/planner', '/annual-calendar', '/calendar'] },
+  { path: '/qizheng', name: 'qizheng', component: () => import('../views/QizhengView.vue') },
+  { path: '/almanac', name: 'almanac', component: () => import('../views/AlmanacView.vue'), alias: '/huangli' },
+  { path: '/iching', name: 'iching', component: () => import('../views/IchingView.vue'), alias: '/yijing' },
+  { path: '/naming', name: 'naming', component: () => import('../views/NamingView.vue') },
+  { path: '/western', name: 'western', component: () => import('../views/WesternView.vue'), alias: '/astrology' },
+  { path: '/tarot', name: 'tarot', component: () => import('../views/TarotView.vue') },
+  { path: '/vault', name: 'vault', component: () => import('../views/VaultView.vue'), alias: '/profiles' },
   {
     path: '/admin',
     component: () => import('../views/admin/AdminLayout.vue'),
@@ -53,6 +32,11 @@ const routes = [
       { path: 'database', name: 'admin-database', component: () => import('../views/admin/DatabaseView.vue') },
       { path: 'llm-settings', name: 'admin-llm-settings', component: () => import('../views/admin/LlmSettingsView.vue') },
     ],
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    redirect: '/',
   },
 ];
 

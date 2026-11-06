@@ -125,27 +125,17 @@
     </div>
 
     <!-- 🌟 所有不同占卜算命功能 · 橫向快速導覽按鈕列 (Row 2: Horizontal Quick Functions Bar) -->
-    <div class="border-t border-dark-gold/15 px-4 sm:px-6 bg-black/10">
-      <div class="max-w-7xl mx-auto flex items-center space-x-1.5 sm:space-x-2 py-1.5 overflow-x-auto no-scrollbar font-serif text-xs">
+    <div class="border-t border-dark-gold/15 px-3 sm:px-6 bg-black/15">
+      <div class="max-w-7xl mx-auto flex items-center space-x-1 sm:space-x-1.5 py-1.5 overflow-x-auto no-scrollbar font-serif text-xs">
         <router-link
           v-for="f in divinationFeatures"
           :key="f.path"
           :to="f.path"
-          class="flex items-center space-x-1.5 px-3 py-1 rounded-full border border-transparent hover:border-dark-gold/40 text-dark-muted hover:text-dark-gold transition-all whitespace-nowrap flex-shrink-0"
+          class="flex items-center space-x-1 px-2.5 py-1 rounded-full border border-transparent hover:border-dark-gold/40 text-dark-muted hover:text-dark-gold transition-all whitespace-nowrap flex-shrink-0"
           active-class="!border-dark-gold !bg-dark-gold/20 !text-dark-gold font-bold shadow-sm"
         >
           <span class="text-xs">{{ f.icon }}</span>
           <span>{{ f.title }}</span>
-        </router-link>
-
-        <!-- 分隔線與後台快捷按鈕 (直接跳轉至本站 /admin/dashboard) -->
-        <div class="h-4 w-[1px] bg-dark-gold/30 flex-shrink-0 mx-1"></div>
-        <router-link
-          to="/admin/dashboard"
-          class="flex items-center space-x-1 px-3 py-1 rounded-full border border-dark-gold/40 hover:border-dark-gold bg-dark-gold/10 text-dark-gold hover:bg-dark-gold hover:text-dark-void transition-all whitespace-nowrap flex-shrink-0 font-bold"
-          title="進入本站 ADMIN 後台進行系統配置與辭庫編輯"
-        >
-          <span>⚙️ 系統後台配置</span>
         </router-link>
       </div>
     </div>

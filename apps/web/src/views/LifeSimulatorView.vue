@@ -1009,6 +1009,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick, watch } from 'vue';
+import { useAuthStore } from '../stores/auth.js';
 import {
   getYearMetaphysicalGuidance,
   getInitialFemaleFriends,
@@ -1024,6 +1025,7 @@ interface SavedProfile {
   birthDatetime: string;
 }
 
+const authStore = useAuthStore();
 const form = ref({
   profileName: '張道遠',
   birthDate: '1995-10-24T14:30',
@@ -1148,7 +1150,18 @@ onMounted(() => {
   loadVaultProfiles();
 });
 
-function loadVaultProfiles() {
+async function loadVaultProfiles() {
+  try {
+    const headers = await authStore.getAuthHeaders();
+    const res = await fetch('/api/v1/profiles', { headers });
+    const data = await res.json();
+    if (data.success && Array.isArray(data.data)) {
+      savedProfiles.value = data.data;
+      return;
+    }
+  } catch (err) {
+    // 降級容錯
+  }
   try {
     const raw = localStorage.getItem('celestial_vault_profiles');
     if (raw) {

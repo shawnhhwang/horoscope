@@ -60,6 +60,13 @@
             <p class="text-xs text-amber-200 font-serif font-bold tracking-wider animate-pulse">
               {{ animationNarrative }}
             </p>
+            <button
+              @click.stop="skipRitual"
+              type="button"
+              class="mt-2 text-[11px] text-dark-gold hover:text-yellow-300 underline font-sans transition-colors cursor-pointer"
+            >
+              ⚡ 略過動畫，直接啟封神籤
+            </button>
           </div>
 
           <!-- 展開籤牌徽章標籤 (若已抽出) -->
@@ -172,12 +179,15 @@
         <!-- 展開神籤紅箋卷軸 (Red Scroll Deck Presentation) -->
         <div
           v-else
+          ref="resultCardRef"
           class="glass-panel rounded-2xl p-6 border-2 border-dark-gold/40 shadow-cosmic relative overflow-hidden bg-gradient-to-b from-dark-void/90 via-dark-surface/90 to-dark-void/95"
         >
           <!-- 卷軸頂部裝飾條 -->
           <div class="flex items-center justify-between border-b-2 border-dark-gold/30 pb-3 mb-4">
             <div>
-              <span class="text-[11px] font-serif text-dark-muted block">二十八宿靈雀神籤</span>
+              <span class="text-[11px] font-serif text-dark-muted block">
+                二十八宿靈雀神籤 · {{ currentResult.lot.mansion || '角木蛟' }}
+              </span>
               <h2 class="font-serif text-xl sm:text-2xl font-bold text-gold-gradient">
                 {{ currentResult.lot.name }}
               </h2>
@@ -261,6 +271,23 @@
               {{ currentResult.lot.birdAdvice }}
             </div>
           </div>
+
+          <!-- 測算日記與後續引導 -->
+          <div class="mt-4 pt-4 border-t border-dark-gold/15 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <button
+              @click="saveReadingJournal"
+              :disabled="savingJournal || journalSaved"
+              class="w-full sm:w-auto px-4 py-2 rounded-xl border border-dark-gold/40 text-dark-gold hover:bg-dark-gold/15 text-xs font-serif transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center space-x-1.5"
+            >
+              <span>{{ journalSaved ? '✅ 已存入靈驗日記' : savingJournal ? '儲存中...' : '💾 儲存神籤至測算日記' }}</span>
+            </button>
+            <div class="flex items-center space-x-2 text-[11px]">
+              <span class="text-dark-muted">命理閉環：</span>
+              <router-link to="/almanac" class="text-dark-gold hover:underline">查今日黃曆 📅</router-link>
+              <span class="text-dark-muted/40">·</span>
+              <router-link to="/planner" class="text-dark-gold hover:underline">流年生活行運 🗓️</router-link>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -268,11 +295,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import { drawBunchoLot, BunchoDrawResult, BunchoLot } from '@celestial/astro-core';
 import { useLlmStore } from '../stores/llm.js';
+import { useAuthStore } from '../stores/auth.js';
 
 const llmStore = useLlmStore();
+const authStore = useAuthStore();
 
 // 抽籤狀態機
 type DrawPhase = 'idle' | 'praying' | 'cage_opening' | 'hopping_out' | 'pecking_lots' | 'drawing_lot' | 'delivering' | 'revealed';
@@ -281,10 +310,22 @@ const drawPhase = ref<DrawPhase>('idle');
 const isDrawing = ref(false);
 const animationProgress = ref(0);
 const animationNarrative = ref('');
+const shouldSkipRitual = ref(false);
+const savingJournal = ref(false);
+const journalSaved = ref(false);
+const resultCardRef = ref<HTMLElement | null>(null);
 
 const selectedAspect = ref<'感情' | '事業' | '財運' | '學業' | '抉擇' | '綜合'>('綜合');
 const questionInput = ref('');
 const currentResult = ref<BunchoDrawResult | null>(null);
+
+onMounted(() => {
+  // 預先快取圖片，消除動畫中途切換產生的短暫閃白
+  const img1 = new Image();
+  img1.src = '/images/buncho/buncho_cage_ready.jpg';
+  const img2 = new Image();
+  img2.src = '/images/buncho/buncho_picking_lot.jpg';
+});
 
 const aspectOptions = [
   { key: '綜合' as const, label: '綜合運勢', icon: '✨' },
@@ -380,6 +421,15 @@ function luckBadgeClass(level: string) {
   return 'bg-purple-500/20 text-purple-300 border border-purple-500/40';
 }
 
+function sleepOrSkip(ms: number): Promise<void> {
+  if (shouldSkipRitual.value) return Promise.resolve();
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function skipRitual() {
+  shouldSkipRitual.value = true;
+}
+
 /**
  * 啟動沉浸式抽籤示意動畫過程
  */
@@ -387,36 +437,38 @@ async function startDivination() {
   if (isDrawing.value) return;
   isDrawing.value = true;
   currentResult.value = null;
+  shouldSkipRitual.value = false;
+  journalSaved.value = false;
 
   // 1. 誠心祈願
   drawPhase.value = 'praying';
   animationProgress.value = 15;
   animationNarrative.value = '您雙手合十，在心中專注默想所求之事...';
-  await sleep(900);
+  await sleepOrSkip(900);
 
   // 2. 鳥籠開啟
   drawPhase.value = 'cage_opening';
   animationProgress.value = 35;
   animationNarrative.value = '輕輕推開紫竹鳥籠小門，小白文鳥側起小腦袋，歡快跳動...';
-  await sleep(1000);
+  await sleepOrSkip(1000);
 
   // 3. 靈雀出籠
   drawPhase.value = 'hopping_out';
   animationProgress.value = 55;
   animationNarrative.value = '小白文鳥輕盈躍上烏木案前，粉紅小爪踩在紅色籤布上...';
-  await sleep(1000);
+  await sleepOrSkip(1000);
 
   // 4. 審視籤陣
   drawPhase.value = 'pecking_lots';
   animationProgress.value = 75;
   animationNarrative.value = '文鳥在 28 宿靈籤陣前左右打量，小嘴在籤牌間輕點尋找...';
-  await sleep(1100);
+  await sleepOrSkip(1100);
 
   // 5. 銜籤呈遞
   drawPhase.value = 'drawing_lot';
   animationProgress.value = 90;
   animationNarrative.value = '靈犀一動！白文鳥用粉紅尖喙精準叼起命定神籤，昂首踏步呈上！';
-  await sleep(900);
+  await sleepOrSkip(900);
 
   // 由底層演算法庫執行確定性隨機抽籤
   const drawn = drawBunchoLot({
@@ -427,10 +479,50 @@ async function startDivination() {
   currentResult.value = drawn;
   animationProgress.value = 100;
   animationNarrative.value = '神籤啟封！請參閱靈雀神諭開示。';
-  await sleep(500);
+  await sleepOrSkip(500);
 
   drawPhase.value = 'revealed';
   isDrawing.value = false;
+  shouldSkipRitual.value = false;
+
+  nextTick(() => {
+    resultCardRef.value?.scrollIntoView({ behavior: 'smooth' });
+  });
+}
+
+async function saveReadingJournal() {
+  if (!currentResult.value || savingJournal.value) return;
+  savingJournal.value = true;
+  try {
+    const headers = await authStore.getAuthHeaders();
+    const lot = currentResult.value.lot;
+    const res = await fetch('/api/v1/readings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
+      body: JSON.stringify({
+        moduleType: 'BUNCHO',
+        inputSnapshot: {
+          aspect: currentResult.value.aspect,
+          question: currentResult.value.question,
+        },
+        chartOutput: currentResult.value,
+        aiSummary: `文鳥靈籤：${lot.name}（${lot.luckLevel} · ${lot.mansion || ''}）· 問${currentResult.value.aspect}：「${currentResult.value.question}」`,
+      }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      journalSaved.value = true;
+    } else {
+      alert(data.message || '儲存靈驗日記失敗');
+    }
+  } catch (err: any) {
+    alert(err.message || '連線異常，無法儲存日記');
+  } finally {
+    savingJournal.value = false;
+  }
 }
 
 function resetDivination() {

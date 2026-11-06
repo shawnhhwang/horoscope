@@ -12,7 +12,7 @@
     <div class="glass-panel rounded-2xl p-6 mb-8 max-w-3xl mx-auto">
       <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div class="sm:col-span-2">
-          <label class="block text-xs font-serif text-dark-muted mb-1">出生日期與時間 (UTC)</label>
+          <label class="block text-xs font-serif text-dark-muted mb-1">出生日期與時間 (當地時間)</label>
           <input
             v-model="birthDateTime"
             type="datetime-local"
@@ -270,7 +270,7 @@ const chart = ref<any>(null);
 const sunSign = computed(() => chart.value?.planets?.find((p: any) => p.name === '太陽')?.sign || chart.value?.sunSign || '白羊座');
 const moonSign = computed(() => chart.value?.planets?.find((p: any) => p.name === '月亮')?.sign || chart.value?.moonSign || '巨蟹座');
 const ascSign = computed(() => chart.value?.ascendantSign || chart.value?.angles?.ascendantSign || '上升座');
-const phaseName = computed(() => chart.value?.lunarPhase?.phaseName || '滿月');
+const phaseName = computed(() => chart.value?.lunarPhase?.name || chart.value?.lunarPhase?.phaseName || '滿月');
 
 const aiPrompt = computed(() => {
   if (!chart.value) return '';

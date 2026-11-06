@@ -156,7 +156,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useLlmStore, ChartContext } from '../../stores/llm.js';
 import { renderSafeMarkdown } from '../../utils/sanitize.js';
 
@@ -182,6 +182,16 @@ const copied = ref(false);
 const isExpanded = ref(true);
 
 let timerId: any = null;
+
+// 當上游排盤生辰或提示詞更新時，自動重置舊報告避免張冠李戴
+watch([() => props.prompt, () => props.summary], () => {
+  if (status.value !== 'loading') {
+    status.value = 'idle';
+    reply.value = '';
+    errorMsg.value = '';
+    elapsedSeconds.value = 0;
+  }
+});
 
 const activeModel = computed(() => {
   return llmStore.activeModelName || 'gemma4:e2b';
@@ -237,7 +247,8 @@ function openInDrawer() {
     summary: props.summary,
     rawData: props.rawData,
   };
-  llmStore.openAssistant(context, props.prompt);
+  // 若頁內已生成解析報告，直接傳入 existingReply 避免重複發送 API 請求
+  llmStore.openAssistant(context, props.prompt, reply.value || undefined);
 }
 
 async function copyResult() {

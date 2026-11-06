@@ -297,15 +297,32 @@
             {{ scenarioResult.synthesis.actionGuidance }}
           </div>
 
-          <!-- 召喚 AI 深入探究 -->
-          <div class="flex justify-end border-t border-dark-gold/20 pt-4">
+          <!-- 測算日記與後續引導 -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-dark-gold/20 pt-4">
+            <button
+              @click="saveDreamJournal"
+              :disabled="savingJournal || journalSaved"
+              class="px-5 py-2 rounded-full border border-dark-gold/50 text-dark-gold hover:bg-dark-gold/15 text-xs font-serif font-bold transition-all disabled:opacity-50 cursor-pointer flex items-center space-x-1"
+            >
+              <span>{{ journalSaved ? '✅ 已存入靈驗日記' : savingJournal ? '儲存中...' : '💾 儲存夢境至測算日記' }}</span>
+            </button>
             <button
               @click="askLlmAboutScenario"
-              class="px-6 py-2.5 rounded-full font-serif font-bold text-xs bg-dark-gold text-dark-void hover:opacity-90 shadow-cosmic transition-all flex items-center space-x-1.5"
+              class="px-6 py-2.5 rounded-full font-serif font-bold text-xs bg-dark-gold text-dark-void hover:opacity-90 shadow-cosmic transition-all flex items-center space-x-1.5 cursor-pointer"
             >
               <span>✨</span>
               <span>召喚 AI 周公解夢大師深度探詢</span>
             </button>
+          </div>
+
+          <!-- 命理閉環指引 -->
+          <div class="p-3.5 rounded-xl bg-black/40 border border-dark-gold/15 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+            <span class="text-dark-muted">🌙 夜夢通幽，白日依天時而動：</span>
+            <div class="flex items-center space-x-2">
+              <router-link to="/almanac" class="text-dark-gold font-bold hover:underline">查今日黃曆 📅</router-link>
+              <span class="text-dark-muted/40">·</span>
+              <router-link to="/planner" class="text-dark-gold font-bold hover:underline">流年生活行運曆 🗓️</router-link>
+            </div>
           </div>
         </div>
       </div>
@@ -324,8 +341,10 @@ import {
   DreamAnalysisResult,
 } from '@celestial/astro-core';
 import { useLlmStore } from '../stores/llm.js';
+import { useAuthStore } from '../stores/auth.js';
 
 const llmStore = useLlmStore();
+const authStore = useAuthStore();
 
 const activeTab = ref<'search' | 'scenario'>('search');
 
@@ -333,9 +352,11 @@ const searchQuery = ref('');
 const selectedCategory = ref<DreamCategory | undefined>(undefined);
 const categories = getAllDreamCategories();
 
-const hotKeywords = ['蛇', '掉牙', '大水', '飛翔', '火', '狗', '貓', '死人', '棺材', '流血', '懷孕', '黃金', '被追趕', '神佛'];
+const hotKeywords = ['蛇', '花開', '樹木', '掉牙', '大水', '飛翔', '火', '狗', '貓', '死人', '棺材', '流血', '懷孕', '黃金', '被追趕', '神佛', '遲到', '迷路'];
 
 const searchResult = ref(searchDreamDictionary(''));
+const savingJournal = ref(false);
+const journalSaved = ref(false);
 
 const filteredEntries = computed(() => {
   return searchResult.value.matchedEntries;
@@ -368,6 +389,7 @@ const scenarioResult = ref<DreamAnalysisResult | null>(null);
 async function analyzeScenario() {
   if (isAnalyzing.value) return;
   isAnalyzing.value = true;
+  journalSaved.value = false;
 
   // 模擬運算感知 600ms
   await new Promise((r) => setTimeout(r, 600));
@@ -385,27 +407,59 @@ function omenBadgeClass(omen: string) {
   return 'bg-rose-900/40 text-rose-300 border border-rose-500/40';
 }
 
+async function saveDreamJournal() {
+  if (!scenarioResult.value || savingJournal.value) return;
+  savingJournal.value = true;
+  try {
+    const headers = await authStore.getAuthHeaders();
+    const res = scenarioResult.value;
+    const response = await fetch('/api/v1/readings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
+      body: JSON.stringify({
+        moduleType: 'DREAM',
+        inputSnapshot: {
+          scenario: scenarioInput.value,
+        },
+        chartOutput: res,
+        aiSummary: `周公解夢：夢境交織【${res.matchedKeywords.join('、')}】（${res.dominantOmen}）· 情節：「${scenarioInput.value.slice(0, 40)}...」`,
+      }),
+    });
+    const data = await response.json();
+    if (data.success) {
+      journalSaved.value = true;
+    } else {
+      alert(data.message || '儲存日記失敗');
+    }
+  } catch (err: any) {
+    alert(err.message || '連線伺服器異常，無法儲存日記');
+  } finally {
+    savingJournal.value = false;
+  }
+}
+
 function askLlmAboutEntry(entry: DreamEntry) {
   const prompt = `我夢見了【${entry.keyword}】（所屬大類：${entry.categoryName}，吉凶評定：${entry.omen}）。《周公解夢》原典載：「${entry.classicText}」。請周公解夢與心理分析專家為我深入剖析此夢境意象在現實生活中的心理投射與吉凶預兆，並指導我該如何調適身心！`;
 
-  llmStore.openAssistantWithContext(
-    {
-      moduleType: 'DREAM',
-      title: `周公解夢 · 【${entry.keyword}】`,
-      summary: `夢境意象：${entry.keyword}（${entry.omen} · ${entry.categoryName}）`,
-      rawData: {
-        keyword: entry.keyword,
-        category: entry.category,
-        categoryName: entry.categoryName,
-        omen: entry.omen,
-        classicText: entry.classicText,
-        vernacularMeaning: entry.vernacularMeaning,
-        psychologicalAnalysis: entry.psychologicalAnalysis,
-        actionAdvice: entry.actionAdvice,
-      },
+  llmStore.openAssistantWithContext({
+    moduleType: 'DREAM',
+    title: `周公解夢 · 【${entry.keyword}】`,
+    summary: `夢境意象：${entry.keyword}（${entry.omen} · ${entry.categoryName}）`,
+    rawData: {
+      keyword: entry.keyword,
+      category: entry.category,
+      categoryName: entry.categoryName,
+      omen: entry.omen,
+      classicText: entry.classicText,
+      vernacularMeaning: entry.vernacularMeaning,
+      psychologicalAnalysis: entry.psychologicalAnalysis,
+      actionAdvice: entry.actionAdvice,
     },
-    prompt
-  );
+    initialPrompt: prompt,
+  });
 }
 
 function askLlmAboutScenario() {
@@ -413,14 +467,12 @@ function askLlmAboutScenario() {
   const res = scenarioResult.value;
   const prompt = `我做了一個夢：「${scenarioInput.value}」。系統辨識出核心意象：【${res.matchedKeywords.join('、')}】，主導吉凶為【${res.dominantOmen}】。周公原典提要為：${res.synthesis.omenSummary}。請周公解夢與榮格心理學專家為我進行多重意象交織的深度潛意識對話，指點迷津！`;
 
-  llmStore.openAssistantWithContext(
-    {
-      moduleType: 'DREAM',
-      title: `夢境交織剖析 · 【${res.matchedKeywords.slice(0, 3).join('·')}】`,
-      summary: `夢境多重意象（主導吉凶: ${res.dominantOmen}）：${res.matchedKeywords.join('、')}`,
-      rawData: res,
-    },
-    prompt
-  );
+  llmStore.openAssistantWithContext({
+    moduleType: 'DREAM',
+    title: `夢境交織剖析 · 【${res.matchedKeywords.slice(0, 3).join('·')}】`,
+    summary: `夢境多重意象（主導吉凶: ${res.dominantOmen}）：${res.matchedKeywords.join('、')}`,
+    rawData: res,
+    initialPrompt: prompt,
+  });
 }
 </script>

@@ -289,7 +289,7 @@
             class="p-3 rounded-xl bg-black/30 border border-dark-gold/15 space-y-1"
           >
             <div class="flex items-center justify-between">
-              <span class="font-bold text-dark-gold">{{ stem }}木日主</span>
+              <span class="font-bold text-dark-gold">{{ formatStemTitle(String(stem)) }}</span>
               <span class="text-[10px] px-1.5 py-0.5 rounded bg-dark-gold/15 text-dark-gold border border-dark-gold/30 font-semibold">
                 值{{ info.tenGod }}
               </span>
@@ -323,6 +323,24 @@ import InPageAiAnalysis from '../components/ai/InPageAiAnalysis.vue';
 const selectedDate = ref(new Date().toISOString().split('T')[0]);
 const almanac = ref<DailyAlmanac | null>(null);
 const selectedZodiac = ref<ZodiacHoroscope | null>(null);
+
+const stemElementMap: Record<string, string> = {
+  甲: '木',
+  乙: '木',
+  丙: '火',
+  丁: '火',
+  戊: '土',
+  己: '土',
+  庚: '金',
+  辛: '金',
+  壬: '水',
+  癸: '水',
+};
+
+function formatStemTitle(stem: string): string {
+  const elem = stemElementMap[stem] || '';
+  return `${stem}${elem}日主`;
+}
 
 const lunarStr = computed(() => almanac.value?.lunarDate?.formatted || '今日農曆');
 const officerName = computed(() => almanac.value?.dayOfficer?.name || '建');

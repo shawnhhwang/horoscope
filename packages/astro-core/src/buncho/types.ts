@@ -32,6 +32,7 @@ export interface BunchoLot {
   id: number;                   // 1 ~ 28 (對應二十八星宿靈雀神籤)
   number: number;
   name: string;                 // 籤名，例如「第 一 籤 · 靈雀銜春」
+  mansion?: string;             // 對應二十八宿星宿名號（如「角木蛟」、「軫水蚓」）
   luckLevel: BunchoLuckLevel;
   poem: string[];               // 四句五言或七言靈雀神籤詩
   birdAction: string;           // 雀鳥動作細節描摹（如「文鳥歪著小腦袋跳出籠門，於紅籤陣中挑選片刻，精準銜起一柄赤金籤牌」）

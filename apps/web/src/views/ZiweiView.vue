@@ -9,7 +9,23 @@
     </div>
 
     <!-- 輸入控制列 -->
-    <div class="glass-panel rounded-2xl p-6 mb-8 max-w-3xl mx-auto">
+    <div class="glass-panel rounded-2xl p-6 mb-8 max-w-4xl mx-auto shadow-cosmic">
+      <div v-if="savedProfiles.length > 0" class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-dark-gold/15 text-xs">
+        <span class="text-dark-gold font-bold flex items-center space-x-1.5">
+          <span>✨</span>
+          <span>命盤檔案庫快捷載入：</span>
+        </span>
+        <select
+          @change="quickLoadProfile(($event.target as HTMLSelectElement).value)"
+          class="bg-black/60 border border-dark-gold/30 rounded-lg px-2.5 py-1 text-dark-text text-xs focus:border-dark-gold outline-none"
+        >
+          <option value="">選擇已登記之命主檔案...</option>
+          <option v-for="p in savedProfiles" :key="p.id" :value="p.id">
+            {{ p.name }} ({{ p.gender }} · {{ p.birthDatetime?.slice(0, 10) }})
+          </option>
+        </select>
+      </div>
+
       <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div>
           <label class="block text-xs font-serif text-dark-muted mb-1">西曆出生日期與時間</label>
@@ -30,19 +46,28 @@
           </select>
         </div>
         <div>
-          <label class="block text-xs font-serif text-dark-muted mb-1">出生地經度 (真太陽時)</label>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-serif text-dark-muted">出生經度</label>
+            <select
+              @change="onCityPresetChange(($event.target as HTMLSelectElement).value)"
+              class="bg-black/40 text-[10px] text-dark-gold border border-dark-gold/30 rounded px-1 outline-none"
+            >
+              <option value="">城市預設...</option>
+              <option v-for="c in cityPresets" :key="c.name" :value="c.lon">{{ c.name }}</option>
+            </select>
+          </div>
           <input
             v-model="longitude"
             type="number"
             step="0.01"
-            class="w-full px-3 py-2 rounded-lg bg-black/40 border border-dark-gold/30 text-xs focus:border-dark-gold outline-none"
+            class="w-full px-3 py-2 rounded-lg bg-black/40 border border-dark-gold/30 text-xs focus:border-dark-gold outline-none font-mono"
           />
         </div>
         <div class="flex items-end">
           <button
             @click="handleCalculate"
             :disabled="loading"
-            class="w-full py-2 rounded-lg font-serif text-xs font-semibold bg-dark-gold text-dark-void hover:opacity-90 shadow-cosmic transition-all disabled:opacity-50"
+            class="w-full py-2.5 rounded-lg font-serif text-xs font-semibold bg-dark-gold text-dark-void hover:opacity-90 shadow-cosmic transition-all disabled:opacity-50 cursor-pointer"
           >
             {{ loading ? '排演中...' : '推算紫微命盤' }}
           </button>
@@ -499,14 +524,34 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import { calculateZiweiChart, calculateTrueSolarTime } from '@celestial/astro-core';
 import InPageAiAnalysis from '../components/ai/InPageAiAnalysis.vue';
 import { useAuthStore } from '../stores/auth.js';
+
+const route = useRoute();
+const authStore = useAuthStore();
 
 const birthDateTime = ref('1995-10-24T08:30');
 const gender = ref<'男' | '女'>('男');
 const longitude = ref(121.56);
 const loading = ref(false);
+const savedProfiles = ref<any[]>([]);
+
+const cityPresets = [
+  { name: '台北 (121.56°E)', lon: 121.56 },
+  { name: '台中 (120.67°E)', lon: 120.67 },
+  { name: '高雄 (120.30°E)', lon: 120.30 },
+  { name: '香港 (114.17°E)', lon: 114.17 },
+  { name: '新加坡 (103.82°E)', lon: 103.82 },
+  { name: '東京 (139.69°E)', lon: 139.69 },
+  { name: '美西舊金山 (-122.42°W)', lon: -122.42 },
+  { name: '美東紐約 (-74.00°W)', lon: -74.00 },
+];
+
+function onCityPresetChange(val: string) {
+  if (val) longitude.value = Number(val);
+}
 
 const chart = ref<any>(null);
 const selectedBranch = ref<string>('寅');
@@ -551,14 +596,39 @@ function getPalace(branch: string) {
   return chart.value?.palaces[branch];
 }
 
+async function fetchSavedProfiles() {
+  try {
+    const headers = await authStore.getAuthHeaders();
+    const res = await fetch('/api/v1/profiles', { headers });
+    const data = await res.json();
+    if (data.success && Array.isArray(data.data)) {
+      savedProfiles.value = data.data;
+    }
+  } catch (err) {
+    // 容錯
+  }
+}
+
+function quickLoadProfile(profileId: string) {
+  if (!profileId) return;
+  const p = savedProfiles.value.find((item) => item.id === profileId);
+  if (!p) return;
+  if (p.birthDatetime) birthDateTime.value = p.birthDatetime.slice(0, 16);
+  if (p.gender === '男' || p.gender === '女') gender.value = p.gender;
+  if (p.longitude) longitude.value = Number(p.longitude);
+  handleCalculate();
+}
+
 async function saveCurrentReading() {
   if (!chart.value) return;
   try {
-    const authStore = useAuthStore();
     const headers = await authStore.getAuthHeaders();
     const res = await fetch('/api/v1/readings', {
       method: 'POST',
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
       body: JSON.stringify({
         moduleType: 'ZIWEI',
         inputSnapshot: { birthDateTime: birthDateTime.value, gender: gender.value, longitude: longitude.value },
@@ -574,11 +644,35 @@ async function saveCurrentReading() {
       alert('儲存失敗：' + (data.message || '未知錯誤'));
     }
   } catch (err: any) {
-    alert('已成功將紫微命盤儲存至個人檔案庫！');
+    alert('儲存失敗：' + (err.message || '連線伺服器異常'));
   }
 }
 
 onMounted(() => {
+  fetchSavedProfiles();
+
+  // 優先檢驗 URL Query 參數 (由 Vault 檔案庫帶入)
+  if (route.query.birthDate) {
+    birthDateTime.value = String(route.query.birthDate);
+  } else {
+    try {
+      const active = sessionStorage.getItem('active_celestial_profile');
+      if (active) {
+        const p = JSON.parse(active);
+        if (p.birthDatetime) birthDateTime.value = p.birthDatetime.slice(0, 16);
+        if (p.gender === '男' || p.gender === '女') gender.value = p.gender;
+        if (p.longitude) longitude.value = Number(p.longitude);
+      }
+    } catch (e) {}
+  }
+
+  if (route.query.gender === '男' || route.query.gender === '女') {
+    gender.value = route.query.gender;
+  }
+  if (route.query.longitude) {
+    longitude.value = Number(route.query.longitude);
+  }
+
   handleCalculate();
 });
 </script>

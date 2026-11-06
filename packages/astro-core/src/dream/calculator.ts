@@ -113,9 +113,29 @@ export function interpretDreamScenario(scenarioText: string): DreamAnalysisResul
     }
   }
 
-  // 若無精確匹配，提供前三項熱門代表性詞條
-  const finalEntries = matchedEntries.length > 0 ? matchedEntries : [DREAM_DICTIONARY[0], DREAM_DICTIONARY[1]];
-  const finalKeywords = matchedKeywords.length > 0 ? matchedKeywords : ['心靈意象'];
+  // 若無精確匹配，提供專屬自性心靈解析，避免強行硬塞無關圖騰
+  let finalEntries: DreamEntry[];
+  let finalKeywords: string[];
+
+  if (matchedEntries.length > 0) {
+    finalEntries = matchedEntries;
+    finalKeywords = matchedKeywords;
+  } else {
+    const customEntry: DreamEntry = {
+      id: 'dream_custom_scenario',
+      keyword: '心靈意象',
+      aliasKeywords: ['自訂夢境'],
+      category: 'event',
+      categoryName: '生死婚喪墜落奔逃',
+      classicText: '《莊子·齊物論》：「昔者莊周夢為胡蝶，栩栩然胡蝶也。俄然覺，則蘧蘧然周也。」',
+      omen: '平吉',
+      vernacularMeaning: '您的夢境呈現獨特的心靈敘事脈絡，未直接命中傳統古籍單一圖騰，代表潛意識正以當代生活場景進行記憶重構與情緒代謝。',
+      psychologicalAnalysis: '在榮格心理學中，跳脫古典圖騰的個人化夢境，常反映自性（The Self）對近期生活壓力的調節與轉化。夢中體驗的情緒感受正是潛意識給您的真實信號。',
+      actionAdvice: '建議記錄下醒來時最鮮明的情緒關鍵詞，以正念調適身心；亦可點擊下方 AI 大師深度解讀進行全息推演。',
+    };
+    finalEntries = [customEntry];
+    finalKeywords = ['自性心靈投射'];
+  }
 
   // 評定主導吉凶
   const omenScores: Record<DreamOmenLevel, number> = {

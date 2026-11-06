@@ -32,6 +32,19 @@
       </div>
     </div>
 
+    <!-- 求問事項輸入框 -->
+    <div class="max-w-xl mx-auto mb-8">
+      <div class="glass-panel rounded-2xl p-3 border border-dark-gold/30 flex items-center space-x-3 shadow-cosmic">
+        <span class="text-xs text-dark-gold font-bold whitespace-nowrap pl-2">🔮 求問事項：</span>
+        <input
+          v-model="seekerQuestion"
+          type="text"
+          placeholder="默念並輸入您心中所求（例如：近期是否適合跳槽換工作？合夥創業吉凶？）"
+          class="w-full bg-transparent text-xs text-dark-text placeholder-dark-muted/60 outline-none"
+        />
+      </div>
+    </div>
+
     <!-- 六爻金錢卦交互舞台 -->
     <div v-if="activeMode === 'coin'" class="max-w-2xl mx-auto glass-panel rounded-2xl p-8 border border-dark-gold/30 text-center mb-12">
       <!-- 三枚銅錢視覺模擬 -->
@@ -80,7 +93,7 @@
           :key="idx"
           class="flex items-center justify-between text-xs p-2 rounded bg-black/40 border border-dark-gold/10"
         >
-          <span class="text-dark-muted font-serif">第 {{ 6 - idx }} 爻</span>
+          <span class="text-dark-muted font-serif">第 {{ tossedYaos.length - idx }} 爻</span>
           <div class="flex items-center space-x-1">
             <!-- 陽爻 (一整條) -->
             <div v-if="val === 7 || val === 9" class="w-24 h-2 bg-dark-gold rounded-full"></div>
@@ -167,7 +180,16 @@
 
       <!-- 四維白話詳解 -->
       <div class="glass-panel rounded-2xl p-8 border border-dark-gold/30">
-        <h3 class="font-serif text-xl font-bold text-gold-gradient mb-6">天機爻辭事態解析</h3>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-3 border-b border-dark-gold/15">
+          <h3 class="font-serif text-xl font-bold text-gold-gradient">天機爻辭事態解析</h3>
+          <button
+            @click="saveReadingJournal"
+            :disabled="savingJournal || journalSaved"
+            class="px-3.5 py-1.5 rounded-xl border border-dark-gold/40 text-dark-gold hover:bg-dark-gold/15 text-xs font-serif transition-all disabled:opacity-50 cursor-pointer flex items-center space-x-1.5 self-start sm:self-auto"
+          >
+            <span>{{ journalSaved ? '✅ 已存入測算日記' : savingJournal ? '儲存中...' : '💾 儲存此卦象至測算日記' }}</span>
+          </button>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
           <div class="p-4 rounded-xl bg-black/30 border border-dark-gold/15">
             <span class="font-serif font-bold text-dark-gold block mb-1">事業與前程：</span>
@@ -185,6 +207,22 @@
             <span class="font-serif font-bold text-dark-gold block mb-1">大局總綱：</span>
             <p class="text-xs text-dark-muted leading-relaxed">{{ divinationResult.interpretation.general }}</p>
           </div>
+        </div>
+      </div>
+
+      <!-- 卦象後續命理閉環指引 -->
+      <div class="p-4 rounded-2xl bg-black/40 border border-dark-gold/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+        <div class="flex items-center space-x-2 text-dark-muted">
+          <span class="text-base">🧭</span>
+          <span><strong>天機決策閉環</strong>：卦象已明，若需參照自身先天命格底色或擇吉而動，可進一步探索：</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <router-link to="/bazi" class="px-3 py-1 rounded-lg bg-dark-gold/15 hover:bg-dark-gold/25 text-dark-gold font-bold transition-colors">
+            觀四柱八字 ⚡
+          </router-link>
+          <router-link to="/almanac" class="px-3 py-1 rounded-lg bg-dark-gold/15 hover:bg-dark-gold/25 text-dark-gold font-bold transition-colors">
+            查今日黃曆 📅
+          </router-link>
         </div>
       </div>
 
@@ -206,13 +244,20 @@
 import { ref, computed } from 'vue';
 import { tossCoins, castCoinDivination, castPlumBlossom, YaoType } from '@celestial/astro-core';
 import InPageAiAnalysis from '../components/ai/InPageAiAnalysis.vue';
+import { useAuthStore } from '../stores/auth.js';
 
+const authStore = useAuthStore();
 const activeMode = ref<'coin' | 'plum'>('coin');
+const seekerQuestion = ref('');
 const isTossing = ref(false);
+const savingJournal = ref(false);
+const journalSaved = ref(false);
 const tossedYaos = ref<YaoType[]>([]);
 const divinationResult = ref<any>(null);
 
-const originalHexagramName = computed(() => divinationResult.value?.originalHexagram?.name || '');
+const originalHexagramName = computed(
+  () => divinationResult.value?.baseHexagram?.name || divinationResult.value?.originalHexagram?.name || ''
+);
 const transformedHexagramName = computed(() => divinationResult.value?.transformedHexagram?.name || '');
 const movingLinesText = computed(() => divinationResult.value?.movingLines?.join('、') || '無動爻');
 
@@ -221,7 +266,8 @@ const aiPrompt = computed(() => {
   const original = originalHexagramName.value;
   const transformed = transformedHexagramName.value;
   const moving = movingLinesText.value;
-  return `請以易經決策思維顧問身份，為我深入剖析此卦：本卦得【${original}】，動爻為【第${moving}爻】，變卦化為【${transformed}】。請以《易經》的時位辯證與戰略決策視角，解析事態當前所處階段、動爻引動之關鍵轉折點、未來發展趨勢與具體的進退抉擇指南。`;
+  const questionPart = seekerQuestion.value ? `求問者心中所問為【${seekerQuestion.value}】。` : '';
+  return `請以易經決策思維顧問身份，為我深入剖析此卦：${questionPart}本卦得【${original}】，動爻為【第${moving}爻】，變卦化為【${transformed}】。請以《易經》的時位辯證與戰略決策視角，解析事態當前所處階段、動爻引動之關鍵轉折點、未來發展趨勢與具體的進退抉擇指南。`;
 });
 
 const plum1 = ref(1);
@@ -231,6 +277,7 @@ const plum3 = ref(3);
 function tossOneYao() {
   if (tossedYaos.value.length >= 6) return;
   isTossing.value = true;
+  journalSaved.value = false;
   setTimeout(() => {
     const val = tossCoins();
     tossedYaos.value.push(val);
@@ -245,6 +292,44 @@ function tossOneYao() {
 function resetToss() {
   tossedYaos.value = [];
   divinationResult.value = null;
+  journalSaved.value = false;
+}
+
+async function saveReadingJournal() {
+  if (!divinationResult.value || savingJournal.value) return;
+  savingJournal.value = true;
+  try {
+    const headers = await authStore.getAuthHeaders();
+    const original = originalHexagramName.value;
+    const transformed = transformedHexagramName.value;
+    const res = await fetch('/api/v1/readings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
+      body: JSON.stringify({
+        moduleType: 'ICHING',
+        inputSnapshot: {
+          mode: activeMode.value,
+          question: seekerQuestion.value,
+          yaos: tossedYaos.value,
+        },
+        chartOutput: divinationResult.value,
+        aiSummary: `易經卜卦：本卦【${original}】之變卦【${transformed}】${seekerQuestion.value ? ` · 求問：${seekerQuestion.value}` : ''}`,
+      }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      journalSaved.value = true;
+    } else {
+      alert(data.message || '儲存測算紀錄失敗');
+    }
+  } catch (err: any) {
+    alert(err.message || '無法連線至伺服器儲存日記');
+  } finally {
+    savingJournal.value = false;
+  }
 }
 
 const reversedYaos = computed(() => {

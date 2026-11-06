@@ -191,6 +191,14 @@ function moduleName(type: string): string {
     NAME: '姓名學',
     WESTERN: '西洋星盤',
     TAROT: '韋特塔羅',
+    BUNCHO: '文鳥靈籤',
+    TEMPLE_POEM: '廟宇籤詩',
+    DREAM: '周公解夢',
+    QIZHENG: '七政四餘',
+    ALMANAC: '每日農民曆',
+    SYNASTRY: '八字合婚',
+    ANNUAL_PLANNER: '流年行運曆',
+    LIFE_SIMULATOR: '百歲模擬一生',
   };
   return map[type] || type;
 }
@@ -221,6 +229,22 @@ const suggestedPrompts = computed(() => {
         return ['🪐 請解析我太陽月亮上升三者交織的靈魂藍圖', '🌙 當前月相原型揭示了我怎樣的潛意識安全感需索？'];
       case 'TAROT':
         return ['🎴 這組牌陣最核心要點醒我的靈魂功課是什麼？', '🗝️ 針對逆位牌所呈現的阻礙，具體突破之道為何？'];
+      case 'BUNCHO':
+        return ['🐦 請依靈籤詩意，剖析我當下心境所問之成敗機運', '🍃 此籤若問職場轉機或情感走向，應守或應動？'];
+      case 'TEMPLE_POEM':
+        return ['🙏 請結合籤詩歷史典故，為我開解神明聖意與行事宜忌', '⏳ 此籤所應之時機約在何時？有無轉危為安之化解方？'];
+      case 'DREAM':
+        return ['🌙 請從榮格潛意識與中醫五臟神魂角度剖析此夢意象', '⚠️ 此夢暗示近期心理壓力還是現實生活中將有變動？'];
+      case 'QIZHENG':
+        return ['🔭 請解析命度主星與十一曜經緯交會對我格局的影響', '⚡ 當前行度是否有截煞或恩星高照之象？'];
+      case 'ALMANAC':
+        return ['📅 依我今日流日與日主十神，最宜把握哪些關鍵行動？', '🚫 今日煞方與相沖生肖在行事上需特別注意什麼？'];
+      case 'SYNASTRY':
+        return ['💍 請深入剖析雙方四柱五行互補與雙宮聯參之化解道', '🏡 依陽宅家道法，我們如何在起居格局上促進夫妻和合？'];
+      case 'ANNUAL_PLANNER':
+        return ['🗓️ 今年各月份五行起伏對我的身心與決策有何指引？', '🍵 依黃帝內經四時調神，我當季最適合的起居養生習慣？'];
+      case 'LIFE_SIMULATOR':
+        return ['⏳ 回顧我百歲模擬的關鍵轉折，命理與自由意志如何取得平衡？', '💎 命中知己盲盒的因緣聚合給我怎樣的人生啟示？'];
     }
   }
   return [

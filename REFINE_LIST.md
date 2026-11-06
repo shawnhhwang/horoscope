@@ -16,7 +16,7 @@
 |---|---|---|---|---|
 | **P0** | 上線前必修：可直接被利用取得管理權限、外洩金鑰／個資，或有明確侵權／違法風險 | 9 | **9 / 9 (100%)** | 0 |
 | **P1** | 商轉前應修：影響穩定性、成本失控、合規缺口 | 12 | **8 / 12 (67%)** | 4 (P-02 佇列, P-03 PG, S-10 HttpOnly, A-01/02 CI/Log) |
-| **P2** | 持續改善：效能、可維運性、技術債 | 10 | **3 / 10 (30%)** | 7 (Bundle, WebP, 密碼強度, Zod等) |
+| **P2** | 持續改善：效能、可維運性、技術債 | 10 | **5 / 10 (50%)** | 5 (WebP, 密碼強度, Zod等) |
 
 ---
 
@@ -134,7 +134,8 @@
 - [ ] **P-04：推演紀錄每回合都整筆重寫大型 JSON 欄位** *(持續關注，現階段推演回合效能良好)*
 
 ### P2
-- [ ] **P-05：前端主 bundle 大小**（已於 Vite 生產建置加入 chunk 分割警告關注）。
+- [x] **P-05：前端主 bundle 大小** *(已修正)*
+  - 全站 17 個核心視圖路由全面導入 `() => import(...)` 動態代碼分割懶加載（Code-splitting），首屏載入極速輕量化。
 - [ ] **P-06：靜態圖片壓縮（WebP 格式轉換與 CDN 快取）**。
 - [x] **P-07：nginx 的 `gzip_types` 缺少 `application/javascript`** *(已修正)*
   - 在 `deploy/docker/nginx.conf` 補齊 `application/javascript`。
@@ -154,7 +155,8 @@
   - 統一匯出至 `middleware/auth.ts`。
 - [x] **A-04：`DATABASE_URL` 範本寫死開發機絕對路徑** *(已修正)*
   - 已更新 `.env.example` 為標準相對路徑。
-- [ ] **A-05：文件與實作持續同步** *(本次同步全站 Markdown 文件)*。
+- [x] **A-05：文件與實作持續同步** *(已修正)*
+  - 全面同步 `USER_MANUAL.md`、`README.md`、`UserManualView.vue`、`REFINE_LIST.md`。
 - [ ] **A-06：Dockerfile 改用 `pnpm deploy --prod` 輕量化構建**。
 
 ---
@@ -163,7 +165,7 @@
 
 所有修正均通過以下端到端與意圖驗證：
 1. **安全弱點掃描**：`pnpm audit --prod` ➔ **0 known vulnerabilities**。
-2. **核心演算法單元測試**：`pnpm --filter @celestial/astro-core test` ➔ **30 / 30 測試全數通過**。
+2. **核心演算法單元測試**：`pnpm --filter @celestial/astro-core test` ➔ **40 / 40 測試全數通過**。
 3. **後端服務整合測試**：`pnpm --filter @celestial/server test` ➔ **66 / 66 測試全數通過**（包含 IDOR 阻斷與 Fail-Closed 意圖測試）。
 4. **前端與後台構建**：`pnpm --filter @celestial/web build` 與 `pnpm --filter @celestial/admin build` ➔ **0 錯誤全數編譯成功**。
 
@@ -183,3 +185,29 @@ flowchart LR
 - S-01 (Fail-Closed)、S-08 (IDOR) 與 S-03 (SSRF) 均已撰寫後端 API 整合測試驗證通過。
 - L-02 塔羅圖檔已歸檔公有領域聲明於 [ASSETS_LICENSE.md](file:///home/coder/Codebase/Horoscope/ASSETS_LICENSE.md)。
 - 授權檢查確認直接依賴無 AGPL/GPL 傳染風險，已更新專案商業專有授權 (`LICENSE`)。
+
+---
+
+## 8. 系統使用性、流暢性與功能故事性全面改善 (UX Diagnosis Complete)
+
+依據系統全盤診斷報告（`UX_DIAGNOSIS_REPORT.md`），已全數完成下列落地改善：
+
+1. **穩定性與邏輯防護 (Stability & P0 Bug Fixes)**：
+   - `AlmanacView.vue`：修復日主十天干五行對映，告別甲乙木以外的天干被誤植為「木日主」的問題。
+   - `DreamView.vue` & `dictionary.ts`：補齊草木花果（花開、果實、樹木、稻田、枯木）及現代詞條（遲到、迷路）；修復自訂情境夢境錯誤 fallback 至蛇龍意象，產出精準心理學與身心能量分析。
+   - `BunchoView.vue` & `calculator.ts`：文鳥靈籤對齊二十八星宿入宿度數（角木蛟至軫水蚓）。
+   - `IchingView.vue`：修復六爻卦象從初爻至上爻排布標籤倒置問題。
+   - `NamingView.vue` & `WesternView.vue`：修復 AI 傳入之評分與月相屬性名稱錯誤。
+
+2. **儀式感、流暢度與神聖體驗 (Fluency & Ritual Pacing)**：
+   - `TemplePoemView.vue`：提供天上聖母媽祖、關聖帝君、觀世音菩薩、玄天上帝、福德正神 5 大尊神選擇；嚴格恪守台灣傳統宮廟儀軌：遇笑筊、陰筊強制將籤支退回竹筒重新搖籤（禁止同籤重複擲筊）；第 3 次退籤享有神明慈悲保底聖筊。
+   - `TarotView.vue`：抽牌以燙金牌背初始覆蓋呈現，提供手動逐張翻牌或一鍵「✨ 揭示全部牌面」，並完整展示心靈、愛情、事業深度方針。
+   - `BunchoView.vue`：提供「⚡ 略過動畫 (直接看籤)」按鈕，圖片非同步預載，手機端揭曉自動滾動至結果卡片。
+   - `ArmillarySphere.vue`：3D 渾天儀導入 `touch-pan-y` 手勢穿透，解決行動端滑動被 WebGL Canvas 劫持問題。
+
+3. **生態互聯與全域 AI 貫通 (Ecosystem & Narrative Continuity)**：
+   - `LlmAssistantModal.vue` & `stores/llm.ts`：全面支援全站 15 大模組自適應上下文注入與各模組專屬啟發式提問；支援自頁面分析直接承接既有回答進抽屜對話，杜絕重複消耗 Token。
+   - `InPageAiAnalysis.vue`：監聽命盤參數變動，星盤重算時自動清空舊解讀避免過期顯示。
+   - 測算日記全面貫通：六爻、塔羅、廟宇籤詩、文鳥抽籤、周公解夢、八字排盤均支援一鍵保存測算筆記至雲端保險庫 (`/vault`)。
+   - `VaultView.vue`、`ZiweiView.vue`、`BaziView.vue`：保險庫生辰檔案支援一秒帶入排盤，新增台灣城市經緯度預設快捷選擇。
+   - `router/index.ts`：17 個前台頁面全員實施 Code-splitting 動態懶加載，新增 404 全局導回防呆。

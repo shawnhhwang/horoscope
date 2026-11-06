@@ -75,6 +75,31 @@
           />
         </div>
 
+        <!-- 主祀神明選擇 (依台灣廟宇參拜規矩恭請神明作主) -->
+        <div>
+          <label class="block text-dark-gold font-bold mb-1.5">
+            參拜主祀神明 (恭請神明聖駕作主)
+          </label>
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+            <button
+              v-for="d in deityOptions"
+              :key="d.id"
+              type="button"
+              @click="selectedDeity = d.id"
+              class="p-2 rounded-xl border text-center transition-all flex flex-col items-center"
+              :class="[
+                selectedDeity === d.id
+                  ? 'border-dark-gold bg-dark-gold/25 text-dark-gold font-bold shadow-cosmic scale-102'
+                  : 'glass-panel border-dark-muted/20 text-dark-muted hover:border-dark-gold/30',
+              ]"
+            >
+              <span class="text-base mb-0.5">{{ d.icon }}</span>
+              <span class="text-xs font-serif">{{ d.name }}</span>
+              <span class="text-[9px] text-dark-muted mt-0.5 truncate w-full">{{ d.title.split('·')[0] }}</span>
+            </button>
+          </div>
+        </div>
+
         <!-- 核心亮點：精確選擇要問哪一方面 (Target Inquiry Aspect) -->
         <div>
           <label class="block text-dark-gold font-bold mb-1.5">
@@ -180,7 +205,9 @@
         />
         <div v-if="lastBweiResult" class="absolute bottom-3 inset-x-3 bg-dark-void/90 border border-dark-gold/60 p-2.5 rounded-lg backdrop-blur-md">
           <div class="flex items-center justify-center space-x-2 mb-1">
-            <span class="text-lg">{{ lastBweiResult.type === 'sheng_bwei' ? '✨' : '⚠️' }}</span>
+            <span class="text-xs px-2 py-0.5 rounded font-mono font-bold" :class="lastBweiResult.type === 'sheng_bwei' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'">
+              {{ lastBweiResult.type === 'sheng_bwei' ? '◓ ◒ 一平一凸' : lastBweiResult.type === 'xiao_bwei' ? '◓ ◓ 兩平向上' : '◒ ◒ 兩凸向上' }}
+            </span>
             <span class="font-serif font-bold text-sm" :class="bweiColorClass(lastBweiResult.type)">
               擲得【{{ lastBweiResult.typeName }}】
             </span>
@@ -191,23 +218,25 @@
         </div>
       </div>
 
-      <!-- 擲筊操作按鈕 -->
+      <!-- 擲筊操作按鈕 (遵循台灣廟宇鐵律：神明未允則竹籤放回籤筒，不對原籤強行重擲) -->
       <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
         <button
+          v-if="!lastBweiResult || lastBweiResult.isAccepted"
           @click="castBwei"
           :disabled="isCastingBwei"
-          class="w-full sm:w-auto px-8 py-3 rounded-full font-serif font-bold text-sm bg-gradient-to-r from-red-600 to-amber-500 text-white hover:opacity-90 shadow-cosmic transition-all flex items-center justify-center space-x-2"
+          class="w-full sm:w-auto px-8 py-3 rounded-full font-serif font-bold text-sm bg-gradient-to-r from-red-600 to-amber-500 text-white hover:opacity-90 shadow-cosmic transition-all flex items-center justify-center space-x-2 cursor-pointer"
         >
           <span>🙏</span>
           <span>{{ isCastingBwei ? '筊杯翻滾中...' : '擲筊請示神明 (拋擲雙杯)' }}</span>
         </button>
 
         <button
-          v-if="lastBweiResult && !lastBweiResult.isAccepted"
+          v-else
           @click="reDrawLot"
-          class="w-full sm:w-auto px-6 py-3 rounded-full glass-panel border border-dark-gold/40 text-dark-gold hover:border-dark-gold text-xs font-serif font-bold transition-all"
+          class="w-full sm:w-auto px-8 py-3 rounded-full font-serif font-bold text-sm bg-gradient-to-r from-amber-600 to-amber-500 text-dark-void hover:opacity-90 shadow-cosmic transition-all flex items-center justify-center space-x-2 cursor-pointer animate-pulse"
         >
-          🎋 神明未允 · 竹籤歸筒重新抽籤
+          <span>🎋</span>
+          <span>神明未允 · 竹籤放回籤筒重新抽籤 (第 {{ redrawCount + 1 }} 輪)</span>
         </button>
       </div>
     </div>
@@ -258,12 +287,19 @@
         </div>
 
         <!-- 操作重抽 -->
-        <div class="mt-5 flex items-center justify-center space-x-3">
+        <div class="mt-5 flex flex-wrap items-center justify-center gap-3">
           <button
             @click="resetAll"
-            class="px-5 py-2 rounded-full glass-panel border border-dark-gold/40 text-dark-gold hover:border-dark-gold text-xs font-serif font-bold transition-all"
+            class="px-5 py-2 rounded-full glass-panel border border-dark-gold/40 text-dark-gold hover:border-dark-gold text-xs font-serif font-bold transition-all cursor-pointer"
           >
             🔄 感謝神恩 · 重新請示
+          </button>
+          <button
+            @click="saveReadingJournal"
+            :disabled="savingJournal || journalSaved"
+            class="px-5 py-2 rounded-full border border-dark-gold/60 text-dark-gold hover:bg-dark-gold/20 text-xs font-serif font-bold transition-all disabled:opacity-50 cursor-pointer flex items-center space-x-1"
+          >
+            <span>{{ journalSaved ? '✅ 已存入靈驗日記' : savingJournal ? '儲存中...' : '💾 儲存籤詩至測算日記' }}</span>
           </button>
         </div>
       </div>
@@ -342,11 +378,27 @@
           </div>
           <button
             @click="askLlmTempleMaster"
-            class="px-6 py-2.5 rounded-full font-serif font-bold text-xs bg-dark-gold text-dark-void hover:opacity-90 transition-all shadow-cosmic flex items-center space-x-1.5 flex-shrink-0"
+            class="px-6 py-2.5 rounded-full font-serif font-bold text-xs bg-dark-gold text-dark-void hover:opacity-90 transition-all shadow-cosmic flex items-center space-x-1.5 flex-shrink-0 cursor-pointer"
           >
             <span>✨</span>
             <span>向 AI 宮廟名師深入解籤</span>
           </button>
+        </div>
+
+        <!-- 命理閉環生態指引 -->
+        <div class="p-4 rounded-2xl bg-black/40 border border-dark-gold/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <div class="flex items-center space-x-2 text-dark-muted">
+            <span class="text-base">🙏</span>
+            <span>領受神意後，可進一步查農曆擇日或推演流年運勢：</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <router-link to="/almanac" class="px-3 py-1 rounded-lg bg-dark-gold/15 hover:bg-dark-gold/25 text-dark-gold font-bold transition-colors">
+              查今日黃曆 📅
+            </router-link>
+            <router-link to="/ziwei" class="px-3 py-1 rounded-lg bg-dark-gold/15 hover:bg-dark-gold/25 text-dark-gold font-bold transition-colors">
+              排紫微斗數 🌟
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -363,8 +415,10 @@ import {
   TempleInquiryAspect,
 } from '@celestial/astro-core';
 import { useLlmStore } from '../stores/llm.js';
+import { useAuthStore } from '../stores/auth.js';
 
 const llmStore = useLlmStore();
+const authStore = useAuthStore();
 
 type Step = 'petition' | 'draw_lot' | 'bwa_bwei' | 'interpretation';
 
@@ -377,6 +431,15 @@ const steps = [
   { key: 'interpretation' as const, label: '4. 領籤解詩', icon: '📜' },
 ];
 
+const deityOptions = [
+  { id: 'mazu', name: '天上聖母媽祖', title: '慈悲護佑 · 航海安瀾 · 婚育平安', icon: '👑' },
+  { id: 'guanyu', name: '關聖帝君 (恩主公)', title: '忠義仁勇 · 經商求財 · 官司化解', icon: '⚔️' },
+  { id: 'guanyin', name: '觀世音菩薩', title: '大慈大悲 · 救苦救難 · 家宅平安', icon: '🪷' },
+  { id: 'xuantian', name: '玄天上帝 (上帝公)', title: '蕩魔鎮煞 · 消災延壽 · 事業前程', icon: '🛡️' },
+  { id: 'tudi', name: '福德正神 (土地公)', title: '在地庇佑 · 財帛豐盈 · 土地安寧', icon: '🪙' },
+];
+const selectedDeity = ref('mazu');
+
 const seekerName = ref('');
 const seekerBirth = ref('');
 const seekerAddress = ref('');
@@ -385,6 +448,9 @@ const specificQuestion = ref('');
 
 const isShaking = ref(false);
 const isCastingBwei = ref(false);
+const redrawCount = ref(0);
+const savingJournal = ref(false);
+const journalSaved = ref(false);
 
 const drawnLotCandidate = ref<TemplePoemLot | null>(null);
 const lastBweiResult = ref<BwaBweiResult | null>(null);
@@ -459,13 +525,15 @@ async function castBwei() {
   // 模擬筊杯落地旋轉
   await new Promise((r) => setTimeout(r, 800));
 
-  const result = castBwaBwei();
+  // 虔心保底機制：若已誠心重抽 2 次以上（第 3 輪），神明感應信士精誠，特賜聖筊
+  const result = redrawCount.value >= 2 ? castBwaBwei('sheng_bwei') : castBwaBwei();
   lastBweiResult.value = result;
   isCastingBwei.value = false;
 
   // 若為聖筊，神明應允，進入解籤
   if (result.isAccepted) {
     confirmedLot.value = drawnLotCandidate.value;
+    redrawCount.value = 0;
     setTimeout(() => {
       currentStep.value = 'interpretation';
     }, 1000);
@@ -473,6 +541,7 @@ async function castBwei() {
 }
 
 function reDrawLot() {
+  redrawCount.value++;
   drawnLotCandidate.value = null;
   lastBweiResult.value = null;
   currentStep.value = 'draw_lot';
@@ -482,28 +551,68 @@ function resetAll() {
   drawnLotCandidate.value = null;
   lastBweiResult.value = null;
   confirmedLot.value = null;
+  redrawCount.value = 0;
+  journalSaved.value = false;
   currentStep.value = 'petition';
+}
+
+async function saveReadingJournal() {
+  if (!confirmedLot.value || savingJournal.value) return;
+  savingJournal.value = true;
+  try {
+    const headers = await authStore.getAuthHeaders();
+    const lot = confirmedLot.value;
+    const deity = deityOptions.find((d) => d.id === selectedDeity.value)?.name || '神明';
+    const res = await fetch('/api/v1/readings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
+      body: JSON.stringify({
+        moduleType: 'TEMPLE_POEM',
+        inputSnapshot: {
+          deity,
+          seekerName: seekerName.value,
+          inquiryAspect: selectedAspect.value,
+          question: specificQuestion.value,
+        },
+        chartOutput: confirmedLot.value,
+        aiSummary: `六十甲子籤【${deity}】：${lot.orderNumberText} ${lot.stemBranch}（${lot.title} · ${lot.luckLevel}）· 問${aspectName.value}：「${specificQuestion.value || '吉凶指引'}」`,
+      }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      journalSaved.value = true;
+    } else {
+      alert(data.message || '儲存靈驗日記失敗');
+    }
+  } catch (err: any) {
+    alert(err.message || '連線伺服器異常，未能儲存日記');
+  } finally {
+    savingJournal.value = false;
+  }
 }
 
 function askLlmTempleMaster() {
   if (!confirmedLot.value) return;
   const lot = confirmedLot.value;
-  const prompt = `信眾【${seekerName.value || '善信'}】向神明抽得六十甲子籤第 ${lot.id} 籤【${lot.stemBranch}】（典故：${lot.title}，吉凶：${lot.luckLevel}）。籤詩為：「${lot.poem.join('，')}」。聖意為：「${lot.holyDecree}」。我問的是【${aspectName.value}】事項：「${specificQuestion.value || '所求吉凶指引'}」。請宮廟解籤名師為我深入借古喻今，解析籤意並指導下一步具體行動策略！`;
+  const deity = deityOptions.find((d) => d.id === selectedDeity.value)?.name || '神明';
+  const prompt = `信眾【${seekerName.value || '善信'}】向【${deity}】抽得六十甲子籤第 ${lot.id} 籤【${lot.stemBranch}】（典故：${lot.title}，吉凶：${lot.luckLevel}）。籤詩為：「${lot.poem.join('，')}」。聖意為：「${lot.holyDecree}」。我問的是【${aspectName.value}】事項：「${specificQuestion.value || '所求吉凶指引'}」。請宮廟解籤名師為我深入借古喻今，解析籤意並指導下一步具體行動策略！`;
 
-  llmStore.openAssistantWithContext(
-    {
-      moduleType: 'TEMPLE_POEM',
-      title: `六十甲子籤 · ${lot.orderNumberText} ${lot.stemBranch} (${lot.title})`,
-      summary: `信眾 ${seekerName.value || '善信'} 問【${aspectName.value}】：${specificQuestion.value || '吉凶指引'}（擲得聖筊確認）`,
-      rawData: {
-        lot,
-        seekerName: seekerName.value,
-        inquiryAspect: selectedAspect.value,
-        question: specificQuestion.value,
-      },
+  llmStore.openAssistantWithContext({
+    moduleType: 'TEMPLE_POEM',
+    title: `六十甲子籤 · ${deity} · ${lot.orderNumberText} ${lot.stemBranch} (${lot.title})`,
+    summary: `信眾 ${seekerName.value || '善信'} 於【${deity}】座前問【${aspectName.value}】：${specificQuestion.value || '吉凶指引'}（擲得聖筊確認）`,
+    rawData: {
+      lot,
+      deity,
+      seekerName: seekerName.value,
+      inquiryAspect: selectedAspect.value,
+      question: specificQuestion.value,
     },
-    prompt
-  );
+    initialPrompt: prompt,
+  });
 }
 </script>
 

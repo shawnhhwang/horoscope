@@ -231,14 +231,14 @@ const analysisResult = ref<any>(null);
 const recommendedList = ref<any[]>([]);
 
 const fullName = computed(() => `${surname.value || ''}${givenName.value || ''}`);
-const totalScore = computed(() => analysisResult.value?.fiveGrids?.totalScore || 0);
-const patternText = computed(() => `${analysisResult.value?.threeTalents?.pattern || ''} (${analysisResult.value?.threeTalents?.fortune || ''})`);
+const totalScore = computed(() => analysisResult.value?.overallScore || 0);
+const patternText = computed(() => `${analysisResult.value?.threeTalents?.pattern || ''} (${analysisResult.value?.threeTalents?.level || ''})`);
 
 const aiPrompt = computed(() => {
   if (!analysisResult.value) return '';
   const score = totalScore.value;
   const pattern = analysisResult.value.threeTalents?.pattern || '';
-  const fortune = analysisResult.value.threeTalents?.fortune || '';
+  const fortune = analysisResult.value.threeTalents?.level || '';
   return `請以正統姓名學與文字學顧問身份，為我客觀評估此姓名【${fullName.value}】：五格綜合評分為「${score}分」，三才配置為「${pattern}（${fortune}）」。請結合漢字音形義內涵、三才生剋穩定度、八字五行補益以及現代社交形象塑造，給予中肯、專業且具參考價值的診斷建言。`;
 });
 
