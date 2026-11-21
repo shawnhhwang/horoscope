@@ -186,6 +186,56 @@ describe('🌟 Role-RAG 角色化專屬顧問與去仙人化語氣意圖測試 (
       expect(ziweiKnowledge).toMatch(/大道至簡|君臣慶會|紫府同宮|三合/);
     });
 
+    it('DREAM 能檢索出周公解夢原典與榮格原型心理學 RAG 知識庫', async () => {
+      const dreamKnowledge = await retrieveModuleKnowledge(
+        'DREAM',
+        { title: '夢境解析', summary: '夢見深水與蛇' },
+        '我夢見深水裡有蛇，象徵什麼？'
+      );
+      expect(dreamKnowledge).toContain('榮格原型心理學');
+      expect(dreamKnowledge).toMatch(/深水|無意識|陰影/);
+    });
+
+    it('TEMPLE_POEM 能檢索出六十甲子籤典故與物理擲筊 RAG 知識庫', async () => {
+      const templeKnowledge = await retrieveModuleKnowledge(
+        'TEMPLE_POEM',
+        { title: '廟宇籤詩', summary: '問婚姻' },
+        '抽到籤詩想以擲筊確認聖意'
+      );
+      expect(templeKnowledge).toContain('擲筊');
+      expect(templeKnowledge).toMatch(/聖筊|笑筊|陰筊/);
+    });
+
+    it('BUNCHO 能檢索出靈雀銜籤與二十八宿 RAG 知識庫', async () => {
+      const bunchoKnowledge = await retrieveModuleKnowledge(
+        'BUNCHO',
+        { title: '文鳥抽籤', summary: '問事' },
+        '靈雀銜籤感應當下氣機'
+      );
+      expect(bunchoKnowledge).toContain('二十八宿');
+      expect(bunchoKnowledge).toMatch(/靈雀|文鳥|氣機/);
+    });
+
+    it('ANNUAL_PLANNER 能檢索出歲運與四正時脈起居 RAG 知識庫', async () => {
+      const plannerKnowledge = await retrieveModuleKnowledge(
+        'ANNUAL_PLANNER',
+        { title: '流年生活曆', summary: '起居調候' },
+        '子午卯酉四正時脈起居'
+      );
+      expect(plannerKnowledge).toContain('四正時脈');
+      expect(plannerKnowledge).toMatch(/子午卯酉|起居養生/);
+    });
+
+    it('LIFE_SIMULATOR 能檢索出百歲人生推演與十年大運轉折 RAG 知識庫', async () => {
+      const simulatorKnowledge = await retrieveModuleKnowledge(
+        'LIFE_SIMULATOR',
+        { title: '百歲人生大夢', summary: '流年推演' },
+        '大運十年轉折與百歲人生'
+      );
+      expect(simulatorKnowledge).toContain('百歲流年');
+      expect(simulatorKnowledge).toMatch(/十年大運|人生推演/);
+    });
+
     it('ZIWEI 離線合成器應精準整合輸出命盤格局與 2/3 大於 1/3 決策心法', () => {
       const mockMsg = [{ role: 'user' as const, content: '請解析我的命宮與一生格局' }];
       const ctx = {

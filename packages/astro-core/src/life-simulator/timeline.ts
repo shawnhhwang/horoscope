@@ -268,23 +268,23 @@ export function generateAnnualLifeStory(params: {
  */
 export function getLifeStageIllustration(age: number): string {
   if (age <= 2) {
-    return '/images/life-simulator/stage_01_infancy.jpg';
+    return '/images/life-simulator/stage_01_infancy.webp';
   } else if (age <= 11) {
-    return '/images/life-simulator/stage_02_childhood.jpg';
+    return '/images/life-simulator/stage_02_childhood.webp';
   } else if (age <= 17) {
-    return '/images/life-simulator/stage_03_youth.jpg';
+    return '/images/life-simulator/stage_03_youth.webp';
   } else if (age <= 21) {
-    return '/images/life-simulator/stage_04_capping.jpg';
+    return '/images/life-simulator/stage_04_capping.webp';
   } else if (age <= 29) {
-    return '/images/life-simulator/stage_05_early_career.jpg';
+    return '/images/life-simulator/stage_05_early_career.webp';
   } else if (age <= 49) {
-    return '/images/life-simulator/stage_06_prime.jpg';
+    return '/images/life-simulator/stage_06_prime.webp';
   } else if (age <= 64) {
-    return '/images/life-simulator/stage_07_mature.jpg';
+    return '/images/life-simulator/stage_07_mature.webp';
   } else if (age <= 79) {
-    return '/images/life-simulator/stage_08_elder.jpg';
+    return '/images/life-simulator/stage_08_elder.webp';
   } else {
-    return '/images/life-simulator/stage_09_centenarian.jpg';
+    return '/images/life-simulator/stage_09_centenarian.webp';
   }
 }
 

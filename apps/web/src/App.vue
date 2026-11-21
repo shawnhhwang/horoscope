@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex flex-col justify-between selection:bg-dark-gold/30 selection:text-dark-gold">
-    <!-- 頂部導航列 (在後台 CMS 路由時隱藏) -->
-    <Navbar v-if="!isAdminRoute" @open-auth-modal="isAuthModalOpen = true" />
+    <!-- 頂部導航列 -->
+    <Navbar @open-auth-modal="isAuthModalOpen = true" />
 
     <!-- 頁面路由內容 -->
     <main class="flex-grow">
@@ -18,8 +18,8 @@
     <!-- 天機靈犀 AI 助手抽屜視窗 -->
     <LlmAssistantModal />
 
-    <!-- 頁尾 (Awwwards 奢華幾何裝飾，在後台 CMS 時隱藏，適配 iPhone 底部安全區) -->
-    <footer v-if="!isAdminRoute" class="glass-panel border-t border-dark-gold/15 py-10 px-4 sm:px-6 mt-20 text-center text-xs text-dark-muted pb-[calc(3rem+env(safe-area-inset-bottom,0px))]">
+    <!-- 頁尾 (Awwwards 奢華幾何裝飾，適配 iPhone 底部安全區) -->
+    <footer class="glass-panel border-t border-dark-gold/15 py-10 px-4 sm:px-6 mt-20 text-center text-xs text-dark-muted pb-[calc(3rem+env(safe-area-inset-bottom,0px))]">
       <div class="max-w-7xl mx-auto flex flex-col items-center justify-between gap-4">
         <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-dark-gold/10 pb-4">
           <div class="flex items-center space-x-2">
@@ -36,11 +36,6 @@
               <span>🏛️</span>
               <span>命盤檔案庫</span>
             </router-link>
-            <span>·</span>
-            <router-link to="/admin/dashboard" class="hover:text-dark-gold transition-colors flex items-center space-x-1">
-              <span>⚙️</span>
-              <span>後台管理</span>
-            </router-link>
           </div>
           <p class="text-[11px]">© 2026 萬象天儀 版權所有 · 探究天地人三才至理</p>
         </div>
@@ -56,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import Lenis from 'lenis';
 import Navbar from './components/layout/Navbar.vue';
@@ -66,27 +61,51 @@ import { useThemeStore } from './stores/theme.js';
 import { useAuthStore } from './stores/auth.js';
 
 const route = useRoute();
-const isAdminRoute = computed(() => route.path.startsWith('/admin'));
 const isAuthModalOpen = ref(false);
 const themeStore = useThemeStore();
 const authStore = useAuthStore();
+
+let lenisInstance: Lenis | null = null;
 
 onMounted(() => {
   themeStore.initTheme();
   authStore.loadAuth();
 
-  // 初始化 Lenis 平滑滾動
-  const lenis = new Lenis({
-    duration: 1.2,
+  // 初始化 Lenis 精品級平滑滾動 (優化阻尼與觸控手感)
+  lenisInstance = new Lenis({
+    duration: 1.0,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    orientation: 'vertical',
+    gestureOrientation: 'vertical',
+    smoothWheel: true,
+    touchMultiplier: 1.2,
   });
 
   function raf(time: number) {
-    lenis.raf(time);
-    requestAnimationFrame(raf);
+    if (lenisInstance) {
+      lenisInstance.raf(time);
+      requestAnimationFrame(raf);
+    }
   }
 
   requestAnimationFrame(raf);
+});
+
+// 監聽路由跳轉：立即且平滑地將滾動條歸零，杜絕跨頁面虛擬滾動殘留與跳躍
+watch(
+  () => route.path,
+  () => {
+    if (lenisInstance) {
+      lenisInstance.scrollTo(0, { immediate: true });
+    }
+  }
+);
+
+onBeforeUnmount(() => {
+  if (lenisInstance) {
+    lenisInstance.destroy();
+    lenisInstance = null;
+  }
 });
 </script>
 

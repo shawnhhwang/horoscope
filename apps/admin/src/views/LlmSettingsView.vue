@@ -1,18 +1,18 @@
 <template>
   <div class="space-y-6">
     <!-- 標題列 -->
-    <div class="flex items-center justify-between border-b border-admin-gold/15 pb-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-admin-gold/15 pb-4">
       <div>
         <h2 class="font-serif font-bold text-xl text-admin-gold tracking-wide">AI 靈犀大語言模型配置 (LLM Settings)</h2>
         <p class="text-xs text-admin-muted mt-1 font-serif">
           集中管理萬象天儀全系統之 LLM 諮詢端點、API Key、模型名稱與命理大師人格 Prompt。支援 OpenAI 相容協議。
         </p>
       </div>
-      <div class="flex items-center space-x-3">
+      <div class="flex flex-wrap items-center gap-2">
         <button
           @click="testConnection"
           :disabled="testing"
-          class="px-4 py-2 rounded-lg border border-admin-gold/40 text-admin-gold text-xs font-serif hover:bg-admin-gold/10 transition-colors disabled:opacity-50"
+          class="px-3.5 py-2 rounded-lg border border-admin-gold/40 text-admin-gold text-xs font-serif hover:bg-admin-gold/10 transition-colors disabled:opacity-50"
         >
           <span v-if="testing">連線測試中...</span>
           <span v-else>連線與解盤測試 ⚡</span>
@@ -20,7 +20,7 @@
         <button
           @click="saveConfig"
           :disabled="saving"
-          class="px-5 py-2 rounded-lg bg-admin-gold text-admin-bg font-serif font-bold text-xs hover:bg-yellow-500 transition-colors shadow-lg disabled:opacity-50"
+          class="px-4 sm:px-5 py-2 rounded-lg bg-admin-gold text-admin-bg font-serif font-bold text-xs hover:bg-yellow-500 transition-colors shadow-lg disabled:opacity-50"
         >
           <span v-if="saving">儲存中...</span>
           <span v-else>儲存配置變更 ✓</span>
@@ -79,7 +79,7 @@
                 :key="p.id"
                 @click="selectProvider(p)"
                 :class="form.provider === p.id ? 'border-admin-gold bg-admin-gold/15 text-admin-gold font-bold' : 'border-admin-gold/10 bg-black/20 text-admin-muted'"
-                class="p-2.5 rounded-lg border text-xs text-center transition-all hover:border-admin-gold/40"
+                class="p-2.5 rounded-lg border text-xs text-center transition-all hover:border-admin-gold/40 font-sans normal-case"
               >
                 {{ p.name }}
               </button>
@@ -92,27 +92,33 @@
             <input
               type="text"
               v-model="form.endpoint"
-              placeholder="https://api.openai.com/v1"
-              class="w-full bg-black/30 border border-admin-gold/20 rounded-lg px-3 py-2 text-xs text-admin-text focus:outline-none focus:border-admin-gold"
+              placeholder="http://192.168.1.3:11434/v1"
+              class="w-full bg-black/30 border border-admin-gold/20 rounded-lg px-3 py-2 text-xs text-admin-text focus:outline-none focus:border-admin-gold font-mono normal-case"
+              autocapitalize="none"
+              autocomplete="off"
+              spellcheck="false"
             />
-            <span class="text-[10px] text-admin-muted block">支援任何 OpenAI 相容反向代理、自建 vLLM、Ollama 或 OneAPI / NewAPI 端點。</span>
+            <span class="text-[10px] text-admin-muted block font-sans">支援任何 OpenAI 相容反向代理、自建 vLLM、Ollama 或 OneAPI / NewAPI 端點。</span>
           </div>
 
           <!-- API Key -->
           <div class="space-y-1.5">
             <div class="flex items-center justify-between">
               <label class="text-xs text-admin-muted block">API 授權密鑰 (API Key)</label>
-              <button type="button" @click="showKey = !showKey" class="text-[10px] text-admin-gold hover:underline">
+              <button type="button" @click="showKey = !showKey" class="text-[10px] text-admin-gold hover:underline font-sans">
                 {{ showKey ? '隱藏密鑰' : '顯示密鑰' }}
               </button>
             </div>
             <input
               :type="showKey ? 'text' : 'password'"
               v-model="form.apiKey"
-              placeholder="留空則自動調用內建專業命理顧問引擎"
-              class="w-full bg-black/30 border border-admin-gold/20 rounded-lg px-3 py-2 text-xs text-admin-text focus:outline-none focus:border-admin-gold"
+              placeholder="Ollama 本地 / 自建無密鑰服務可直接留空"
+              class="w-full bg-black/30 border border-admin-gold/20 rounded-lg px-3 py-2 text-xs text-admin-text focus:outline-none focus:border-admin-gold font-mono normal-case"
+              autocapitalize="none"
+              autocomplete="off"
+              spellcheck="false"
             />
-            <span class="text-[10px] text-admin-muted block">Key 將安全儲存於系統資料庫中。若未填寫或外部端點無響應，系統自動提供深層星象解析。</span>
+            <span class="text-[10px] text-admin-muted block font-sans">若為本機 / 局域網 Ollama 服務無金鑰，請留空即可正常直連推演。</span>
           </div>
         </div>
 
@@ -122,7 +128,7 @@
 
           <!-- 模型名稱 -->
           <div class="space-y-2">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between font-sans">
               <label class="text-xs text-admin-muted block">模型名稱 (Model Identifier)</label>
               <span class="text-[10px] text-admin-muted">常用預設點選即填入</span>
             </div>
@@ -132,7 +138,7 @@
                 v-for="m in modelPresets"
                 :key="m"
                 @click="form.model = m"
-                class="px-2 py-1 rounded bg-black/30 border border-admin-gold/15 text-[10px] text-admin-gold hover:bg-admin-gold/10 transition-colors"
+                class="px-2 py-1 rounded bg-black/30 border border-admin-gold/15 text-[10px] text-admin-gold hover:bg-admin-gold/10 transition-colors font-mono font-normal normal-case"
               >
                 {{ m }}
               </button>
@@ -140,9 +146,13 @@
             <input
               type="text"
               v-model="form.model"
-              placeholder="gpt-4o"
-              class="w-full bg-black/30 border border-admin-gold/20 rounded-lg px-3 py-2 text-xs text-admin-text focus:outline-none focus:border-admin-gold"
+              placeholder="gemma4:e2b"
+              class="w-full bg-black/30 border border-admin-gold/20 rounded-lg px-3 py-2 text-xs text-admin-text focus:outline-none focus:border-admin-gold font-mono font-normal normal-case"
+              autocapitalize="none"
+              autocomplete="off"
+              spellcheck="false"
             />
+            <span class="text-[10px] text-admin-muted block font-sans">字元嚴格區分大小寫，如 Ollama 模型名稱請輸入純小寫 <code class="font-mono text-amber-300">gemma4:e2b</code>。</span>
           </div>
 
           <!-- Temperature -->
@@ -167,7 +177,7 @@
       <div class="space-y-6">
         <div class="p-6 rounded-xl border border-admin-gold/15 bg-admin-sidebar space-y-4 flex flex-col h-full">
           <div class="flex items-center justify-between border-b border-admin-gold/10 pb-2">
-            <h3 class="text-sm font-bold text-admin-gold">3. 現代專業命理顧問 System Prompt</h3>
+            <h3 class="text-sm font-bold text-admin-gold">3. 專業命理顧問 System Prompt</h3>
             <button
               type="button"
               @click="resetPrompt"
@@ -178,7 +188,7 @@
           </div>
 
           <p class="text-[11px] text-admin-muted leading-relaxed">
-            此 Prompt 定義前台 AI 顧問之言行口吻。系統將在每次對話自動注入求測者當前命盤的完整坐標與數據。
+            此 Prompt 定義前台 AI 顧問之言行口吻。系統將在每次對話自動注入求測者當前命盤的完整坐標與專屬角色 RAG 領域知識庫。
           </p>
 
           <textarea
@@ -203,23 +213,26 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../stores/auth';
 
-const API_BASE = import.meta.env.VITE_API_BASE || '/api/v1';
+const API_BASE = '/api/v1';
 
 const providers = [
-  { id: 'openai-compatible', name: 'OpenAI 相容', endpoint: 'https://api.openai.com/v1', model: 'gpt-4o' },
-  { id: 'anthropic', name: 'Claude API', endpoint: 'https://api.anthropic.com/v1', model: 'claude-3-5-sonnet-20241022' },
+  { id: 'custom', name: 'Ollama 本地 / 局域網', endpoint: 'http://192.168.1.3:11434/v1', model: 'gemma4:e2b' },
+  { id: 'openai-compatible', name: 'OpenAI 相容協議', endpoint: 'https://api.openai.com/v1', model: 'gpt-4o' },
+  { id: 'anthropic', name: 'Claude API', endpoint: 'https://api.anthropic.com/v1', model: 'claude-3-5-sonnet' },
   { id: 'gemini', name: 'Google Gemini', endpoint: 'https://generativelanguage.googleapis.com/v1beta/openai', model: 'gemini-1.5-pro' },
-  { id: 'custom', name: '自建 / 代理', endpoint: 'http://localhost:11434/v1', model: 'deepseek-chat' },
 ];
 
 const modelPresets = [
+  'gemma4:e2b',
+  'llama3',
+  'deepseek-r1',
   'gpt-4o',
   'gpt-4o-mini',
   'claude-3-5-sonnet',
   'gemini-1.5-pro',
   'deepseek-chat',
-  'qwen-plus',
 ];
 
 const defaultPrompt =
@@ -227,10 +240,10 @@ const defaultPrompt =
 
 const form = ref({
   enabled: true,
-  provider: 'openai-compatible',
-  endpoint: 'https://api.openai.com/v1',
+  provider: 'custom',
+  endpoint: 'http://192.168.1.3:11434/v1',
   apiKey: '',
-  model: 'gpt-4o',
+  model: 'gemma4:e2b',
   temperature: 0.7,
   systemPrompt: defaultPrompt,
 });
@@ -242,25 +255,35 @@ const statusMsg = ref('');
 const statusType = ref<'success' | 'error'>('success');
 const testResult = ref<any>(null);
 
-function getHeaders() {
-  const token = localStorage.getItem('admin_token') || '';
-  return {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
-  };
+async function getHeaders() {
+  const authStore = useAuthStore();
+  return await authStore.getAuthHeaders();
 }
 
 async function fetchConfig() {
   try {
+    const headers = await getHeaders();
     const res = await fetch(`${API_BASE}/admin/llm-config`, {
-      headers: getHeaders(),
+      headers,
     });
     const json = await res.json();
     if (json.success && json.data) {
       form.value = {
-        ...form.value,
-        ...json.data,
+        enabled: typeof json.data.enabled === 'boolean' ? json.data.enabled : true,
+        provider: json.data.provider || 'custom',
+        endpoint: json.data.endpoint || 'http://192.168.1.3:11434/v1',
+        apiKey: json.data.apiKey || '',
+        model: json.data.model || 'gemma4:e2b',
+        temperature: typeof json.data.temperature === 'number' ? json.data.temperature : 0.7,
+        systemPrompt: json.data.systemPrompt || defaultPrompt,
       };
+    } else {
+      // 嘗試從公開狀態 API 取得目前正在生效的模型名稱作為備援
+      const statusRes = await fetch(`${API_BASE}/llm/status`);
+      const statusJson = await statusRes.json();
+      if (statusJson.success && statusJson.data?.model) {
+        form.value.model = statusJson.data.model;
+      }
     }
   } catch (err: any) {
     console.error('Fetch LLM config error:', err);
@@ -269,9 +292,7 @@ async function fetchConfig() {
 
 function selectProvider(p: any) {
   form.value.provider = p.id;
-  if (!form.value.endpoint || form.value.endpoint === 'https://api.openai.com/v1') {
-    form.value.endpoint = p.endpoint;
-  }
+  form.value.endpoint = p.endpoint;
   form.value.model = p.model;
 }
 
@@ -283,16 +304,26 @@ async function saveConfig() {
   saving.value = true;
   statusMsg.value = '';
   try {
+    // 確保留空或精確去除兩側空白，保留純小寫模型名稱
+    if (form.value.model) {
+      form.value.model = form.value.model.trim();
+    }
+    const headers = await getHeaders();
     const res = await fetch(`${API_BASE}/admin/llm-config`, {
       method: 'PUT',
-      headers: getHeaders(),
+      headers,
       body: JSON.stringify(form.value),
     });
     const json = await res.json();
     if (json.success) {
       statusType.value = 'success';
       statusMsg.value = 'LLM 配置變更已成功同步至全系統！';
-      form.value.apiKey = json.data.apiKey;
+      if (json.data?.apiKey !== undefined) {
+        form.value.apiKey = json.data.apiKey;
+      }
+      if (json.data?.model) {
+        form.value.model = json.data.model;
+      }
     } else {
       statusType.value = 'error';
       statusMsg.value = json.message || '儲存配置失敗';
@@ -310,11 +341,11 @@ async function testConnection() {
   testResult.value = null;
   statusMsg.value = '';
   try {
-    // 先暫存設定
     await saveConfig();
+    const headers = await getHeaders();
     const res = await fetch(`${API_BASE}/admin/llm-test`, {
       method: 'POST',
-      headers: getHeaders(),
+      headers,
       body: JSON.stringify({
         prompt: '您好，請以專業命理諮詢顧問的口吻，簡要說明八字五行在現代生活中的調和原則。',
       }),

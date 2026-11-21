@@ -7,3 +7,12 @@
   border: 1px solid rgba(229, 195, 120, 0.15);
   border-radius: 0.75rem;
 }
+
+.glass-panel {
+  background: rgba(22, 25, 34, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+.shadow-cosmic {
+  box-shadow: 0 8px 30px rgba(229, 195, 120, 0.08);
+}

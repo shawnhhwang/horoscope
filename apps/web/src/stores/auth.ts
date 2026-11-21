@@ -23,16 +23,16 @@ export const useAuthStore = defineStore('auth', () => {
       : localStorage.getItem('celestial_demo_mode') === 'true' && envDemo
   );
 
-  // DEMO 尊榮總控帳號（預設賦予系統最大權限 ADMIN）
+  // DEMO 體驗訪客帳號（最小權限原則：前台僅賦予一般會員權限，管理權限隔離於獨立後台）
   const demoUser: UserProfile = {
-    id: 'demo-admin-id',
-    email: 'admin@celestial.dao',
-    displayName: '系統管理員 (DEMO 最高權限)',
-    role: 'ADMIN',
+    id: 'demo-visitor-id',
+    email: 'demo-visitor@celestial.dao',
+    displayName: '體驗訪客 (DEMO)',
+    role: 'MEMBER',
     isDemo: true,
   };
 
-  // 當前生效用戶：真實登入者優先；若未登入且處於 DEMO 模式則自動賦予 ADMIN 最大權限
+  // 當前生效用戶：真實登入者優先；若未登入且處於 DEMO 模式則賦予訪客權限
   const user = computed<UserProfile | null>(() => {
     if (realUser.value) return realUser.value;
     if (isDemoMode.value) return demoUser;
@@ -41,29 +41,17 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAuthenticated = computed(() => !!user.value);
 
-  // DEMO 模式自動獲取真實有效的 ADMIN Token，確保後端 API 與後台無縫通訊
+  // DEMO 模式不再於前台自動取得或快取管理員 Token
   async function ensureDemoToken() {
-    if (isDemoMode.value && !realUser.value) {
-      try {
-        const res = await fetch('/api/v1/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: 'admin@celestial.dao', password: 'AdminPassword123!' }),
-        });
-        const data = await res.json();
-        if (data.success && data.data?.token) {
-          token.value = data.data.token;
-          localStorage.setItem('celestial_token', data.data.token);
-          localStorage.setItem('admin_token', data.data.token);
-          localStorage.setItem('admin_user', JSON.stringify(data.data.user));
-        }
-      } catch (err) {
-        // 靜默處理離線
-      }
-    }
+    return;
   }
 
   function toggleDemoMode(targetState?: boolean) {
+    if (!serverDemoEnabled.value) {
+      isDemoMode.value = false;
+      localStorage.setItem('celestial_demo_mode', 'false');
+      return;
+    }
     if (typeof targetState === 'boolean') {
       isDemoMode.value = targetState;
     } else {
@@ -97,6 +85,12 @@ export const useAuthStore = defineStore('auth', () => {
         if (!data.data.demoMode) {
           isDemoMode.value = false;
           localStorage.setItem('celestial_demo_mode', 'false');
+          if (!realUser.value) {
+            token.value = null;
+            localStorage.removeItem('celestial_token');
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_user');
+          }
         }
       }
     } catch {
@@ -104,22 +98,27 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  function loadAuth() {
+  async function loadAuth() {
     const savedToken = localStorage.getItem('celestial_token');
     const savedUser = localStorage.getItem('celestial_user');
     if (savedToken && savedUser) {
-      token.value = savedToken;
-      realUser.value = JSON.parse(savedUser);
+      try {
+        token.value = savedToken;
+        realUser.value = JSON.parse(savedUser);
+      } catch {
+        localStorage.removeItem('celestial_token');
+        localStorage.removeItem('celestial_user');
+      }
     }
     const savedDemo = localStorage.getItem('celestial_demo_mode');
     if (savedDemo !== null) {
       isDemoMode.value = savedDemo === 'true' && envDemo;
     }
 
-    syncServerConfig();
+    await syncServerConfig();
 
-    if (isDemoMode.value && !realUser.value) {
-      ensureDemoToken();
+    if (isDemoMode.value && serverDemoEnabled.value && !realUser.value) {
+      await ensureDemoToken();
     }
   }
 
@@ -134,15 +133,11 @@ export const useAuthStore = defineStore('auth', () => {
     if (isDemoMode.value && !token.value) {
       await ensureDemoToken();
     }
-    const currentToken =
-      token.value ||
-      localStorage.getItem('celestial_token') ||
-      localStorage.getItem('admin_token') ||
-      'demo-admin-token';
+    const currentToken = token.value || localStorage.getItem('celestial_token') || '';
 
     return {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${currentToken}`,
+      ...(currentToken ? { Authorization: `Bearer ${currentToken}` } : {}),
       'x-demo-mode': isDemoMode.value ? 'true' : 'false',
     };
   }

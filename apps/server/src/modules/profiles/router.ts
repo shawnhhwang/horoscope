@@ -1,7 +1,9 @@
 import { Router, Response } from 'express';
 import { prisma } from '@celestial/database';
 import { calculateTrueSolarTime } from '@celestial/astro-core';
+import { createProfileSchema } from '@celestial/shared';
 import { authenticate, AuthRequest } from '../../middleware/auth.js';
+import { validateRequest } from '../../middleware/validate.js';
 
 export const profilesRouter = Router();
 
@@ -21,7 +23,7 @@ profilesRouter.get('/', async (req: AuthRequest, res: Response) => {
 });
 
 // 新增命盤人物檔案
-profilesRouter.post('/', async (req: AuthRequest, res: Response) => {
+profilesRouter.post('/', validateRequest({ body: createProfileSchema }), async (req: AuthRequest, res: Response) => {
   try {
     const { name, gender = '男', birthDatetime, longitude = 120, latitude = 25, birthLocationName, notes } = req.body;
     if (!name || !birthDatetime) {

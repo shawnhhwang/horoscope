@@ -120,4 +120,16 @@ model LifeSimulationRecord {
   updatedAt        DateTime @updatedAt
 }
 
+model AdminAuditLog {
+  id          String   @id @default(uuid())
+  adminUserId String
+  adminEmail  String
+  action      String   // DB_CREATE, DB_UPDATE, DB_DELETE, DB_RESTORE, USER_ROLE_CHANGE, LLM_CONFIG_UPDATE
+  targetTable String?
+  targetId    String?
+  summary     String
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+}
+
 

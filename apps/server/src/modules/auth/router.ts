@@ -1,7 +1,9 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@celestial/database';
+import { loginSchema, registerSchema } from '@celestial/shared';
 import { authenticate, AuthRequest, signToken, isDemoModeActive } from '../../middleware/auth.js';
+import { validateRequest } from '../../middleware/validate.js';
 
 export const authRouter = Router();
 
@@ -16,7 +18,7 @@ authRouter.get('/config', (_req: Request, res: Response) => {
 });
 
 // 會員註冊
-authRouter.post('/register', async (req, res: Response) => {
+authRouter.post('/register', validateRequest({ body: registerSchema }), async (req, res: Response) => {
   try {
     const { email, password, displayName } = req.body;
     if (!email || !password || !displayName) {
@@ -58,7 +60,7 @@ authRouter.post('/register', async (req, res: Response) => {
 });
 
 // 會員登入
-authRouter.post('/login', async (req, res: Response) => {
+authRouter.post('/login', validateRequest({ body: loginSchema }), async (req, res: Response) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {

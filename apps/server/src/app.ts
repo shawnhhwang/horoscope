@@ -1,7 +1,6 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
@@ -9,6 +8,7 @@ import fs from 'fs';
 dotenv.config();
 dotenv.config({ path: path.resolve(process.cwd(), '../../.env') });
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+
 import { authRouter } from './modules/auth/router.js';
 import { calculatorRouter } from './modules/calculator/router.js';
 import { profilesRouter } from './modules/profiles/router.js';
@@ -18,60 +18,77 @@ import { llmRouter } from './modules/llm/router.js';
 import { almanacRouter } from './modules/almanac/router.js';
 import { habitsRouter } from './modules/habits/router.js';
 import { simulatorRouter } from './modules/simulator/router.js';
+import {
+  authRateLimiter,
+  llmMinuteLimiter,
+  llmDailyQuotaMiddleware,
+  simulatorRateLimiter,
+} from './middleware/rateLimit.js';
 
 export function createApp(): Express {
   const app = express();
+  // 信任反向代理 (Docker / Nginx / Cloudflare)
+  app.set('trust proxy', 1);
   const isProduction = process.env.NODE_ENV === 'production';
-  const isTest = process.env.NODE_ENV === 'test';
+  const enableHsts = process.env.ENABLE_HSTS === 'true';
 
-  // 安全防護與跨域配置
+  // 安全防護標頭 (Helmet: CSP + X-Frame-Options + nosniff + 可選 HSTS)
   const corsOrigin = process.env.CORS_ORIGIN;
   app.use(
     helmet({
       crossOriginResourcePolicy: { policy: 'cross-origin' },
+      crossOriginOpenerPolicy: false,
+      originAgentCluster: false,
+      frameguard: { action: 'deny' },
+      noSniff: true,
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+      hsts: enableHsts ? { maxAge: 31536000, includeSubDomains: true } : false,
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'"],
+          styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+          fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+          imgSrc: ["'self'", 'data:', 'https:'],
+          connectSrc: ["'self'", 'https:', 'wss:', 'ws:'],
+          frameAncestors: ["'none'"],
+          objectSrc: ["'none'"],
+          upgradeInsecureRequests: enableHsts ? [] : null,
+        },
+      },
     })
   );
   app.use(
     cors({
       origin: !corsOrigin || corsOrigin === '*'
-        ? (isProduction ? false : true) // 生產環境禁止反射任意 Origin，開發環境支援全通
+        ? true
         : corsOrigin.includes(',')
         ? corsOrigin.split(',').map((o) => o.trim())
         : corsOrigin,
       credentials: true,
     })
   );
-  app.use(express.json({ limit: '2mb' }));
 
-  // 敏感端點速率限制 (DoS 與暴力破解防護)
-  const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: isTest ? 2000 : 30, // 30 次 / 15 分鐘
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { success: false, message: '登入或註冊請求過於頻繁，請稍候再試' },
+  // [P0-SEC-02] 全域 Request Body 大小上限 1MB
+  app.use(express.json({ limit: '1mb' }));
+
+  // 畸形 JSON Payload 統一回傳標準化 400 Bad Request
+  app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
+    if (err instanceof SyntaxError && 'body' in err) {
+      return res.status(400).json({ success: false, message: '無效的 JSON 請求格式' });
+    }
+    if (err?.type === 'entity.too.large') {
+      return res.status(413).json({ success: false, message: '請求資料體積超過 1MB 上限' });
+    }
+    return next(err);
   });
 
-  const llmLimiter = rateLimit({
-    windowMs: 60 * 1000,
-    max: isTest ? 2000 : 40, // 40 次 / 分鐘
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { success: false, message: 'AI 諮詢請求過於頻繁，請稍候再試' },
-  });
-
-  const simulatorLimiter = rateLimit({
-    windowMs: 60 * 1000,
-    max: isTest ? 2000 : 50,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { success: false, message: '人生模擬啟動過於頻繁，請稍候再試' },
-  });
-
-  app.use('/api/v1/auth/login', authLimiter);
-  app.use('/api/v1/auth/register', authLimiter);
-  app.use('/api/v1/llm/chat', llmLimiter);
-  app.use('/api/v1/simulator/start', simulatorLimiter);
+  // [P0-SEC-02] 分級速率限制防禦
+  app.use('/api/v1/auth/login', authRateLimiter);
+  app.use('/api/v1/auth/register', authRateLimiter);
+  app.use('/api/v1/llm/chat', llmMinuteLimiter, llmDailyQuotaMiddleware);
+  app.use('/api/v1/llm/stream', llmMinuteLimiter, llmDailyQuotaMiddleware);
+  app.use('/api/v1/simulator/start', simulatorRateLimiter);
 
   // 健康檢查端點
   app.get('/health', (_req: Request, res: Response) => {
@@ -112,7 +129,6 @@ export function createApp(): Express {
       if (req.path.startsWith('/api') || req.path === '/health') {
         return next();
       }
-      // 若請求包含副檔名 (如 .js, .css, .png 等靜態資源) 且未被 express.static 命中，不回退 index.html
       if (path.extname(req.path)) {
         return next();
       }
@@ -125,7 +141,7 @@ export function createApp(): Express {
     return res.status(404).json({ success: false, message: '未找到該 API 端點' });
   });
 
-  // 全局錯誤捕獲中介軟體 (生產環境隱藏敏感錯誤堆疊)
+  // 全局錯誤捕獲中介軟體
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     console.error('Unhandled Server Error:', err);
     return res.status(500).json({

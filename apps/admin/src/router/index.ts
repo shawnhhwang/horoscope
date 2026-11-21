@@ -3,6 +3,7 @@ import LoginView from '../views/LoginView.vue';
 import DashboardView from '../views/DashboardView.vue';
 import InterpretationsView from '../views/InterpretationsView.vue';
 import UsersView from '../views/UsersView.vue';
+import DatabaseView from '../views/DatabaseView.vue';
 import LlmSettingsView from '../views/LlmSettingsView.vue';
 
 const routes = [
@@ -11,7 +12,9 @@ const routes = [
   { path: '/dashboard', name: 'dashboard', component: DashboardView },
   { path: '/interpretations', name: 'interpretations', component: InterpretationsView },
   { path: '/users', name: 'users', component: UsersView },
+  { path: '/database', name: 'database', component: DatabaseView },
   { path: '/llm-settings', name: 'llm-settings', component: LlmSettingsView },
+  { path: '/:pathMatch(.*)*', redirect: '/dashboard' },
 ];
 
 export const router = createRouter({

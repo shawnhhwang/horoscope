@@ -94,6 +94,12 @@
 
           <div class="flex flex-wrap gap-2 border-t border-dark-gold/15 pt-4 mt-2">
             <button
+              @click="openChart(p, '/holographic')"
+              class="flex-1 min-w-[85px] py-1.5 rounded-lg text-center text-xs bg-dark-gold/15 border border-dark-gold/50 hover:bg-dark-gold/25 text-dark-gold font-bold transition-colors cursor-pointer"
+            >
+              ✨ 全息合參
+            </button>
+            <button
               @click="openChart(p, '/ziwei')"
               class="flex-1 min-w-[70px] py-1.5 rounded-lg text-center text-xs border border-dark-gold/30 hover:border-dark-gold text-dark-gold transition-colors cursor-pointer"
             >

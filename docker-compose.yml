@@ -17,10 +17,30 @@ services:
       JWT_SECRET: ${JWT_SECRET:-celestial_jwt_super_secret_key_change_me_2026}
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
       DEMO_MODE: ${DEMO_MODE:-false}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      ADMIN_DB_WRITE_ENABLED: ${ADMIN_DB_WRITE_ENABLED:-false}
+      LLM_ALLOW_PRIVATE_HOSTS: ${LLM_ALLOW_PRIVATE_HOSTS:-}
+    depends_on:
+      - redis
     ports:
       - "5499:5499"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:5499/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     volumes:
       - celestial_data:/app/packages/database/prisma
 
+  redis:
+    image: redis:7-alpine
+    container_name: celestial-redis
+    restart: always
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    volumes:
+      - celestial_redis:/data
+
 volumes:
   celestial_data:
+  celestial_redis:

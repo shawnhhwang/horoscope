@@ -11,22 +11,7 @@ export interface ChatMessage {
 }
 
 export interface ChartContext {
-  moduleType:
-    | 'ZIWEI'
-    | 'BAZI'
-    | 'ICHING'
-    | 'NAME'
-    | 'WESTERN'
-    | 'TAROT'
-    | 'BUNCHO'
-    | 'TEMPLE_POEM'
-    | 'DREAM'
-    | 'QIZHENG'
-    | 'ALMANAC'
-    | 'SYNASTRY'
-    | 'ANNUAL_PLANNER'
-    | 'LIFE_SIMULATOR'
-    | string;
+  moduleType: string;
   title: string;
   summary: string;
   rawData: any;
@@ -50,7 +35,7 @@ export const useLlmStore = defineStore('llm', () => {
       id: 'welcome',
       role: 'assistant',
       content:
-        '您好，我是萬象天儀·天機靈犀的命理明師與人生策士顧問。\n\n常言道：「**君子知命，知時而動，知止而退。**」每當遇到人生十字路口，大家最常向算命老師請益的無非是：**職場轉職與合夥、婚戀合盤與家庭、新生兒命名、重大二選一抉擇、一生命運波瀾、今日出行擇吉、廟宇問籤或是夜夢吉凶**。\n\n您可以直接向我描述您當前遇到的現實情境或困惑（例如：*「我最近在職涯上面臨轉職與合夥瓶頸，該用什麼功能看？」* 或 *「想跟另一半合八字看婚配適不適合」*），我會像資深的算命老師一樣為您親切問診，並推薦最精準的系統模組引導您探索；若您已在具體排盤頁面，我也會結合當前星盤數據為您展開深度推演。\n\n若您想一覽全站所有 15 大模組的操作詳解，亦可點擊查看 [📖 全系統使用手冊與問診指南](/guide)。請問今天有什麼人生課題需要為您解惑的嗎？',
+        '您好，我是萬象天儀·天機靈犀的命理明師與人生策士顧問。\n\n您可以直接向我描述您當前遇到的現實情境或困惑，我會為您親切問診並推薦最精準的系統模組；若您已在具體排盤頁面，我也會結合當前星盤數據為您展開深度推演。\n\n若想一覽全站模組操作詳解，亦可查看 [📖 全系統使用手冊與問診指南](/guide)。',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -62,15 +47,13 @@ export const useLlmStore = defineStore('llm', () => {
       if (json.success && json.data?.model) {
         activeModelName.value = json.data.model;
       }
-    } catch (err) {
-      // 靜默處理離線
+    } catch {
+      // ignore offline
     }
   }
 
   function openAssistant(context?: ChartContext, initialPrompt?: string, existingReply?: string) {
-    if (context) {
-      activeContext.value = context;
-    }
+    if (context) activeContext.value = context;
     isOpen.value = true;
 
     if (existingReply) {
@@ -99,30 +82,101 @@ export const useLlmStore = defineStore('llm', () => {
     openAssistant(ctx, initialPrompt, existingReply);
   }
 
-  function closeAssistant() {
-    isOpen.value = false;
-  }
+  function closeAssistant() { isOpen.value = false; }
+  function toggleAssistant() { isOpen.value = !isOpen.value; }
+  function clearContext() { activeContext.value = null; }
 
-  function toggleAssistant() {
-    isOpen.value = !isOpen.value;
-  }
+  async function consumeSseStream(
+    payload: { messages: Array<{ role: string; content: string }>; chartContext?: ChartContext },
+    onDelta: (chunk: string, meta?: { model?: string; source?: 'external_api' | 'celestial_builtin' }) => void
+  ): Promise<{ reply: string; model: string; source: 'external_api' | 'celestial_builtin' }> {
+    const token = localStorage.getItem('celestial_token');
+    const res = await fetch(`${API_BASE}/llm/stream`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(payload),
+    });
 
-  function clearContext() {
-    activeContext.value = null;
+    if (!res.ok || !res.body) {
+      // Fallback to standard JSON chat endpoint
+      const fallbackRes = await fetch(`${API_BASE}/llm/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(payload),
+      });
+      const json = await fallbackRes.json();
+      if (!json.success || !json.data) {
+        throw new Error(json.message || 'LLM 推演解析異常');
+      }
+      onDelta(json.data.reply, { model: json.data.model, source: json.data.source });
+      return {
+        reply: json.data.reply,
+        model: json.data.model || activeModelName.value,
+        source: json.data.source || 'celestial_builtin',
+      };
+    }
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+    let buffer = '';
+    let fullReply = '';
+    let model = activeModelName.value;
+    let source: 'external_api' | 'celestial_builtin' = 'celestial_builtin';
+    let currentEvent = 'message';
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('event:')) {
+          currentEvent = trimmed.slice(6).trim();
+        } else if (trimmed.startsWith('data:')) {
+          const rawData = trimmed.slice(5).trim();
+          if (!rawData) continue;
+          try {
+            const parsed = JSON.parse(rawData);
+            if (currentEvent === 'meta') {
+              if (parsed.model) model = parsed.model;
+              if (parsed.source) source = parsed.source;
+            } else if (currentEvent === 'delta' && parsed.content) {
+              fullReply += parsed.content;
+              onDelta(parsed.content, { model, source });
+            } else if (currentEvent === 'done' && parsed.reply) {
+              fullReply = parsed.reply;
+            } else if (currentEvent === 'error') {
+              throw new Error(parsed.message || 'SSE 推演異常');
+            }
+          } catch (e: any) {
+            if (currentEvent === 'error') throw e;
+          }
+        }
+      }
+    }
+
+    return { reply: fullReply, model, source };
   }
 
   async function sendMessage(content: string) {
     const text = content.trim();
     if (!text || isGenerating.value) return;
 
-    // 加入用戶訊息
-    const userMsg: ChatMessage = {
+    messages.value.push({
       id: `user-${Date.now()}`,
       role: 'user',
       content: text,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-    messages.value.push(userMsg);
+    });
 
     isGenerating.value = true;
     elapsedSeconds.value = 0;
@@ -131,73 +185,59 @@ export const useLlmStore = defineStore('llm', () => {
       elapsedSeconds.value = Number(((Date.now() - startTime) / 1000).toFixed(1));
     }, 100);
 
+    const assistantMsg: ChatMessage = {
+      id: `assistant-${Date.now()}`,
+      role: 'assistant',
+      content: '',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+    messages.value.push(assistantMsg);
+    const msgIndex = messages.value.length - 1;
+
     try {
-      // 構建傳送至後端的對話歷史
       const apiMessages = messages.value
-        .filter((m) => m.id !== 'welcome')
-        .map((m) => ({
-          role: m.role,
-          content: m.content,
-        }));
+        .filter((m) => m.id !== 'welcome' && m.id !== assistantMsg.id)
+        .map((m) => ({ role: m.role, content: m.content }));
 
-      const res = await fetch(`${API_BASE}/llm/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const result = await consumeSseStream(
+        {
           messages: apiMessages,
-          chartContext: activeContext.value ? {
-            moduleType: activeContext.value.moduleType,
-            title: activeContext.value.title,
-            summary: activeContext.value.summary,
-            rawData: activeContext.value.rawData,
-          } : undefined,
-        }),
-      });
+          chartContext: activeContext.value
+            ? {
+                moduleType: activeContext.value.moduleType,
+                title: activeContext.value.title,
+                summary: activeContext.value.summary,
+                rawData: activeContext.value.rawData,
+              }
+            : undefined,
+        },
+        (chunk, meta) => {
+          messages.value[msgIndex].content += chunk;
+          if (meta?.model) messages.value[msgIndex].model = meta.model;
+          if (meta?.source) messages.value[msgIndex].source = meta.source;
+        }
+      );
 
-      const json = await res.json();
-      if (json.success && json.data) {
-        const assistantMsg: ChatMessage = {
-          id: `assistant-${Date.now()}`,
-          role: 'assistant',
-          content: json.data.reply,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          model: json.data.model,
-          source: json.data.source,
-        };
-        messages.value.push(assistantMsg);
-      } else {
-        messages.value.push({
-          id: `error-${Date.now()}`,
-          role: 'assistant',
-          content: '天機推演受阻：' + (json.message || '連線伺服器異常'),
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        });
-      }
-    } catch (err: any) {
-      messages.value.push({
-        id: `error-${Date.now()}`,
-        role: 'assistant',
-        content: '未能連線至天機後端服務，請確認伺服器狀態。',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      });
+      messages.value[msgIndex].content = result.reply;
+      messages.value[msgIndex].model = result.model;
+      messages.value[msgIndex].source = result.source;
+    } catch {
+      messages.value[msgIndex].content = '未能連線至天機後端服務，請確認伺服器狀態。';
     } finally {
       clearInterval(timer);
       isGenerating.value = false;
     }
   }
 
-  // 直接請求單次解盤 (供頁面內部動態更新區域使用，無需開啟抽屜)
-  async function requestDirectAnalysis(context: ChartContext, prompt: string): Promise<{
-    reply: string;
-    model: string;
-    source: string;
-    duration: number;
-  }> {
+  async function requestDirectAnalysis(
+    context: ChartContext,
+    prompt: string,
+    onProgress?: (partialText: string, meta?: { model?: string; source?: string }) => void
+  ): Promise<{ reply: string; model: string; source: string; duration: number }> {
     const startTime = Date.now();
-    const res = await fetch(`${API_BASE}/llm/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    let acc = '';
+    const res = await consumeSseStream(
+      {
         messages: [{ role: 'user', content: prompt }],
         chartContext: {
           moduleType: context.moduleType,
@@ -205,19 +245,14 @@ export const useLlmStore = defineStore('llm', () => {
           summary: context.summary,
           rawData: context.rawData,
         },
-      }),
-    });
+      },
+      (chunk, meta) => {
+        acc += chunk;
+        onProgress?.(acc, meta);
+      }
+    );
     const duration = Number(((Date.now() - startTime) / 1000).toFixed(1));
-    const json = await res.json();
-    if (json.success && json.data) {
-      return {
-        reply: json.data.reply,
-        model: json.data.model || activeModelName.value || 'gemma4:e2b',
-        source: json.data.source || 'external_api',
-        duration,
-      };
-    }
-    throw new Error(json.message || 'LLM 推演解析異常');
+    return { ...res, duration };
   }
 
   return {

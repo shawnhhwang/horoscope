@@ -1,6 +1,6 @@
 <template>
   <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
-    <div class="relative w-full max-w-md p-8 glass-panel rounded-2xl shadow-cosmic-lg border border-dark-gold/40">
+    <div data-lenis-prevent class="relative w-full max-w-md p-8 glass-panel rounded-2xl shadow-cosmic-lg border border-dark-gold/40 overscroll-contain">
       <!-- 關閉按鈕 -->
       <button @click="$emit('close')" class="absolute top-4 right-4 text-dark-muted hover:text-dark-text text-xl">
         ✕

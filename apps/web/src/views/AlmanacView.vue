@@ -3,8 +3,11 @@
     <!-- 頂部古風金箔天書特色橫幅 -->
     <div class="relative rounded-2xl overflow-hidden mb-8 border border-dark-gold/30 shadow-cosmic max-w-5xl mx-auto h-44 sm:h-52">
       <img
-        src="/images/almanac/almanac_banner.jpg"
+        src="/images/almanac/almanac_banner.webp"
         alt="傳統黃曆金箔天書"
+        width="1200"
+        height="896"
+        decoding="async"
         class="w-full h-full object-cover object-center opacity-65 filter brightness-95 hover:scale-105 transition-transform duration-700"
       />
       <div class="absolute inset-0 bg-gradient-to-r from-dark-void/90 via-dark-void/60 to-transparent flex flex-col justify-center px-8">
@@ -49,6 +52,71 @@
           type="date"
           class="px-3 py-1.5 rounded-lg bg-black/40 border border-dark-gold/30 text-xs text-dark-text focus:border-dark-gold outline-none"
         />
+      </div>
+    </div>
+
+    <!-- 🎯 智能擇日查詢器 (未來 60 天吉日掃描 + 生肖避沖) -->
+    <div class="glass-panel rounded-2xl p-6 mb-8 max-w-5xl mx-auto border border-dark-gold/35 shadow-cosmic space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-dark-gold/15 pb-3">
+        <div>
+          <span class="text-[10px] font-sans uppercase tracking-[0.2em] text-dark-gold font-bold">SMART AUSPICIOUS DATE FINDER</span>
+          <h2 class="text-base sm:text-lg font-bold text-gold-gradient">智能黃道擇日器 · 未來 60 日吉時精算</h2>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <select
+            v-model="pickerEventType"
+            class="px-3 py-1.5 rounded-lg bg-black/40 border border-dark-gold/30 text-dark-text outline-none focus:border-dark-gold"
+          >
+            <option value="簽約">簽約交易</option>
+            <option value="搬家">入宅移徙 (搬家)</option>
+            <option value="開幕">開市開幕</option>
+            <option value="嫁娶">結婚嫁娶</option>
+          </select>
+          <select
+            v-model="pickerZodiac"
+            class="px-3 py-1.5 rounded-lg bg-black/40 border border-dark-gold/30 text-dark-text outline-none focus:border-dark-gold"
+          >
+            <option value="">不限生肖</option>
+            <option v-for="animal in ['鼠','牛','虎','兔','龍','蛇','馬','羊','猴','雞','狗','豬']" :key="animal" :value="animal">
+              避沖生肖{{ animal }}
+            </option>
+          </select>
+          <button
+            @click="scanAuspiciousDates"
+            :disabled="scanningDates"
+            class="px-4 py-1.5 rounded-lg bg-dark-gold text-dark-void font-bold hover:opacity-90 disabled:opacity-50 cursor-pointer"
+          >
+            {{ scanningDates ? '推算中...' : '✨ 挑選吉日' }}
+          </button>
+        </div>
+      </div>
+
+      <div v-if="auspiciousResults.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div
+          v-for="rec in auspiciousResults.slice(0, 6)"
+          :key="rec.date"
+          @click="selectRecommendedDate(rec.date)"
+          class="p-3.5 rounded-xl bg-black/35 border border-dark-gold/25 hover:border-dark-gold cursor-pointer transition-all space-y-1.5"
+        >
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-dark-gold">{{ rec.date }}</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              吉度 {{ rec.score }} 分
+            </span>
+          </div>
+          <div class="text-[11px] text-dark-muted">
+            {{ rec.lunarDate }} · {{ rec.dayGanZhi }}日 ({{ rec.dayOfficer }}日 · 沖{{ rec.clashAnimal }})
+          </div>
+          <div class="text-[11px] text-emerald-300/90">
+            合適：{{ rec.matchedActivities.join('、') || pickerEventType }}
+          </div>
+          <div v-if="rec.auspiciousHours?.length" class="text-[10px] text-amber-300/90">
+            吉時：{{ rec.auspiciousHours.slice(0, 3).join(' / ') }}
+          </div>
+        </div>
+      </div>
+      <div v-else-if="hasScannedDates && !scanningDates" class="text-xs text-dark-muted text-center py-2">
+        未來 60 日內暫無完全避沖之極吉日，建議切換為「不限生肖」或「簽約」再試。
       </div>
     </div>
 
@@ -360,6 +428,40 @@ function fetchAlmanac() {
   const data = calculateDailyAlmanac(target);
   almanac.value = data;
   selectedZodiac.value = data.zodiacHoroscopes[0]; // 預設鼠
+}
+
+const pickerEventType = ref<'簽約' | '搬家' | '開幕' | '嫁娶'>('簽約');
+const pickerZodiac = ref('');
+const scanningDates = ref(false);
+const hasScannedDates = ref(false);
+const auspiciousResults = ref<any[]>([]);
+
+async function scanAuspiciousDates() {
+  scanningDates.value = true;
+  hasScannedDates.value = true;
+  try {
+    const res = await fetch('/api/v1/calculator/almanac/auspicious-dates', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventType: pickerEventType.value,
+        zodiac: pickerZodiac.value || undefined,
+        days: 60,
+        startDate: selectedDate.value,
+      }),
+    });
+    const json = await res.json();
+    if (json.success && json.data?.recommendations) {
+      auspiciousResults.value = json.data.recommendations;
+    }
+  } finally {
+    scanningDates.value = false;
+  }
+}
+
+function selectRecommendedDate(dateStr: string) {
+  selectedDate.value = dateStr;
+  fetchAlmanac();
 }
 
 function setToday() {

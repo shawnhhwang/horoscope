@@ -13,7 +13,8 @@
     <Transition name="slide-right">
       <div
         v-if="llmStore.isOpen"
-        class="fixed top-0 right-0 bottom-0 w-full sm:w-[480px] lg:w-[540px] z-50 flex flex-col glass-panel border-l border-dark-gold/30 shadow-2xl transition-colors font-serif pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]"
+        data-lenis-prevent
+        class="fixed top-0 right-0 bottom-0 w-full sm:w-[480px] lg:w-[540px] z-50 flex flex-col glass-panel border-l border-dark-gold/30 shadow-2xl transition-colors font-serif pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)] overscroll-contain"
       >
         <!-- 頂部標題列 -->
         <div class="px-5 sm:px-6 py-4 border-b border-dark-gold/20 flex items-center justify-between bg-black/10">
@@ -80,8 +81,8 @@
           </button>
         </div>
 
-        <!-- 對話記錄區 -->
-        <div ref="chatContainer" @click="handleChatClick" class="flex-1 overflow-y-auto p-5 space-y-4 text-xs leading-relaxed">
+        <!-- 對話記錄區 (帶 data-lenis-prevent 防止滾動穿透到主頁面) -->
+        <div ref="chatContainer" @click="handleChatClick" data-lenis-prevent class="flex-1 overflow-y-auto p-5 space-y-4 text-xs leading-relaxed overscroll-contain">
           <div
             v-for="msg in llmStore.messages"
             :key="msg.id"
@@ -382,5 +383,32 @@ watch(
   color: #fef08a;
   background-color: rgba(212, 175, 55, 0.15);
   border-radius: 4px;
+}
+
+/* 淺色模式下 Markdown 文字高對比度適配 */
+html.light :deep(.markdown-content h1),
+html.light :deep(.markdown-content h2),
+html.light :deep(.markdown-content h3),
+html.light :deep(.markdown-content h4) {
+  color: #5C4016 !important;
+}
+html.light :deep(.markdown-content strong) {
+  color: #9A3412 !important;
+}
+html.light :deep(.markdown-content p),
+html.light :deep(.markdown-content li) {
+  color: #1A1C23 !important;
+}
+html.light :deep(.markdown-content blockquote) {
+  border-left-color: #8C6424 !important;
+  color: #78350F !important;
+  background: rgba(164, 126, 59, 0.1) !important;
+}
+html.light :deep(.markdown-content a) {
+  color: #785116 !important;
+}
+html.light :deep(.markdown-content a:hover) {
+  color: #9A3412 !important;
+  background-color: rgba(164, 126, 59, 0.15) !important;
 }
 </style>

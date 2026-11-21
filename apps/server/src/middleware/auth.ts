@@ -2,18 +2,19 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { prisma } from '@celestial/database';
 
+let hasWarnedMissingJwtSecret = false;
+
 export function getJwtSecret(): string {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production' && !hasWarnedMissingJwtSecret) {
+      hasWarnedMissingJwtSecret = true;
       console.error('🚨 [SECURITY WARNING]: JWT_SECRET is not set in production! A fallback key is dangerous.');
     }
     return 'celestial_jwt_secret_dev_key_2026';
   }
   return secret;
 }
-
-const JWT_SECRET = getJwtSecret();
 
 export interface AuthenticatedUser {
   id: string;
@@ -69,14 +70,14 @@ export function isDemoModeActive(): boolean {
 }
 
 export function signToken(user: { id: string; email: string; role: string }): string {
-  return jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, {
+  return jwt.sign({ id: user.id, email: user.email, role: user.role }, getJwtSecret(), {
     expiresIn: '24h',
   });
 }
 
 export function verifyToken(token: string): AuthenticatedUser | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as AuthenticatedUser;
+    return jwt.verify(token, getJwtSecret()) as AuthenticatedUser;
   } catch {
     return null;
   }

@@ -20,19 +20,8 @@ const routes = [
   { path: '/naming', name: 'naming', component: () => import('../views/NamingView.vue') },
   { path: '/western', name: 'western', component: () => import('../views/WesternView.vue'), alias: '/astrology' },
   { path: '/tarot', name: 'tarot', component: () => import('../views/TarotView.vue') },
+  { path: '/holographic', name: 'holographic', component: () => import('../views/HolographicView.vue') },
   { path: '/vault', name: 'vault', component: () => import('../views/VaultView.vue'), alias: '/profiles' },
-  {
-    path: '/admin',
-    component: () => import('../views/admin/AdminLayout.vue'),
-    children: [
-      { path: '', redirect: '/admin/dashboard' },
-      { path: 'dashboard', name: 'admin-dashboard', component: () => import('../views/admin/DashboardView.vue') },
-      { path: 'interpretations', name: 'admin-interpretations', component: () => import('../views/admin/InterpretationsView.vue') },
-      { path: 'users', name: 'admin-users', component: () => import('../views/admin/UsersView.vue') },
-      { path: 'database', name: 'admin-database', component: () => import('../views/admin/DatabaseView.vue') },
-      { path: 'llm-settings', name: 'admin-llm-settings', component: () => import('../views/admin/LlmSettingsView.vue') },
-    ],
-  },
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',

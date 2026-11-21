@@ -1,0 +1,19 @@
+{
+  "name": "@celestial/shared",
+  "version": "1.0.0",
+  "description": "萬象天儀 - 前後端共用 Zod Schema 與 TypeScript DTO 型別庫",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5"
+  }
+}

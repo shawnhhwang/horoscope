@@ -16,8 +16,11 @@
     <!-- 頂部古意背景特色橫幅 -->
     <div class="relative rounded-2xl overflow-hidden mb-8 border border-dark-gold/30 shadow-cosmic max-w-5xl mx-auto h-40 sm:h-48">
       <img
-        src="/images/oriental/bagua_astrolabe.jpg"
+        src="/images/oriental/bagua_astrolabe.webp"
         alt="東方八卦天盤青銅渾天儀"
+        width="1200"
+        height="896"
+        decoding="async"
         class="w-full h-full object-cover object-center opacity-60 filter brightness-90 hover:scale-105 transition-transform duration-700"
       />
       <div class="absolute inset-0 bg-gradient-to-r from-dark-void/90 via-dark-void/60 to-transparent flex flex-col justify-center px-8">

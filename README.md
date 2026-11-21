@@ -206,33 +206,43 @@ pnpm --filter @celestial/astro-core build
 pnpm --filter @celestial/database build
 ```
 
-#### 步驟 4：啟動開發伺服器 (雙服務架構：Web 5499 + Server 5498)
-```bash
-# 啟動後端 API 服務 (Port 5498)
-pnpm dev:server
+#### 步驟 4：一鍵啟動全端服務 (單一指令帶起前後端)
 
-# 另開終端啟動前端主站與整合後台 (Port 5499)
-pnpm dev:web
+本專案支援**單一指令啟動前後端**，無需開啟多個終端機：
+
+```bash
+# ⚡ 開發模式 (熱重載 HMR - 單一指令同時啟動後端 API 與前端 Vite)
+pnpm dev
+
+# 🚀 生產一體化模式 (單一服務 Port 5499 同時託管 API 與前端靜態 SPA)
+pnpm build && pnpm start
 ```
+
+*   **開發模式 (`pnpm dev`)**：後端 API 運行於 `5498`，前端 Vite 運行於 `5499`（透過代理透明轉發 `/api`），瀏覽器直接開啟 [http://localhost:5499](http://localhost:5499) 即可享有零延遲熱更新。
+*   **生產模式 (`pnpm start`)**：Node.js Express 伺服器在 `5499` 連接埠上同時提供 API 與前端 SPA 靜態檔案，實現全端一體化。
 
 ---
 
-## 🐳 Docker 一鍵部署 (Docker Deployment - 單一服務 5499 直達)
+## 🐳 Docker 一鍵部署 (Docker Deployment - 單一容器 5499 直達)
 
-本專案支援一鍵全端一體化容器部署，僅需啟動 **單一容器服務**，對外僅需暴露 **單一連接埠 5499**（整合 Vue 3 前端、Admin 管理後台、Node.js Express API 與 SQLite 持久層）。
+本專案經過深度整合，將前後端整併為**單一 Docker 映像檔**。打包後不會有前後端連線不通、跨域或路徑錯誤的問題，對外僅需暴露 **單一連接埠 5499**（整合 Vue 3 前端、Admin 管理後台、Node.js Express API 與 SQLite 持久層）。
 
 ```bash
-# 1. 複製環境變數範本
+# 1. 複製環境變數範本 (選填，映像檔已有開箱即用預設值)
 cp .env.example .env
 
 # 2. 一鍵構建並啟動單一全端服務 (Port 5499)
-docker compose up --build -d
+pnpm docker:up
+# 或：docker compose up --build -d
 
-# 或直接使用標準 Docker 指令單容器運行：
+# 亦可使用標準 Docker 指令單容器運行：
+pnpm docker:build
+pnpm docker:run
+# 或：
 # docker build -t celestial-app .
 # docker run -d -p 5499:5499 -v celestial_data:/app/packages/database/prisma --name celestial-app celestial-app
 
-# 3. 檢查容器狀態
+# 3. 檢查容器狀態與健康度
 docker compose ps
 ```
 

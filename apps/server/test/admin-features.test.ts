@@ -1,6 +1,9 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import fs from 'fs';
+import path from 'path';
 import request from 'supertest';
 import { createApp } from '../src/app.js';
+import { resolveDatabaseFilePath, ensureDatabaseInitialized } from '@celestial/database';
 
 describe('🛡️ 後台資料庫管理、會員設定與 RAG 提示詞工程測試', () => {
   const app = createApp();
@@ -10,12 +13,31 @@ describe('🛡️ 後台資料庫管理、會員設定與 RAG 提示詞工程測
   let testInterpretationId: string = '';
 
   beforeAll(async () => {
+    await ensureDatabaseInitialized();
     // 登入預設管理員
-    const adminRes = await request(app).post('/api/v1/auth/login').send({
-      email: 'admin@celestial.dao',
-      password: 'AdminPassword123!',
-    });
+    const adminRes = await request(app)
+      .post('/api/v1/auth/login')
+      .set('X-Forwarded-For', '192.168.1.100')
+      .send({
+        email: 'admin@celestial.dao',
+        password: 'AdminPassword123!',
+      });
+    expect(adminRes.status).toBe(200);
     adminToken = adminRes.body.data.token;
+  });
+
+  afterAll(() => {
+    if (backupFilename) {
+      const dbPath = resolveDatabaseFilePath();
+      const backupFile = path.join(path.dirname(dbPath), 'backups', path.basename(backupFilename));
+      if (fs.existsSync(backupFile)) {
+        try {
+          fs.unlinkSync(backupFile);
+        } catch {
+          // 忽略測試清理錯誤
+        }
+      }
+    }
   });
 
   describe('1. DEMO 模式環境變數與端點測試', () => {
@@ -82,6 +104,7 @@ describe('🛡️ 後台資料庫管理、會員設定與 RAG 提示詞工程測
       const createRes = await request(app)
         .post('/api/v1/admin/database/tables/SystemInterpretation')
         .set('Authorization', `Bearer ${adminToken}`)
+        .set('x-admin-confirm', 'CONFIRM_DB_WRITE')
         .send({
           moduleType: 'TAROT',
           keyCode: 'TEST_TAROT_TEMPERANCE',
@@ -97,6 +120,7 @@ describe('🛡️ 後台資料庫管理、會員設定與 RAG 提示詞工程測
       const updateRes = await request(app)
         .put(`/api/v1/admin/database/tables/SystemInterpretation/${testInterpretationId}`)
         .set('Authorization', `Bearer ${adminToken}`)
+        .set('x-admin-confirm', 'CONFIRM_DB_WRITE')
         .send({
           title: '節制 (Temperance) 深度修持解讀',
         });
@@ -106,7 +130,8 @@ describe('🛡️ 後台資料庫管理、會員設定與 RAG 提示詞工程測
       // 3. 刪除
       const deleteRes = await request(app)
         .delete(`/api/v1/admin/database/tables/SystemInterpretation/${testInterpretationId}`)
-        .set('Authorization', `Bearer ${adminToken}`);
+        .set('Authorization', `Bearer ${adminToken}`)
+        .set('x-admin-confirm', 'CONFIRM_DB_WRITE');
       expect(deleteRes.status).toBe(200);
       expect(deleteRes.body.success).toBe(true);
     });

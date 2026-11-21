@@ -1,3 +1,5 @@
+如果專案有graphify-out，閱讀程式碼的索引請優先使用，節省TOKENS
+
 # AI 開發編碼準則 (Coding Principles)
 
 ## 核心原則
@@ -62,3 +64,12 @@
 ### Rule 12: Fail Loudly (失敗要大聲)
 *   誠實揭露狀態：若跳過任何數據或測試，不得聲稱「已完成」。
 *   主動揭露不確定性，嚴禁隱藏問題。
+
+---
+
+## Skill 輸出規範
+
+### `answer-me-with-html` 輸出位置
+*   每次執行 `answer-me-with-html`（`am render` / `am video` / `am export`）時，產生的所有檔案（`.html`、`.mp4`、`.webm`、`.pdf`、`.png` 等）**必須直接輸出至當下工作資料夾（Current Working Directory）**，不可留在預設的 `~/.answer-me-with-html/pages/`。
+*   執行 `am render -` 或 `am video -` 時，務必於 heredoc 之前加上 `-o "./<檔名>.html"`（或 `-o "<當下工作資料夾絕對路徑>/<檔名>.html"`）；執行 `am export` 時亦須將 `--pdf` / `--png` 指向當下資料夾。
+*   若重渲染修正警告，直接使用相同的 `-o` 路徑原地覆寫。

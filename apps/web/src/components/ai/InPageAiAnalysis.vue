@@ -223,7 +223,14 @@ async function startAnalysis() {
   };
 
   try {
-    const result = await llmStore.requestDirectAnalysis(context, props.prompt);
+    const result = await llmStore.requestDirectAnalysis(context, props.prompt, (partial, meta) => {
+      if (partial && status.value === 'loading') {
+        status.value = 'completed';
+      }
+      reply.value = partial;
+      if (meta?.model) model.value = meta.model;
+      if (meta?.source) source.value = meta.source;
+    });
     reply.value = result.reply;
     model.value = result.model;
     source.value = result.source;

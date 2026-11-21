@@ -16,6 +16,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import * as THREE from 'three';
 
+const container = ref<HTMLDivElement | null>(null);
 const canvasWrapper = ref<HTMLDivElement | null>(null);
 
 let scene: THREE.Scene;
@@ -23,7 +24,10 @@ let camera: THREE.PerspectiveCamera;
 let renderer: THREE.WebGLRenderer;
 let sphereGroup: THREE.Group;
 let stars: THREE.Points;
-let animationFrameId: number;
+let animationFrameId: number = 0;
+let isVisible = true;
+let observer: IntersectionObserver | null = null;
+let resizeTimeout: number | undefined;
 
 let isDragging = false;
 let previousMousePosition = { x: 0, y: 0 };
@@ -134,22 +138,42 @@ onMounted(() => {
   pointLight2.position.set(-5, -5, -5);
   scene.add(pointLight2);
 
-  // 6. 交互事件綁定
+  // 6. 交互事件綁定 (採用 passive 監聽以釋放行動端與滾動合成器線程)
   const el = canvasWrapper.value;
   el.addEventListener('mousedown', onMouseDown);
   window.addEventListener('mousemove', onMouseMove);
   window.addEventListener('mouseup', onMouseUp);
   window.addEventListener('resize', onWindowResize);
 
-  // 觸控支援
-  el.addEventListener('touchstart', onTouchStart, { passive: false });
-  window.addEventListener('touchmove', onTouchMove, { passive: false });
+  // 觸控支援 (passive: true 保證滑動網頁時不卡頓)
+  el.addEventListener('touchstart', onTouchStart, { passive: true });
+  window.addEventListener('touchmove', onTouchMove, { passive: true });
   window.addEventListener('touchend', onTouchEnd);
+
+  // 7. 使用 IntersectionObserver 智能休眠 (元件滾出視窗時暫停 GPU 渲染，節省算力並維持 120fps 流暢滾動)
+  if ('IntersectionObserver' in window && container.value) {
+    observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        isVisible = entry.isIntersecting;
+        if (isVisible && !animationFrameId) {
+          animate();
+        }
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(container.value);
+  }
 
   animate();
 });
 
 function animate() {
+  if (!isVisible) {
+    animationFrameId = 0;
+    return;
+  }
+
   animationFrameId = requestAnimationFrame(animate);
 
   // 自轉緩動
@@ -213,16 +237,30 @@ function onTouchEnd() {
 }
 
 function onWindowResize() {
-  if (!canvasWrapper.value) return;
-  const w = canvasWrapper.value.clientWidth;
-  const h = canvasWrapper.value.clientHeight;
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
-  renderer.setSize(w, h);
+  if (resizeTimeout) window.clearTimeout(resizeTimeout);
+  resizeTimeout = window.setTimeout(() => {
+    if (!canvasWrapper.value || !renderer || !camera) return;
+    const w = canvasWrapper.value.clientWidth;
+    const h = canvasWrapper.value.clientHeight;
+    if (w === 0 || h === 0) return;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }, 100);
 }
 
 onBeforeUnmount(() => {
-  cancelAnimationFrame(animationFrameId);
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = 0;
+  }
+  if (observer) {
+    observer.disconnect();
+    observer = null;
+  }
+  if (resizeTimeout) {
+    window.clearTimeout(resizeTimeout);
+  }
   window.removeEventListener('mousemove', onMouseMove);
   window.removeEventListener('mouseup', onMouseUp);
   window.removeEventListener('resize', onWindowResize);

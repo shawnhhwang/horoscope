@@ -201,8 +201,12 @@
       <div class="lg:col-span-5 glass-panel rounded-2xl p-6 border border-dark-gold/30 shadow-cosmic space-y-4">
         <div class="w-full aspect-[4/3] rounded-xl overflow-hidden border border-dark-gold/30 mb-2 relative group bg-black/40">
           <img
-            src="/images/dream/dream_zhougong.jpg"
+            src="/images/dream/dream_zhougong.webp"
             alt="周公夜臥古松下超現實夢境插畫"
+            width="1200"
+            height="669"
+            loading="lazy"
+            decoding="async"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
           <div class="absolute bottom-2 right-2 bg-dark-void/80 px-2.5 py-1 rounded-full text-[10px] font-serif text-amber-200 border border-dark-gold/40">

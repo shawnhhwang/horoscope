@@ -435,18 +435,18 @@ describe('🌟 萬象天儀 核心演算法庫 Intent-Based Tests', () => {
       deck.forEach((card) => {
         let filename = '';
         if (card.arcana === 'major') {
-          filename = `m${String(card.number).padStart(2, '0')}.jpg`;
+          filename = `m${String(card.number).padStart(2, '0')}.webp`;
         } else {
           const suitPrefix =
             card.suit === 'wands' ? 'w' :
             card.suit === 'cups' ? 'c' :
             card.suit === 'swords' ? 's' : 'p';
-          filename = `${suitPrefix}${String(card.number).padStart(2, '0')}.jpg`;
+          filename = `${suitPrefix}${String(card.number).padStart(2, '0')}.webp`;
         }
         const filePath = path.join(cardsDir, filename);
         expect(fs.existsSync(filePath), `圖片檔案缺失: ${filename} (${card.nameZh})`).toBe(true);
         const stat = fs.statSync(filePath);
-        expect(stat.size).toBeGreaterThan(10240); // 檔案大小需大於 10KB
+        expect(stat.size).toBeGreaterThan(2048); // WebP 壓縮後檔案非空
       });
     });
 

@@ -148,8 +148,12 @@
     <div v-if="currentStep === 'draw_lot'" class="max-w-2xl mx-auto glass-panel rounded-2xl p-6 sm:p-8 border border-dark-gold/30 shadow-cosmic text-center">
       <div class="w-full max-w-sm mx-auto aspect-[4/3] rounded-xl overflow-hidden border border-dark-gold/30 mb-6 shadow-inner relative group bg-black/40">
         <img
-          src="/images/temple/temple_cylinder.jpg"
+          src="/images/temple/temple_cylinder.webp"
           alt="台灣廟宇神桌竹籤筒與筊杯"
+          width="1200"
+          height="896"
+          loading="lazy"
+          decoding="async"
           class="w-full h-full object-cover transition-transform duration-700"
           :class="{ 'animate-shake': isShaking }"
         />
@@ -198,8 +202,12 @@
       <!-- 擲筊插畫與落地狀態 (Bwa-Bwei Visuals) -->
       <div class="w-full max-w-sm mx-auto aspect-[4/3] rounded-xl overflow-hidden border border-dark-gold/30 mb-6 shadow-inner relative bg-black/40">
         <img
-          src="/images/temple/temple_bwa_bwei.jpg"
+          src="/images/temple/temple_bwa_bwei.webp"
           alt="閩南紅磚地面硃紅筊杯聖筊吉兆"
+          width="1200"
+          height="669"
+          loading="lazy"
+          decoding="async"
           class="w-full h-full object-cover transition-transform duration-500"
           :class="{ 'scale-105 filter brightness-110': isCastingBwei }"
         />

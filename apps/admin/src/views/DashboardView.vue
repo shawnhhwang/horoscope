@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-8">
-    <div class="flex justify-between items-center">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
       <div>
         <h2 class="font-serif text-2xl font-bold text-admin-gold">營運總覽與數據大盤</h2>
         <p class="text-xs text-admin-muted mt-1">即時監控系統會員增長、測算調用與辭庫規模</p>
       </div>
-      <button @click="fetchStats" class="px-3 py-1.5 rounded-lg border border-admin-gold/30 text-xs text-admin-gold hover:bg-admin-gold/10">
-        重新整理數據
+      <button @click="fetchStats" class="px-3.5 py-1.5 rounded-lg border border-admin-gold/30 text-xs text-admin-gold hover:bg-admin-gold/10 transition-colors cursor-pointer self-start sm:self-auto">
+        重新整理數據 🔄
       </button>
     </div>
 
@@ -68,20 +68,20 @@
           <h3 class="font-serif text-lg font-bold text-admin-gold mb-3">服務健康狀態與架構規格</h3>
           <div class="space-y-3 text-xs text-admin-muted">
             <div class="flex justify-between border-b border-admin-gold/10 pb-2">
-              <span>後端 API 引擎：</span>
-              <span class="text-emerald-400 font-mono">Node.js v20 (Express + TypeScript)</span>
+              <span>前端與後台整合：</span>
+              <span class="text-emerald-400 font-mono">Vue 3 (Port 5499 一體化全端直達)</span>
             </div>
             <div class="flex justify-between border-b border-admin-gold/10 pb-2">
-              <span>前端展示框架：</span>
-              <span class="text-emerald-400 font-mono">Vue 3 + Vite + Tailwind CSS</span>
+              <span>後端 API 引擎：</span>
+              <span class="text-emerald-400 font-mono">Node.js v20 (Express + TypeScript, Port 5499)</span>
             </div>
             <div class="flex justify-between border-b border-admin-gold/10 pb-2">
               <span>資料持久層：</span>
-              <span class="text-emerald-400 font-mono">PostgreSQL 16 + Prisma ORM</span>
+              <span class="text-emerald-400 font-mono">PostgreSQL 16 / SQLite + Prisma ORM</span>
             </div>
             <div class="flex justify-between border-b border-admin-gold/10 pb-2">
-              <span>容器化部署：</span>
-              <span class="text-emerald-400 font-mono">Docker Compose Full-Stack Ready</span>
+              <span>單一服務純淨架構：</span>
+              <span class="text-emerald-400 font-mono">全站單一服務一體化 (Port 5499 單一對外端點)</span>
             </div>
             <div class="flex justify-between border-b border-admin-gold/10 pb-2">
               <span>視覺渲染標竿：</span>
@@ -99,6 +99,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useAuthStore } from '@/stores/auth';
+
+const authStore = useAuthStore();
 
 const stats = ref({
   totalUsers: 2,
@@ -112,15 +115,17 @@ const stats = ref({
     BAZI: 8,
     ICHING: 6,
     WESTERN_NATAL: 5,
+    QIZHENG: 5,
     NAME: 4,
+    ALMANAC: 4,
   } as Record<string, number>,
 });
 
 async function fetchStats() {
-  const token = localStorage.getItem('admin_token');
   try {
+    const headers = await authStore.getAuthHeaders();
     const res = await fetch('/api/v1/admin/stats', {
-      headers: { Authorization: `Bearer ${token}` },
+      headers,
     });
     const data = await res.json();
     if (data.success) {
@@ -137,8 +142,11 @@ function getModuleName(type: string) {
     BAZI: '四柱八字論命',
     ICHING: '周易六爻卜卦',
     TAROT: '78張韋特塔羅',
+    WESTERN: '西洋星盤與月相',
     WESTERN_NATAL: '西洋星盤與月相',
+    QIZHENG: '七政四餘天星盤',
     NAME: '易經姓名學剖析',
+    ALMANAC: '通勝農民曆與吉凶',
   };
   return map[type] || type;
 }

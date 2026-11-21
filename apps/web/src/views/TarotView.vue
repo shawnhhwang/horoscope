@@ -94,7 +94,7 @@
     </div>
 
     <!-- 抽出的牌陣展示 -->
-    <div v-if="readingResult" class="space-y-12 animate-fade-in">
+    <div v-if="readingResult" ref="readingPosterRef" class="space-y-12 animate-fade-in">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         <div
           v-for="(cardItem, idx) in readingResult.drawnCards"
@@ -115,6 +115,10 @@
               <img
                 :src="getCardImage(cardItem.card)"
                 :alt="cardItem.card.nameZh"
+                width="320"
+                height="548"
+                loading="lazy"
+                decoding="async"
                 :class="{ 'rotate-180': cardItem.isReversed }"
                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-500"
               />
@@ -138,8 +142,12 @@
             <!-- 牌背紋樣 (未翻開時) -->
             <div v-else class="w-full h-full relative overflow-hidden group/back">
               <img
-                src="/images/tarot/card_back.jpg"
+                src="/images/tarot/card_back.webp"
                 alt="塔羅牌背"
+                width="420"
+                height="626"
+                loading="lazy"
+                decoding="async"
                 class="w-full h-full object-cover group-hover/back:scale-105 transition-transform duration-500"
               />
               <div class="absolute inset-0 bg-black/20 flex flex-col items-center justify-center space-y-1">
@@ -177,7 +185,12 @@
         <h3 class="font-serif text-xl font-bold text-gold-gradient mb-3">占卜綜合啟示與指引</h3>
         <p class="text-sm text-dark-text leading-relaxed mb-6">{{ readingResult.overallAdvice }}</p>
 
-        <div class="flex flex-col sm:flex-row justify-end gap-3">
+        <div class="flex flex-wrap justify-end gap-3">
+          <SharePosterButton
+            :target-ref="readingPosterRef"
+            :filename="`tarot-${spreadLabel}`"
+            label="下載牌陣分享海報"
+          />
           <button
             @click="saveTarotJournal"
             :disabled="savingJournal || journalSaved"
@@ -341,8 +354,11 @@
             <img
               :src="getCardImage(card)"
               :alt="card.nameZh"
+              width="320"
+              height="548"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               loading="lazy"
+              decoding="async"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-90 group-hover:opacity-100 transition-opacity"></div>
             
@@ -384,6 +400,10 @@
           <img
             :src="getCardImage(previewCard)"
             :alt="previewCard.nameZh"
+            width="320"
+            height="548"
+            loading="lazy"
+            decoding="async"
             class="w-full h-full object-cover"
           />
         </div>
@@ -400,14 +420,14 @@
           <div class="space-y-3 text-xs leading-relaxed">
             <div class="p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-500/20">
               <span class="font-bold text-emerald-400 block mb-1">【正位關鍵詞】</span>
-              <p class="text-white/80 text-[11px]">{{ previewCard.uprightMeaning.keywords.join(' · ') }}</p>
-              <p class="text-white/70 text-[11px] mt-1">{{ previewCard.uprightMeaning.overview }}</p>
+              <p class="text-dark-text text-[11px] font-medium">{{ previewCard.uprightMeaning.keywords.join(' · ') }}</p>
+              <p class="text-dark-muted text-[11px] mt-1 leading-relaxed">{{ previewCard.uprightMeaning.overview }}</p>
             </div>
 
             <div class="p-2.5 rounded-lg bg-rose-950/30 border border-rose-500/20">
               <span class="font-bold text-rose-400 block mb-1">【逆位關鍵詞】</span>
-              <p class="text-white/80 text-[11px]">{{ previewCard.reversedMeaning.keywords.join(' · ') }}</p>
-              <p class="text-white/70 text-[11px] mt-1">{{ previewCard.reversedMeaning.overview }}</p>
+              <p class="text-dark-text text-[11px] font-medium">{{ previewCard.reversedMeaning.keywords.join(' · ') }}</p>
+              <p class="text-dark-muted text-[11px] mt-1 leading-relaxed">{{ previewCard.reversedMeaning.overview }}</p>
             </div>
           </div>
 
@@ -539,33 +559,26 @@ async function saveTarotJournal() {
  * 取得牌卡之實體圖片路徑 (支援全 78 張牌卡 100% 完整映射)
  */
 function getCardImage(card: any): string {
-  if (!card) return '/images/tarot/card_back.jpg';
+  if (!card) return '/images/tarot/card_back.webp';
   const num = card.number;
 
   if (card.arcana === 'major') {
-    // 若為奢華典藏模式且有特色特寫畫作
-    if (artStyle.value === 'celestial') {
-      if (num === 0) return '/images/tarot/the_fool.jpg';
-      if (num === 1) return '/images/tarot/magician.jpg';
-      if (num === 2) return '/images/tarot/the_high_priestess.jpg';
-      if (num === 6) return '/images/tarot/the_lovers.jpg';
-      if (num === 10) return '/images/tarot/wheel_of_fortune.jpg';
-      if (num === 17) return '/images/tarot/the_star.jpg';
-      if (num === 19) return '/images/tarot/the_sun.jpg';
-    }
     const numStr = String(num).padStart(2, '0');
-    return `/images/tarot/cards/m${numStr}.jpg`;
+    return `/images/tarot/cards/m${numStr}.webp`;
   } else {
     const suitPrefix =
       card.suit === 'wands' ? 'w' :
       card.suit === 'cups' ? 'c' :
       card.suit === 'swords' ? 's' : 'p';
     const numStr = String(num).padStart(2, '0');
-    return `/images/tarot/cards/${suitPrefix}${numStr}.jpg`;
+    return `/images/tarot/cards/${suitPrefix}${numStr}.webp`;
   }
 }
 
 import InPageAiAnalysis from '../components/ai/InPageAiAnalysis.vue';
+import SharePosterButton from '../components/common/SharePosterButton.vue';
+
+const readingPosterRef = ref<HTMLElement | null>(null);
 
 const spreadLabel = computed(() => spreads.find((s) => s.type === selectedSpread.value)?.label || '塔羅牌陣');
 const cardSummary = computed(() => {

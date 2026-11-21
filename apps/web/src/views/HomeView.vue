@@ -29,6 +29,12 @@
           探索紫微斗數
         </router-link>
         <router-link
+          to="/holographic"
+          class="px-8 py-3.5 rounded-full font-serif text-sm font-semibold tracking-wider border border-dark-gold/60 bg-dark-gold/15 text-dark-gold hover:bg-dark-gold/25 shadow-cosmic transition-all transform hover:-translate-y-0.5"
+        >
+          ✨ 一鍵全息合參
+        </router-link>
+        <router-link
           to="/tarot"
           class="px-8 py-3.5 rounded-full font-serif text-sm font-semibold tracking-wider glass-panel border border-dark-gold/40 text-dark-gold hover:border-dark-gold transition-all transform hover:-translate-y-0.5"
         >
@@ -41,6 +47,10 @@
         <ArmillarySphere />
       </div>
     </section>
+
+    <!-- 每日 30 秒開運微儀式與新手煩惱導覽組合拳 -->
+    <DailyRitualWidget />
+    <ScenarioGuideWidget />
 
     <!-- 六大核心命理與占星模組矩陣 -->
     <section class="max-w-7xl mx-auto px-6 py-20 border-t border-dark-gold/15">
@@ -253,4 +263,6 @@
 
 <script setup lang="ts">
 import ArmillarySphere from '../components/celestial/ArmillarySphere.vue';
+import DailyRitualWidget from '../components/home/DailyRitualWidget.vue';
+import ScenarioGuideWidget from '../components/home/ScenarioGuideWidget.vue';
 </script>

@@ -32,8 +32,11 @@
           <!-- 圖片 1：鳥籠靜候 (Cage Ready) -->
           <img
             v-if="['idle', 'praying', 'cage_opening'].includes(drawPhase)"
-            src="/images/buncho/buncho_cage_ready.jpg"
+            src="/images/buncho/buncho_cage_ready.webp"
             alt="白文鳥於鳥籠內棲木靜候祈願"
+            width="1200"
+            height="896"
+            decoding="async"
             class="w-full h-full object-cover transition-all duration-700"
             :class="{ 'scale-105 filter brightness-110': drawPhase === 'praying' }"
           />
@@ -41,8 +44,12 @@
           <!-- 圖片 2：文鳥出籠叼籤呈遞 (Picking & Delivering) -->
           <img
             v-else
-            src="/images/buncho/buncho_picking_lot.jpg"
+            src="/images/buncho/buncho_picking_lot.webp"
             alt="白文鳥輕巧跳出籠門銜起描金靈籤"
+            width="1200"
+            height="896"
+            loading="lazy"
+            decoding="async"
             class="w-full h-full object-cover transition-all duration-700 animate-fade-in"
           />
 
@@ -322,9 +329,9 @@ const currentResult = ref<BunchoDrawResult | null>(null);
 onMounted(() => {
   // 預先快取圖片，消除動畫中途切換產生的短暫閃白
   const img1 = new Image();
-  img1.src = '/images/buncho/buncho_cage_ready.jpg';
+  img1.src = '/images/buncho/buncho_cage_ready.webp';
   const img2 = new Image();
-  img2.src = '/images/buncho/buncho_picking_lot.jpg';
+  img2.src = '/images/buncho/buncho_picking_lot.webp';
 });
 
 const aspectOptions = [

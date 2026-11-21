@@ -23,7 +23,7 @@ export const DEFAULT_FEMALE_FRIENDS: FemaleFriendProfile[] = [
     mysteryAlias: '【素雅白裙的知性女子】',
     mysteryDescription:
       '午後巷口老書店簷下，一位身著素雅白裙的女子正在細細翻閱書冊，微風拂過，空氣中飄過一縷淡淡桂花香。她轉過身，目光清澈如水，眼神中閃過一絲似曾相識的溫柔。',
-    illustration: '/images/life-simulator/romance_wanqing.jpg',
+    illustration: '/images/life-simulator/romance_wanqing.webp',
     affinity: 0,
     herAffinity: 65,
     compatibilityScore: 88,
@@ -41,7 +41,7 @@ export const DEFAULT_FEMALE_FRIENDS: FemaleFriendProfile[] = [
     mysteryAlias: '【幹練率性的熱情女子】',
     mysteryDescription:
       '在校園社團或專案籌備的激昂會場裡，一位短髮俐落、腳踏紅色帆布鞋的女子正在白板前據理力爭。散會後，她笑著遞過來一罐黑咖啡，清脆的笑聲驅散了徹夜的疲憊。',
-    illustration: '/images/life-simulator/romance_ruoxi.jpg',
+    illustration: '/images/life-simulator/romance_ruoxi.webp',
     affinity: 0,
     herAffinity: 60,
     compatibilityScore: 82,
@@ -59,7 +59,7 @@ export const DEFAULT_FEMALE_FRIENDS: FemaleFriendProfile[] = [
     mysteryAlias: '【靈動浪漫的旅人女子】',
     mysteryDescription:
       '在一列開往東海岸的慢速火車或老街畫廊中，驟雨忽至。一位胸前掛著底片相機、指尖微染水彩顏料的長裙女子坐在對座，正專注地在速寫本上勾勒著窗外雲影。她抬頭相視一笑，眉眼彎彎如月。',
-    illustration: '/images/life-simulator/romance_yuwei.jpg',
+    illustration: '/images/life-simulator/romance_yuwei.webp',
     affinity: 0,
     herAffinity: 70,
     compatibilityScore: 92,
@@ -77,7 +77,7 @@ export const DEFAULT_FEMALE_FRIENDS: FemaleFriendProfile[] = [
     mysteryAlias: '【沉著敏銳的職場女子】',
     mysteryDescription:
       '在一場事關生死存亡的商業談判中，身旁穿著米色風衣、戴著金絲眼鏡的女性夥伴言辭犀利、力挽狂瀾。深夜返程的車廂裡，她摘下眼鏡望向窗外車水馬龍，眼神中露出一瞬難得的疲倦與柔情。',
-    illustration: '/images/life-simulator/romance_peiyi.jpg',
+    illustration: '/images/life-simulator/romance_peiyi.webp',
     affinity: 0,
     herAffinity: 55,
     compatibilityScore: 78,
@@ -95,7 +95,7 @@ export const DEFAULT_FEMALE_FRIENDS: FemaleFriendProfile[] = [
     mysteryAlias: '【氣質溫厚的世家女子】',
     mysteryDescription:
       '在家族重要茶聚與長輩宴席的一隅，一位佩戴珍珠髮夾、舉止優雅大方的女子靜坐於堂。面對長輩親友的打趣詢問，她落落大方替你化解尷尬，並體貼地奉上一盞溫熱上等烏龍茶。',
-    illustration: '/images/life-simulator/romance_minzhi.jpg',
+    illustration: '/images/life-simulator/romance_minzhi.webp',
     affinity: 0,
     herAffinity: 62,
     compatibilityScore: 85,
@@ -119,7 +119,7 @@ export const DEFAULT_MALE_FRIENDS: FemaleFriendProfile[] = [
     mysteryAlias: '【溫暖清朗的白襯衫學長】',
     mysteryDescription:
       '校園老樟樹林蔭下碎金般的斑駁光影中，一位身著乾淨白襯衫、單手扶推單車的年輕男子回頭溫柔微笑。晨光灑在他清秀的側臉上，帶著一抹略顯青澀卻無比溫柔的笑容。他自然地接過你手中的厚重書本，聲音清冽而溫煦。',
-    illustration: '/images/life-simulator/romance_male_zixuan.jpg',
+    illustration: '/images/life-simulator/romance_male_zixuan.webp',
     affinity: 0,
     herAffinity: 65,
     compatibilityScore: 88,
@@ -137,7 +137,7 @@ export const DEFAULT_MALE_FRIENDS: FemaleFriendProfile[] = [
     mysteryAlias: '【眼神堅定且才華橫溢的青年】',
     mysteryDescription:
       '在通宵達旦的創意競賽或專案辦公室裡，落地窗外霓虹閃爍，空氣中瀰漫著濃縮咖啡的香氣。他推了推精緻黑框眼鏡，在你陷入瓶頸時輕輕敲了敲桌面，遞來一張畫滿精妙架構圖的便簽。抬頭相視，眼底跳動著與你如出一轍的不服輸火焰。',
-    illustration: '/images/life-simulator/romance_male_yulin.jpg',
+    illustration: '/images/life-simulator/romance_male_yulin.webp',
     affinity: 0,
     herAffinity: 60,
     compatibilityScore: 82,
@@ -155,7 +155,7 @@ export const DEFAULT_MALE_FRIENDS: FemaleFriendProfile[] = [
     mysteryAlias: '【深沉幹練的菁英雅士】',
     mysteryDescription:
       '在一場驟雨突襲的都市夜幕石階前，雨絲如幕，水窪倒映著金黃街燈。一柄寬大的黑色長傘穩穩遮在你的頭頂。身旁的男子身著深灰色合身高質感西服，目光深邃篤定。他將傘微偏向你，手臂被雨水浸潤亦毫不在意，低沉沉穩的嗓音彷彿能撫平一切世事紛擾。',
-    illustration: '/images/life-simulator/romance_male_bohan.jpg',
+    illustration: '/images/life-simulator/romance_male_bohan.webp',
     affinity: 0,
     herAffinity: 58,
     compatibilityScore: 86,
@@ -173,7 +173,7 @@ export const DEFAULT_MALE_FRIENDS: FemaleFriendProfile[] = [
     mysteryAlias: '【溫柔隨性的藝術旅者】',
     mysteryDescription:
       '在台灣東海岸暮色與璀璨星河交織的舊木棧道長椅上，海風微拂，一位裹著深藍羊毛圍巾、懷抱木吉他的男子正低聲哼唱著老歌。身旁手沖熱茶壺蒸氣裊裊，他轉過頭對你粲然一笑，神情浪漫不羈、空靈溫柔，眼神純粹得如同倒映著整片星海。',
-    illustration: '/images/life-simulator/romance_male_chengze.jpg',
+    illustration: '/images/life-simulator/romance_male_chengze.webp',
     affinity: 0,
     herAffinity: 70,
     compatibilityScore: 92,
@@ -191,7 +191,7 @@ export const DEFAULT_MALE_FRIENDS: FemaleFriendProfile[] = [
     mysteryAlias: '【世家儒雅的溫潤長者】',
     mysteryDescription:
       '在古色古香的庭院迴廊與長輩壽宴雅室中，身著深色素雅中式立領唐裝外套的男子緩步而來。他舉止謙和有禮、談吐溫文爾雅。在你被繁瑣社交禮節所累時，他極有分寸地出面為你解圍，並在私下體貼遞來一盒精緻蜜棗與溫茶，眼神溫柔而篤定。',
-    illustration: '/images/life-simulator/romance_male_ruian.jpg',
+    illustration: '/images/life-simulator/romance_male_ruian.webp',
     affinity: 0,
     herAffinity: 62,
     compatibilityScore: 85,

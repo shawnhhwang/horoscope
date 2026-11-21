@@ -72,6 +72,22 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(229, 195, 120, 0.18);
+  transform: translateZ(0);
+}
+
+/* 流暢度與 GPU 合成層優化 */
+.will-change-transform {
+  will-change: transform;
+}
+
+.overscroll-contain {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 400px;
 }
 
 /* ==========================================================================
@@ -130,20 +146,50 @@ html.light .text-gold-gradient {
   -webkit-text-fill-color: transparent !important;
 }
 
-html.light .text-dark-text {
+/* 核心正文與主標題字體 (Deep Ink Contrast) */
+html.light .text-dark-text,
+html.light .\!text-dark-text,
+html.light .text-dark-text\/95,
+html.light .text-dark-text\/90,
+html.light .text-dark-text\/80 {
   color: #1A1C23 !important;
 }
 
-html.light .text-dark-muted {
-  color: #586174 !important;
+/* 核心次要文字與說明註解 (Charcoal Slate Contrast - 徹底消除淺灰模糊感) */
+html.light .text-dark-muted,
+html.light .\!text-dark-muted,
+html.light .text-dark-muted\/90,
+html.light .text-dark-muted\/80 {
+  color: #374151 !important;
 }
 
-html.light .text-dark-gold {
-  color: #8C6424 !important;
+html.light .text-dark-muted\/50,
+html.light .text-dark-muted\/40 {
+  color: #4B5563 !important;
 }
 
+/* 古典天儀金屬色字體 (Rich Antique Bronze - 由淺黃修正為深古銅金) */
+html.light .text-dark-gold,
+html.light .\!text-dark-gold,
+html.light .text-dark-gold\/90,
+html.light .text-dark-gold\/80,
+html.light .text-dark-gold\/70,
+html.light .text-dark-gold\/60,
+html.light .text-dark-gold\/40 {
+  color: #785116 !important;
+}
+
+html.light .\!bg-dark-gold\/20 {
+  background-color: rgba(164, 126, 59, 0.18) !important;
+}
+
+html.light .\!border-dark-gold {
+  border-color: #785116 !important;
+}
+
+/* 按鈕專用金屬底色與白字適配 (增強對比度) */
 html.light .bg-dark-gold {
-  background-color: #A47E3B !important;
+  background-color: #8C6424 !important;
   color: #FFFFFF !important;
 }
 
@@ -159,8 +205,46 @@ html.light .bg-dark-nebula {
   background-color: #EFECE6 !important;
 }
 
-html.light .bg-dark-card {
+html.light .bg-dark-card,
+html.light .bg-dark-card\/95,
+html.light .bg-dark-card\/90,
+html.light .bg-dark-card\/80,
+html.light .bg-dark-card\/70,
+html.light .bg-dark-card\/50 {
+  background-color: #FAF8F5 !important;
+}
+
+/* 後台 CMS 專用色彩淺色模式適配 */
+html.light .text-admin-text {
+  color: #1A1C23 !important;
+}
+
+html.light .text-admin-muted {
+  color: #374151 !important;
+}
+
+html.light .text-admin-gold {
+  color: #785116 !important;
+}
+
+html.light .bg-admin-bg {
+  background-color: #F9F8F5 !important;
+}
+
+html.light .bg-admin-sidebar {
+  background-color: #F4F1EA !important;
+  border-color: rgba(164, 126, 59, 0.22) !important;
+}
+
+html.light .bg-admin-card {
   background-color: #FFFFFF !important;
+}
+
+html.light .admin-card {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(164, 126, 59, 0.22) !important;
+  box-shadow: 0 4px 20px -2px rgba(164, 126, 59, 0.08) !important;
+  color: #1A1C23 !important;
 }
 
 /* 覆寫黑色半透明區塊，於淺色模式下呈現典藏米色/純白 */
@@ -181,6 +265,14 @@ html.light .bg-black\/10 {
   color: #1A1C23 !important;
 }
 
+/* 修正特定淺色卡片內部硬編碼的 text-white，轉為深色高對比字體 */
+html.light .bg-black\/40 .text-white,
+html.light .bg-black\/30 .text-white,
+html.light .bg-black\/50 .text-white,
+html.light .glass-panel .text-white:not(button):not(.bg-dark-gold):not(.rounded-full) {
+  color: #1A1C23 !important;
+}
+
 /* 輸入框、下拉選單、文本域淺色適配 */
 html.light input,
 html.light select,
@@ -190,15 +282,21 @@ html.light textarea {
   color: #1A1C23 !important;
 }
 
+html.light input.text-white,
+html.light select.text-white,
+html.light textarea.text-white {
+  color: #1A1C23 !important;
+}
+
 html.light input::placeholder,
 html.light textarea::placeholder {
-  color: #8E96A8 !important;
+  color: #6B7280 !important;
 }
 
 html.light input:focus,
 html.light select:focus,
 html.light textarea:focus {
-  border-color: #8C6424 !important;
+  border-color: #785116 !important;
   outline: none !important;
 }
 
@@ -226,85 +324,242 @@ html.light .border-dark-gold\/10 {
   border-color: rgba(164, 126, 59, 0.28) !important;
 }
 
-/* 淺色模式下高對比度文字與標籤 */
-html.light .text-emerald-300,
-html.light .text-emerald-400 {
-  color: #047857 !important;
+/* ==========================================================================
+   淺色模式高對比度文字色系修正 (High-Contrast Light Theme Palette)
+   將原本深色模式適用的 100/200/300 淺粉彩，全數校準為易讀深色
+   ========================================================================== */
+
+/* 1. 琥珀金/黃色系 (Amber/Yellow/Orange - 籤詩絕句、白話斷語、土行、權星) */
+html.light .text-amber-100,
+html.light .text-amber-100\/90 {
+  color: #78350F !important;
 }
 
-html.light .text-rose-300,
-html.light .text-rose-400 {
-  color: #BE123C !important;
+html.light .text-amber-200,
+html.light .text-amber-200\/90 {
+  color: #92400E !important;
 }
 
 html.light .text-amber-300,
-html.light .text-amber-400 {
+html.light .text-amber-300\/90,
+html.light .text-amber-300\/80 {
   color: #B45309 !important;
 }
 
-html.light .text-violet-300,
-html.light .text-violet-400 {
-  color: #6D28D9 !important;
-}
-
-html.light .text-cyan-300,
-html.light .text-cyan-400 {
-  color: #0E7490 !important;
-}
-
-/* 格局徽章與明度 200 淺色模式高對比度修正 */
-html.light .text-amber-200 {
+html.light .text-amber-400,
+html.light .text-amber-500 {
   color: #92400E !important;
+}
+
+html.light .text-yellow-300,
+html.light .text-yellow-400 {
+  color: #854D0E !important;
+}
+
+html.light .text-orange-300 {
+  color: #C2410C !important;
+}
+
+/* 2. 翡翠綠/木行系 (Emerald/Green - 木行能量、化祿、健康吉兆) */
+html.light .text-emerald-100\/90 {
+  color: #064E3B !important;
 }
 
 html.light .text-emerald-200 {
   color: #065F46 !important;
 }
 
-html.light .text-rose-200 {
+html.light .text-emerald-300,
+html.light .text-emerald-300\/90,
+html.light .text-emerald-400 {
+  color: #047857 !important;
+}
+
+html.light .text-green-300,
+html.light .text-green-400 {
+  color: #15803D !important;
+}
+
+/* 3. 硃砂紅/火行系 (Rose/Red/Pink - 火行能量、化忌、凶煞標籤) */
+html.light .text-rose-100,
+html.light .text-rose-100\/90 {
+  color: #881337 !important;
+}
+
+html.light .text-rose-200,
+html.light .text-rose-200\/90 {
   color: #9F1239 !important;
 }
 
+html.light .text-rose-300,
+html.light .text-rose-300\/90,
+html.light .text-rose-300\/80,
+html.light .text-rose-400 {
+  color: #BE123C !important;
+}
+
+html.light .text-red-300,
+html.light .text-red-400 {
+  color: #B91C1C !important;
+}
+
+html.light .text-pink-200\/90,
+html.light .text-pink-300,
+html.light .text-pink-400 {
+  color: #BE185D !important;
+}
+
+/* 4. 青藍水行系 (Cyan/Sky/Blue/Teal - 水行能量、化科、流年歲次) */
 html.light .text-cyan-200 {
   color: #155E75 !important;
 }
 
+html.light .text-cyan-300,
+html.light .text-cyan-300\/90,
+html.light .text-cyan-400 {
+  color: #0E7490 !important;
+}
+
+html.light .text-sky-300,
+html.light .text-sky-400 {
+  color: #0369A1 !important;
+}
+
+html.light .text-blue-300 {
+  color: #1D4ED8 !important;
+}
+
+html.light .text-teal-300 {
+  color: #0F766E !important;
+}
+
+/* 5. 紫羅蘭/玄學心理系 (Purple/Violet/Indigo - 榮格潛意識、小限運程、靈籤) */
+html.light .text-purple-100 {
+  color: #581C87 !important;
+}
+
+html.light .text-purple-200 {
+  color: #6B21A8 !important;
+}
+
+html.light .text-purple-300,
+html.light .text-purple-400 {
+  color: #7E22CE !important;
+}
+
+html.light .text-violet-300,
+html.light .text-violet-300\/90,
+html.light .text-violet-400 {
+  color: #6D28D9 !important;
+}
+
+html.light .text-indigo-100,
+html.light .text-indigo-100\/90,
+html.light .text-indigo-100\/95 {
+  color: #312E81 !important;
+}
+
+html.light .text-indigo-200 {
+  color: #3730A3 !important;
+}
+
+html.light .text-indigo-300,
+html.light .text-indigo-300\/90,
+html.light .text-indigo-300\/80 {
+  color: #4338CA !important;
+}
+
+/* 6. 白金/冷石灰階系 (Slate/Gray - 八字「金 (Metal)」與冷色指標) */
+html.light .text-slate-300,
+html.light .text-slate-400 {
+  color: #334155 !important;
+}
+
+html.light .text-gray-300,
+html.light .text-gray-400 {
+  color: #374151 !important;
+}
+
+/* ==========================================================================
+   徽章背景與高亮卡片淺色適配 (Badge & Callout Container Overrides)
+   ========================================================================== */
+html.light .bg-amber-500\/10,
 html.light .bg-amber-500\/15 {
   background-color: rgba(254, 243, 199, 0.95) !important;
-  border-color: rgba(217, 119, 6, 0.5) !important;
+  border-color: rgba(217, 119, 6, 0.45) !important;
 }
 
-html.light .bg-emerald-500\/15 {
+html.light .bg-emerald-500\/10,
+html.light .bg-emerald-500\/15,
+html.light .bg-emerald-500\/20 {
   background-color: rgba(209, 250, 229, 0.95) !important;
-  border-color: rgba(16, 185, 129, 0.5) !important;
+  border-color: rgba(16, 185, 129, 0.45) !important;
 }
 
+html.light .bg-rose-500\/10,
 html.light .bg-rose-500\/15 {
   background-color: rgba(255, 228, 230, 0.95) !important;
-  border-color: rgba(244, 63, 94, 0.5) !important;
+  border-color: rgba(244, 63, 94, 0.45) !important;
 }
 
+html.light .bg-red-500\/20 {
+  background-color: rgba(254, 226, 226, 0.95) !important;
+  border-color: rgba(239, 68, 68, 0.45) !important;
+}
+
+html.light .bg-cyan-500\/10,
 html.light .bg-cyan-500\/15 {
   background-color: rgba(207, 250, 254, 0.95) !important;
-  border-color: rgba(6, 182, 212, 0.5) !important;
+  border-color: rgba(6, 182, 212, 0.45) !important;
 }
 
+html.light .bg-purple-500\/10,
+html.light .bg-purple-500\/15 {
+  background-color: rgba(243, 232, 255, 0.95) !important;
+  border-color: rgba(168, 85, 247, 0.45) !important;
+}
+
+/* 950 深色微光區塊於淺色模式轉換為柔和清新底色 */
 html.light .bg-emerald-950\/20,
 html.light .bg-emerald-950\/30,
 html.light .bg-emerald-950\/60,
+html.light .bg-emerald-950\/70,
 html.light .bg-emerald-950\/80 {
-  background-color: rgba(209, 250, 229, 0.75) !important;
-  border-color: rgba(16, 185, 129, 0.35) !important;
+  background-color: rgba(209, 250, 229, 0.82) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
   color: #065F46 !important;
 }
 
 html.light .bg-rose-950\/20,
 html.light .bg-rose-950\/30,
 html.light .bg-rose-950\/60,
+html.light .bg-rose-950\/70,
 html.light .bg-rose-950\/80 {
-  background-color: rgba(255, 228, 230, 0.75) !important;
-  border-color: rgba(244, 63, 94, 0.35) !important;
+  background-color: rgba(255, 228, 230, 0.82) !important;
+  border-color: rgba(244, 63, 94, 0.4) !important;
   color: #9F1239 !important;
+}
+
+html.light .bg-amber-950\/20,
+html.light .bg-amber-950\/25,
+html.light .bg-amber-950\/30 {
+  background-color: rgba(254, 243, 199, 0.85) !important;
+  border-color: rgba(217, 119, 6, 0.4) !important;
+  color: #78350F !important;
+}
+
+html.light .bg-indigo-950\/20,
+html.light .bg-indigo-950\/25,
+html.light .bg-indigo-950\/30 {
+  background-color: rgba(224, 231, 255, 0.85) !important;
+  border-color: rgba(99, 102, 241, 0.4) !important;
+  color: #3730A3 !important;
+}
+
+html.light .bg-red-950\/25 {
+  background-color: rgba(254, 226, 226, 0.85) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  color: #991B1B !important;
 }
 
 html.light .shadow-cosmic {

@@ -4,10 +4,17 @@
   "private": true,
   "description": "萬象天儀 (Astraea & CelestialDao) - 頂級東西方綜合星象與命理系統",
   "scripts": {
+    "dev": "pnpm --parallel -F @celestial/server -F @celestial/web run dev",
+    "start": "NODE_ENV=production node apps/server/dist/main.js",
+    "preview": "pnpm build && pnpm start",
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "dev:server": "pnpm --filter @celestial/server dev",
     "dev:web": "pnpm --filter @celestial/web dev",
+    "docker:build": "docker build -t celestial-app .",
+    "docker:run": "docker run -d -p 5499:5499 -v celestial_data:/app/packages/database/prisma --name celestial-app celestial-app",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
     "lint": "pnpm -r lint"
   },
   "devDependencies": {

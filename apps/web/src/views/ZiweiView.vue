@@ -180,7 +180,7 @@
             <span class="text-xs text-dark-muted">{{ chart.horoscope.decade.ageRange[0] }} - {{ chart.horoscope.decade.ageRange[1] }} 歲</span>
           </div>
           <div>
-            <div class="text-sm font-bold text-white">{{ chart.horoscope.decade.palaceName }}（{{ chart.horoscope.decade.stem }}{{ chart.horoscope.decade.branch }}）</div>
+            <div class="text-sm font-bold text-dark-text">{{ chart.horoscope.decade.palaceName }}（{{ chart.horoscope.decade.stem }}{{ chart.horoscope.decade.branch }}）</div>
             <div class="text-[11px] text-dark-muted mt-1">宮干【{{ chart.horoscope.decade.stem }}】引動大限四化：</div>
             <div class="grid grid-cols-4 gap-1 mt-1.5 text-center text-[10px]">
               <span class="p-1 rounded bg-emerald-500/10 border border-emerald-500/25 text-emerald-300">祿: {{ chart.horoscope.decade.siHua[0] }}</span>
@@ -198,7 +198,7 @@
             <span class="text-xs text-dark-muted">{{ chart.horoscope.yearly.year }} 年</span>
           </div>
           <div>
-            <div class="text-sm font-bold text-white">{{ chart.horoscope.yearly.stem }}{{ chart.horoscope.yearly.branch }}年 · {{ chart.horoscope.yearly.palaceName }}</div>
+            <div class="text-sm font-bold text-dark-text">{{ chart.horoscope.yearly.stem }}{{ chart.horoscope.yearly.branch }}年 · {{ chart.horoscope.yearly.palaceName }}</div>
             <div class="text-[11px] text-dark-muted mt-1">年干【{{ chart.horoscope.yearly.stem }}】引動流年四化：</div>
             <div class="grid grid-cols-4 gap-1 mt-1.5 text-center text-[10px]">
               <span class="p-1 rounded bg-emerald-500/10 border border-emerald-500/25 text-emerald-300">祿: {{ chart.horoscope.yearly.siHua[0] }}</span>
@@ -216,7 +216,7 @@
             <span class="text-xs text-dark-muted">行運 {{ chart.horoscope.smallLimit.age }} 歲</span>
           </div>
           <div>
-            <div class="text-sm font-bold text-white">{{ chart.horoscope.smallLimit.palaceName }}（{{ chart.horoscope.smallLimit.branch }}宮）</div>
+            <div class="text-sm font-bold text-dark-text">{{ chart.horoscope.smallLimit.palaceName }}（{{ chart.horoscope.smallLimit.branch }}宮）</div>
             <div class="text-[11px] text-dark-muted mt-1">小限宮干【{{ chart.horoscope.smallLimit.stem }}】四化：</div>
             <div class="grid grid-cols-4 gap-1 mt-1.5 text-center text-[10px]">
               <span class="p-1 rounded bg-emerald-500/10 border border-emerald-500/25 text-emerald-300">祿: {{ chart.horoscope.smallLimit.siHua[0] }}</span>
